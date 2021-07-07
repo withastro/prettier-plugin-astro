@@ -7,15 +7,18 @@
   "scripts": {
     "test": "uvu test -i fixtures -i package.json",
     "lint": "eslint .",
-    "fix": "yarn lint --fix"
+    "fix": "yarn lint --fix",
+    "format": "prettier -w \"**/*.{js,jsx,ts,tsx,md,json}\""
   },
   "dependencies": {
     "@astrojs/parser": "^0.15.0",
     "prettier": "^2.2.1"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.16.0",
     "@types/prettier": "^2.2.1",
     "eslint": "^7.29.0",
-    "eslint-plugin-prettier-doc": "^1.0.1"
+    "eslint-plugin-prettier-doc": "^1.0.1",
+    "uvu": "^0.5.1"
   }
 }
