@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": ["test/**"],
+  "plugins": ["prettier-doc"],
+  "extends": ["plugin:prettier-doc/recommended"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  }
+}
