@@ -47,7 +47,7 @@ Prettier('can format an Astro file with frontmatter', async () => {
   assert.fixture(formatted, out);
 });
 
-Prettier.skip(
+Prettier(
   "can format an Astro file with embedded JSX expressions",
   async () => {
     const [src, out] = await getFiles("embedded-expr");
@@ -58,8 +58,7 @@ Prettier.skip(
   }
 );
 
-// This is currently failing! See: https://github.com/snowpackjs/astro/issues/478
-Prettier.skip(
+Prettier(
   "can format an Astro file with a JSX expression in an attribute",
   async () => {
     const [src, out] = await getFiles("attribute-with-embedded-expr");

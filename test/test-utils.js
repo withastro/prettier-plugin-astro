@@ -1,5 +1,6 @@
 import prettier from "prettier";
 import { fileURLToPath } from "url";
+
 /**
  * format the contents of an astro file
  * @param contents {string}
