@@ -31,8 +31,16 @@ Prettier("can format a basic Astro file", async () => {
   assert.fixture(formatted, out);
 });
 
-Prettier("can format an Astro file with frontmatter", async () => {
-  const [src, out] = await getFiles("frontmatter");
+Prettier('can format a basic Astro file with styles', async () => {
+  const [src, out] = await getFiles('with-styles');
+  assert.not.fixture(src, out);
+
+  const formatted = format(src);
+  assert.fixture(formatted, out);
+});
+
+Prettier('can format an Astro file with frontmatter', async () => {
+  const [src, out] = await getFiles('frontmatter');
   assert.not.fixture(src, out);
 
   const formatted = format(src);
