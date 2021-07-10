@@ -104,6 +104,11 @@ const embed = (path, print, textToDoc, options) => {
     return group(['---', hardline, textToDoc(node.content, { ...options, parser: 'typescript' }), '---', hardline, hardline]);
   }
 
+  if (node.type === 'Style') {
+    console.log(node)
+    return group(['<style>', hardline, dedent(textToDoc(node.content.styles, { ...options, parser: 'css' })), '</style>', hardline])
+  }
+
   if (node.__isRawHTML) {
     return textToDoc(node.content, { ...options, parser: 'html' });
   }
