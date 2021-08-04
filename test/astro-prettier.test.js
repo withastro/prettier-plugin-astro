@@ -65,4 +65,12 @@ Prettier('can format an Astro file with a JSX expression and an HTML Comment', a
   assert.fixture(formatted, out);
 });
 
+Prettier('can format and Astro file with a single style element', async () => {
+  const [src, out] = await getFiles('single-style-element');
+  assert.not.fixture(src, out);
+
+  const formatted = format(src);
+  assert.fixture(formatted, out);
+});
+
 Prettier.run();
