@@ -1,6 +1,6 @@
 const parse = require('./parse');
-const printer = require("./printer");
-const { options } = require("./options");
+const printer = require('./printer');
+const { options } = require('./options');
 
 /** @type {Partial<import('prettier').SupportLanguage>[]} */
 const languages = [
@@ -19,12 +19,12 @@ const parsers = {
     astFormat: 'astro',
     locStart: (node) => node.start,
     locEnd: (node) => node.end,
-  }
+  },
 };
 
 /** @type {Record<string, import('prettier').Printer>} */
 const printers = {
-  astro: printer
+  astro: printer,
 };
 
 module.exports = {

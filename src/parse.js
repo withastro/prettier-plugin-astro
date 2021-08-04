@@ -1,8 +1,8 @@
 const { parse: parseAstro } = require('@astrojs/parser');
 
 /**
- * @param {string} text 
+ * @param {string} text
  */
-const parse = (text) => parseAstro(text)
+const parse = (text) => parseAstro(text);
 
 module.exports = parse;
