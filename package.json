@@ -5,7 +5,7 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "test": "uvu test -i fixtures -i package.json",
+    "test": "uvu test -i fixtures -i test-utils.js -i package.json",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
     "format": "prettier -w \"**/*.{js,jsx,ts,tsx,md,json}\""
