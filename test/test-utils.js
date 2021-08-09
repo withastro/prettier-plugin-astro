@@ -6,8 +6,16 @@ import { fileURLToPath } from 'url';
  * @param contents {string}
  */
 export function format(contents) {
-  return prettier.format(contents, {
-    parser: 'astro',
-    plugins: [fileURLToPath(new URL('../', import.meta.url))],
-  });
+  // for some reason uvu isn't detecting throwing of strings??
+  try {
+    return prettier.format(contents, {
+      parser: 'astro',
+      plugins: [fileURLToPath(new URL('../', import.meta.url))],
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      throw e;
+    }
+    throw new Error(e);
+  }
 }
