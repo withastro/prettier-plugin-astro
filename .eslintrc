@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["test/**"],
+  "ignorePatterns": ["test/fixures/**"],
   "plugins": ["prettier-doc"],
   "extends": ["plugin:prettier-doc/recommended"],
   "parserOptions": {
