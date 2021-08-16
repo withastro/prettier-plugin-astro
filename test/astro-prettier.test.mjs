@@ -59,6 +59,8 @@ test('can format an Astro file with embedded JSX expressions', Prettier, 'embedd
 
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
+test.only('does not alter html comments', PrettierUnaltered, 'html-comment');
+
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
 
 test.failing('can format an Astro file with a single style element', Prettier, 'single-style-element');

@@ -301,6 +301,8 @@ const print = (path, opts, print) => {
         }),
         '}',
       ];
+    case 'Comment':
+      return [`<!--`, node.data, `-->`];
     default: {
       throw new Error(`Unhandled node type "${node.type}"!`);
     }
