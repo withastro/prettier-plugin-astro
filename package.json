@@ -5,7 +5,7 @@
   "type": "commonjs",
   "private": true,
   "scripts": {
-    "test": "uvu test -i fixtures -i test-utils.js -i package.json",
+    "test": "ava test/*.test.mjs",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
     "format": "prettier -w \"**/*.{js,jsx,ts,tsx,md,json}\""
@@ -17,8 +17,9 @@
   "devDependencies": {
     "@changesets/cli": "^2.16.0",
     "@types/prettier": "^2.2.1",
+    "ava": "^4.0.0-alpha.2",
     "eslint": "^7.29.0",
-    "eslint-plugin-prettier-doc": "^1.0.1",
-    "uvu": "^0.5.1"
+    "eslint-plugin-ava": "^12.0.0",
+    "eslint-plugin-prettier-doc": "^1.0.1"
   }
 }
