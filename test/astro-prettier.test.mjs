@@ -1,5 +1,5 @@
 import test from 'ava';
-import { format } from './test-utils.mjs';
+import { format, markdownFormat } from './test-utils.mjs';
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
 
@@ -12,6 +12,11 @@ const readFile = (path) => fs.readFile(fileURLToPath(new URL(`./fixtures${path}`
  */
 const getFiles = async (name) => {
   const [src, out] = await Promise.all([readFile(`/in/${name}.astro`), readFile(`/out/${name}.astro`)]);
+  return [src, out];
+};
+
+const getMarkdownFiles = async (name) => {
+  const [src, out] = await Promise.all([readFile(`/in/${name}.md`), readFile(`/out/${name}.md`)]);
   return [src, out];
 };
 
@@ -72,3 +77,19 @@ test('does not alter html comments', PrettierUnaltered, 'html-comment');
 test.todo("properly follow prettier' advice on formatting comments");
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
+
+test(
+  'can format an Astro file containing an Astro file embedded in a codeblock',
+  async (t, name) => {
+    const [src, out] = await getMarkdownFiles(name);
+    t.not(src, out);
+
+    const formatted = markdownFormat(src);
+    t.not(formatted, out);
+    // test that our formatting is idempotent
+    const formattedTwice = markdownFormat(formatted);
+    t.is(formatted, formattedTwice);
+  },
+  'embedded-in-markdown'
+);
+

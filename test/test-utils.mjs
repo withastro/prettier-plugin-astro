@@ -19,3 +19,17 @@ export function format(contents) {
     throw new Error(e);
   }
 }
+
+export function markdownFormat(contents) {
+  try {
+    return prettier.format(contents, {
+      parser: 'markdown',
+      plugins: [fileURLToPath(new URL('../', import.meta.url))],
+    });
+  } catch (e) {
+    if (e instanceof Error) {
+      throw e;
+    }
+    throw new Error(e);
+  }
+}
