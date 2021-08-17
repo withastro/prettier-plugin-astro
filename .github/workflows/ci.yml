@@ -1,0 +1,24 @@
+name: 'CI'
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  node_version: 14
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn --frozen-lockfile --ignore-engines
+        env:
+          CI: true
+      - run: yarn test
