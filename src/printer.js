@@ -61,8 +61,7 @@ const printTopLevelParts = (node, path, opts, print) => {
     parts.markup.push(path.call(print, 'html'));
   }
 
-  const docs = flatten([parts.frontmatter, ...parseSortOrder(opts.astroSortOrder).map((p) => parts[p])]);
-
+  const docs = flatten([parts.frontmatter, ...parseSortOrder(opts.astroSortOrder).map((p) => parts[p])]).filter((doc) => '' !== doc);
   return group([join(hardline, docs)]);
 };
 
@@ -101,7 +100,9 @@ const print = (path, opts, print) => {
   switch (node.type) {
     case 'Fragment': {
       const text = getText(node, opts);
-
+      if (text.length === 0) {
+        return '';
+      }
       // If we don't see any JSX expressions, this is just embedded HTML
       // and we can skip a bunch of work. Hooray!
       if (text.indexOf('{') === -1) {
@@ -371,7 +372,7 @@ const embed = (path, print, textToDoc, opts) => {
   }
 
   if (node.type === 'Style') {
-    return group(['<style>', hardline, dedent(textToDoc(node.content.styles, { ...opts, parser: 'css' })), '</style>', hardline]);
+    return group(['<style>', hardline, indent(textToDoc(node.content.styles, { ...opts, parser: 'css' })), '</style>', hardline]);
   }
 
   if (node.__isRawHTML) {

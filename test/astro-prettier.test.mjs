@@ -51,6 +51,8 @@ PrettierUnaltered.title = Prettier.title;
 
 test.failing('can format a basic Astro file', Prettier, 'basic');
 
+test('can format an Astro file with a single style element', Prettier, 'single-style-element');
+
 test.failing('can format a basic Astro file with styles', Prettier, 'with-styles');
 
 test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
@@ -59,8 +61,6 @@ test('can format an Astro file with embedded JSX expressions', Prettier, 'embedd
 
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
-test.only('does not alter html comments', PrettierUnaltered, 'html-comment');
+test('does not alter html comments', PrettierUnaltered, 'html-comment');
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
-
-test.failing('can format an Astro file with a single style element', Prettier, 'single-style-element');
