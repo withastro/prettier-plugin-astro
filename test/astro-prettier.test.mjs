@@ -26,6 +26,9 @@ const Prettier = async (t, name) => {
 
   const formatted = format(src);
   t.is(formatted, out);
+  // test that our formatting is idempotent
+  const formattedTwice = format(formatted);
+  t.is(formatted, formattedTwice);
 };
 
 /**
@@ -45,15 +48,18 @@ const PrettierUnaltered = async (t, name) => {
 
   const formatted = format(src);
   t.is(formatted, out);
+  // test that our formatting is idempotent
+  const formattedTwice = format(formatted);
+  t.is(formatted, formattedTwice);
 };
 
 PrettierUnaltered.title = Prettier.title;
 
-test.failing('can format a basic Astro file', Prettier, 'basic');
+test('can format a basic Astro file', Prettier, 'basic');
 
 test('can format an Astro file with a single style element', Prettier, 'single-style-element');
 
-test.failing('can format a basic Astro file with styles', Prettier, 'with-styles');
+test('can format a basic Astro file with styles', Prettier, 'with-styles');
 
 test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
 
@@ -62,5 +68,7 @@ test('can format an Astro file with embedded JSX expressions', Prettier, 'embedd
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
 test('does not alter html comments', PrettierUnaltered, 'html-comment');
+
+test.todo("properly follow prettier' advice on formatting comments");
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
