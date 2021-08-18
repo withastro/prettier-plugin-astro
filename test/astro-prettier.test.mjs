@@ -98,3 +98,7 @@ test.todo('test whether attributes that can be translated into shortcodes are co
 test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
 test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
+
+test.failing('can format an Astro file with components that are the uppercase version of html elements', PrettierUnaltered, 'preserve-tag-case');
+
+test.failing('BUG: RangeError { message: "Maximum call stack size exceeded" }', PrettierUnaltered, 'maximum-call-size-exceeded');
