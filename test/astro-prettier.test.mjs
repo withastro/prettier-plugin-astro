@@ -93,3 +93,8 @@ test(
   'embedded-in-markdown'
 );
 
+test.todo('test whether attributes that can be translated into shortcodes are converted.');
+
+test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
+
+test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');

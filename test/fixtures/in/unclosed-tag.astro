@@ -1,0 +1,42 @@
+
+
+
+
+
+
+
+
+<footer>
+<ul>
+  <li><a href="#">Back to top</a></li>
+  <slot />
+  </uL>
+  <span
+    >This Site is in no way affiliated or attempting to represent itself as the
+    Distractible podcast.</span
+  >
+</footer>
+
+<style>
+  footer {
+    font-family: var(--font-default);
+    background-color: var(--color-black);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-white);
+  }
+  footer > * {
+    padding-block-start: 2rem;
+    padding-block-end: 2rem;
+    padding-inline-start: 1rem;
+    padding-inline-end: 1rem;
+  }
+  a {
+    color: var(--color-white);
+    text-transform: uppercase;
+    font-weight: 700;
+    text-decoration: underline;
+    font-size: 1.5rem;
+  }
+</style>
