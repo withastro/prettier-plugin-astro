@@ -102,3 +102,5 @@ test.todo('test whether invalid files provide helpful support messages / still t
 test.failing('can format an Astro file with components that are the uppercase version of html elements', PrettierUnaltered, 'preserve-tag-case');
 
 test.failing('BUG: RangeError { message: "Maximum call stack size exceeded" }', PrettierUnaltered, 'maximum-call-size-exceeded');
+
+test.todo('can format an Astro file with a script tag inside it');
