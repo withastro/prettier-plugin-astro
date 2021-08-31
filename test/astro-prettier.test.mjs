@@ -104,3 +104,7 @@ test.failing('can format an Astro file with components that are the uppercase ve
 test.failing('BUG: RangeError { message: "Maximum call stack size exceeded" }', PrettierUnaltered, 'maximum-call-size-exceeded');
 
 test.todo('can format an Astro file with a script tag inside it');
+
+test.todo('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
+
+test.todo('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
