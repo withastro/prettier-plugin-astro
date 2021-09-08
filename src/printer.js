@@ -183,6 +183,21 @@ const print = (path, opts, print) => {
       if (isSelfClosingTag) {
         return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
       }
+      try {
+        if (node.name.toLowerCase() === '!doctype') {
+          attributesWithLowercaseHTML = attributes.map((attribute) => {
+            if (attribute[0].type === 'line' && attribute[1].toLowerCase() === 'html') {
+              attribute[1] = attribute[1].toLowerCase();
+              return attribute;
+            }
+            return attribute;
+          });
+
+          return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, , `>`]);
+        }
+      } catch (e) {
+        console.warn(`error ${e} in the doctype printing`);
+      }
 
       const children = node.children;
       const firstChild = children[0];
