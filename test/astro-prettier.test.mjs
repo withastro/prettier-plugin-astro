@@ -70,6 +70,8 @@ test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
 
 test('can format an Astro file with embedded JSX expressions', Prettier, 'embedded-expr');
 
+test('can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions', Prettier, 'doctype-with-embedded-expr');
+
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
 test('does not alter html comments', PrettierUnaltered, 'html-comment');
