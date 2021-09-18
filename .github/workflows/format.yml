@@ -1,10 +1,9 @@
-name: 'CI'
+name: 'Format Code'
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 env:
   node_version: 14
@@ -22,4 +21,9 @@ jobs:
       - run: yarn --frozen-lockfile --ignore-engines
         env:
           CI: true
-      - run: yarn test
+      - run: yarn format
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[ci] yarn format'
+          branch: ${{ github.head_ref }}
