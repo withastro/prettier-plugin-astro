@@ -8,6 +8,7 @@ To get setup:
 2. `yarn`
 3. Run tests with `yarn test`
 4. Format code with `yarn format`
+5. Run `yarn changeset` to add your changes to the changelog on version bump.
 
 ## Resources for contributing
 
