@@ -35,6 +35,8 @@ const {
   getText,
 } = require('./utils');
 
+const supportedStyleLangValues = ['css', 'sass'];
+
 /**
  *
  * @param {import('@astrojs/parser').Ast} node
@@ -397,7 +399,10 @@ const embed = (path, print, textToDoc, opts) => {
         styleLang = langAttribute[0].value[0].raw.toLowerCase();
       }
     }
-    parserLang = styleLang;
+    if (styleLang in supportedStyleLangValues) parserLang = styleLang;
+    // TODO(obnoxiousnerd): Provide error handling in case of unrecognized
+    // styles language.
+    else parserLang = 'css';
 
     // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
     // so we remove the last element of the array
