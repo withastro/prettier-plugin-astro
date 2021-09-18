@@ -193,7 +193,7 @@ const print = (path, opts, print) => {
             return attribute;
           });
 
-          return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, , `>`]);
+          return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, `>`]);
         }
       } catch (e) {
         console.warn(`error ${e} in the doctype printing`);
