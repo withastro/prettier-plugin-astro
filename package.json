@@ -8,7 +8,7 @@
     "test": "ava test/*.test.mjs",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
-    "format": "prettier -w \"**/*.{js,jsx,ts,tsx,md,json}\""
+    "format": "prettier -w ."
   },
   "dependencies": {
     "@astrojs/parser": "^0.15.0",
