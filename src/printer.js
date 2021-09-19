@@ -35,7 +35,7 @@ const {
   getText,
 } = require('./utils');
 
-const supportedStyleLangValues = ['css', 'sass'];
+const supportedStyleLangValues = ['css', 'scss'];
 
 /**
  *
