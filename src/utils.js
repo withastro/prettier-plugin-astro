@@ -90,7 +90,7 @@ function isOrCanBeConvertedToShorthand(node) {
 
   if (isLoneMustacheTag(node.value)) {
     const expression = node.value[0].expression;
-    return expression.type === 'Identifier' && expression.name === node.name;
+    return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
   }
 
   return false;
@@ -134,6 +134,40 @@ function replaceEndOfLineWith(text, replacement) {
     }
   }
   return parts;
+}
+
+/**
+ *
+ * @param { ElementNode | InlineComponentNode | SlotNode | WindowNode | HeadNode | TitleNode | SlotTemplateNode } node
+ * @param {string} originalText string
+ * @param {boolean} stripLeadingAndTrailingNewline boolean
+ * @returns {string}
+ */
+function printRaw(node, originalText, stripLeadingAndTrailingNewline = false) {
+  if (node.children.length === 0) {
+    return '';
+  }
+
+  const firstChild = node.children[0];
+  const lastChild = node.children[node.children.length - 1];
+
+  let raw = originalText.substring(firstChild.start, lastChild.end);
+
+  if (!stripLeadingAndTrailingNewline) {
+    return raw;
+  }
+
+  if (startsWithLinebreak(raw)) {
+    raw = raw.substring(raw.indexOf('\n') + 1);
+  }
+  if (endsWithLinebreak(raw)) {
+    raw = raw.substring(0, raw.lastIndexOf('\n'));
+    if (raw.charAt(raw.length - 1) === '\r') {
+      raw = raw.substring(0, raw.length - 1);
+    }
+  }
+
+  return raw;
 }
 
 function isNodeWithChildren(node) {
@@ -516,6 +550,7 @@ module.exports = {
   trimTextNodeRight,
   trimChildren,
   flatten,
+  printRaw,
   getText,
   trim,
   isLine,
