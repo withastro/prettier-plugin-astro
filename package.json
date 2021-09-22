@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "test": "ava test/*.test.mjs",
+    "release": "changeset publish",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
     "format": "prettier -w ."
