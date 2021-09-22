@@ -1,9 +1,24 @@
 {
   "name": "prettier-plugin-astro",
-  "version": "0.0.6",
+  "version": "0.0.1",
+  "description": "A Prettier Plugin for formatting Astro files",
   "main": "src/index.js",
   "type": "commonjs",
-  "private": true,
+  "homepage": "https://github.com/snowpackjs/prettier-plugin-astro/",
+  "issues": {
+    "url": "https://github.com/snowpackjs/prettier-plugin-astro/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "prettier-plugin",
+    "prettier",
+    "astro",
+    "formatter"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/snowpackjs/prettier-plugin-astro.git"
+  },
   "scripts": {
     "test": "ava test/*.test.mjs",
     "release": "changeset publish",
