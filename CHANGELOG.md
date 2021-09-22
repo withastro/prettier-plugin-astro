@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.0.7
+
+### Patch Changes
+
+- 80df170: Upgrade prettier to ^2.4.1
+
 ## 0.0.6
 
 ### Patch Changes
