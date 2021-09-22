@@ -60,6 +60,22 @@ const PrettierUnaltered = async (t, name) => {
 
 PrettierUnaltered.title = Prettier.title;
 
+const PrettierMarkdown = async (t, name) => {
+  const [src, out] = await getMarkdownFiles(name);
+  t.not(src, out);
+
+  const formatted = markdownFormat(src);
+  t.not(formatted, out);
+  // test that our formatting is idempotent
+  const formattedTwice = markdownFormat(formatted);
+  t.is(formatted, formattedTwice);
+};
+
+PrettierMarkdown.title = (title, name) => `${title}:
+
+- input: fixtures/in/${name}.md
+- output: fixtures/out/${name}.md`;
+
 test('can format a basic Astro file', Prettier, 'basic');
 
 test('can format an Astro file with a single style element', Prettier, 'single-style-element');
@@ -86,22 +102,9 @@ test.todo("properly follow prettier' advice on formatting comments");
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
 
-test(
-  'can format an Astro file containing an Astro file embedded in a codeblock',
-  async (t, name) => {
-    const [src, out] = await getMarkdownFiles(name);
-    t.not(src, out);
+test('can format an Astro file containing an Astro file embedded in a codeblock', PrettierMarkdown, 'embedded-in-markdown');
 
-    const formatted = markdownFormat(src);
-    t.not(formatted, out);
-    // test that our formatting is idempotent
-    const formattedTwice = markdownFormat(formatted);
-    t.is(formatted, formattedTwice);
-  },
-  'embedded-in-markdown'
-);
-
-test.todo('test whether attributes that can be translated into shortcodes are converted.');
+test('converts valid shorthand variables into shorthand', Prettier, 'converts-to-shorthand');
 
 test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
@@ -109,10 +112,12 @@ test.todo('test whether invalid files provide helpful support messages / still t
 
 test.failing('can format an Astro file with components that are the uppercase version of html elements', PrettierUnaltered, 'preserve-tag-case');
 
-test.failing('BUG: RangeError { message: "Maximum call stack size exceeded" }', PrettierUnaltered, 'maximum-call-size-exceeded');
+test.failing('Autocloses open tags? BUG: RangeError { message: "Maximum call stack size exceeded" }', Prettier, 'maximum-call-size-exceeded');
 
-test.todo('can format an Astro file with a script tag inside it');
+test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
 
 test.todo('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
 
 test.todo('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
+
+test.failing(`Can format an Astro file with a template string`, Prettier, 'with-codespans');

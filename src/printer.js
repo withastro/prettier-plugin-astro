@@ -28,6 +28,7 @@ const {
   canOmitSoftlineBeforeClosingTag,
   startsWithLinebreak,
   endsWithLinebreak,
+  printRaw,
   trim,
   isLine,
   trimChildren,
@@ -320,7 +321,13 @@ const print = (path, opts, print) => {
         '}',
       ];
     case 'Comment':
-      return [`<!--`, node.data, `-->`];
+      return [`<!--`, getUnencodedText(node), `-->`];
+    case 'CodeSpan':
+      return getUnencodedText(node);
+    case 'CodeFence':
+      console.debug(node);
+      return getUnencodedText(node);
+    // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];
     default: {
       throw new Error(`Unhandled node type "${node.type}"!`);
     }
