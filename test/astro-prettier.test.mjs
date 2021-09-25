@@ -121,3 +121,5 @@ test.todo('Can format an Astro file with a HTML style prettier ignore comment: h
 test.todo('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
 
 test.failing(`Can format an Astro file with a template string`, Prettier, 'with-codespans');
+
+test(`Can format an Astro file with global attribute in <style> tag`, Prettier, 'global-style');
