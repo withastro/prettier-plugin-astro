@@ -425,7 +425,11 @@ const embed = (path, print, textToDoc, opts) => {
     // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
     // so we remove the last element of the array
     const [formatttedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
-    return group([styleLang !== 'css' ? `<style lang="${styleLang}">` : '<style>', indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
+
+    const attributes = path.map((childPath) => childPath.call(print), 'attributes');
+    const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
+
+    return group([styleGroup, indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
   }
 
   if (node.__isRawHTML) {
