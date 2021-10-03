@@ -108,7 +108,8 @@ const print = (path, opts, print) => {
       }
       // If we don't see any JSX expressions, this is just embedded HTML
       // and we can skip a bunch of work. Hooray!
-      if (text.indexOf('{') === -1) {
+      const hasInlineComponent = node.children.filter((x) => x.type === 'InlineComponent').length > 0;
+      if (text.indexOf('{') === -1 && !hasInlineComponent) {
         node.__isRawHTML = true;
         node.content = text;
         return path.call(print);
@@ -393,6 +394,15 @@ const embed = (path, print, textToDoc, opts) => {
 
   if (node.type === 'Script' && node.context === 'setup') {
     return group(['---', hardline, textToDoc(node.content, { ...opts, parser: 'typescript' }), '---', hardline]);
+  }
+
+  // format <script type="module"> content
+  if (node.type === 'Text') {
+    const parent = path.getParentNode();
+    if (parent.type === 'Element' && parent.name === 'script') {
+      const [formatttedScript, _] = textToDoc(node.data, { ...opts, parser: 'typescript' });
+      return group(formatttedScript);
+    }
   }
 
   if (node.type === 'Style') {
