@@ -27,7 +27,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@astrojs/parser": "^0.15.0",
+    "@astrojs/parser": "^0.20.2",
     "prettier": "^2.4.1"
   },
   "devDependencies": {

@@ -34,6 +34,7 @@ const {
   trimChildren,
   flatten,
   getText,
+  isObjEmpty,
 } = require('./utils');
 
 const supportedStyleLangValues = ['css', 'scss'];
@@ -56,11 +57,11 @@ const printTopLevelParts = (node, path, opts, print) => {
     parts.frontmatter.push(path.call(print, 'module'));
   }
 
-  if (node.css) {
+  if (node.css && node.css.length) {
     parts.styles.push(path.call(print, 'css'));
   }
 
-  if (node.html) {
+  if (node.html && !isObjEmpty(node.html)) {
     parts.markup.push(path.call(print, 'html'));
   }
 
