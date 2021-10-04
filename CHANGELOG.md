@@ -1,5 +1,14 @@
 # prettier-plugin-astro
 
+## 0.0.8
+
+### Patch Changes
+
+- 87c3564: Bump mixme from 0.5.1 to 0.5.4 (#12)
+- 87c3564: Bump @changesets/cli from 2.16.0 to 2.17.0 (#15)
+- 87c3564: Bump eslint-plugin-ava from 12.0.0 to 13.0.0 (#13)
+- 87c3564: Preserve tag case (#19)
+
 ## 0.0.7
 
 ### Patch Changes
