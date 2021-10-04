@@ -1,7 +1,7 @@
 {
   "ignorePatterns": ["test/fixures/**"],
   "plugins": ["prettier-doc"],
-  "extends": ["plugin:prettier-doc/recommended"],
+  "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
