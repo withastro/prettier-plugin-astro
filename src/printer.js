@@ -400,7 +400,7 @@ const embed = (path, print, textToDoc, opts) => {
   if (node.type === 'Text') {
     const parent = path.getParentNode();
     if (parent.type === 'Element' && parent.name === 'script') {
-      const [formatttedScript, _] = textToDoc(node.data, { ...opts, parser: 'typescript' });
+      const [formatttedScript, ,] = textToDoc(node.data, { ...opts, parser: 'typescript' });
       return group(formatttedScript);
     }
   }
@@ -423,7 +423,7 @@ const embed = (path, print, textToDoc, opts) => {
 
     // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
     // so we remove the last element of the array
-    const [formatttedStyles, _] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
+    const [formatttedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
     return group([styleLang !== 'css' ? `<style lang="${styleLang}">` : '<style>', indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
   }
 
