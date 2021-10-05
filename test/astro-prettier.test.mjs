@@ -1,7 +1,8 @@
 import test from 'ava';
+// eslint-disable-next-line ava/no-import-test-files
 import { format, markdownFormat } from './test-utils.mjs';
 import { promises as fs } from 'fs';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, URL } from 'url';
 
 const readFile = (path) => fs.readFile(fileURLToPath(new URL(`./fixtures${path}`, import.meta.url))).then((res) => res.toString().replace(/\r\n/g, '\n'));
 
@@ -84,6 +85,7 @@ test('can format a basic Astro file with styles', Prettier, 'with-styles');
 
 test('can format a basic Astro file with SCSS styles', Prettier, 'with-scss');
 
+// TODO make this both test "does not fail on SASS & prints the raw source & a test that specifies whether we can actually format the SASS w/ an embed"
 test.failing('can format a basic Astro file with styles written in Indented SASS ', Prettier, 'with-indented-sass');
 
 test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
@@ -112,10 +114,11 @@ test.todo('test whether invalid files provide helpful support messages / still t
 
 test('can format an Astro file with components that are the uppercase version of html elements', Prettier, 'preserve-tag-case');
 
-test.failing('Autocloses open tags? BUG: RangeError { message: "Maximum call stack size exceeded" }', Prettier, 'maximum-call-size-exceeded');
+test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
 
 test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
 
+// Supports various prettier ignore comments
 test.todo('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
 
 test.todo('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html');
