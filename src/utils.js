@@ -523,6 +523,11 @@ function getParts(doc) {
   }
 }
 
+const isObjEmpty = (obj) => {
+  for (let i in obj) return false;
+  return true;
+};
+
 module.exports = {
   isASTNode,
   isEmptyTextNode,
@@ -555,4 +560,5 @@ module.exports = {
   trim,
   isLine,
   isEmptyDoc,
+  isObjEmpty,
 };
