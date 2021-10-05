@@ -83,6 +83,8 @@ test('can format an Astro file with a single style element', Prettier, 'single-s
 
 test('can format a basic Astro file with styles', Prettier, 'with-styles');
 
+test(`Can format an Astro file with attributes in the <style> tag`, Prettier, 'style-tag-attributes');
+
 test('can format a basic Astro file with SCSS styles', Prettier, 'with-scss');
 
 // TODO make this both test "does not fail on SASS & prints the raw source & a test that specifies whether we can actually format the SASS w/ an embed"
@@ -125,6 +127,4 @@ test.failing('Can format an Astro file with a HTML style prettier ignore comment
 
 test('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-js');
 
-test.failing(`Can format an Astro file with a template string`, Prettier, 'with-codespans');
-
-test(`Can format an Astro file with attributes in the <style> tag`, Prettier, 'style-tag-attributes');
+test.failing(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');

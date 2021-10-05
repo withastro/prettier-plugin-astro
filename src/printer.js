@@ -326,10 +326,13 @@ const print = (path, opts, print) => {
       return [`<!--`, getUnencodedText(node), `-->`];
     case 'CodeSpan':
       return getUnencodedText(node);
-    case 'CodeFence':
+    case 'CodeFence': {
       console.debug(node);
-      return getUnencodedText(node);
-    // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];
+      const lang = node.metadata.slice(3);
+      return [node.metadata, hardline, /** somehow call textToDoc(lang),  */ node.data, hardline, '```', hardline];
+
+      // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];
+    }
     default: {
       throw new Error(`Unhandled node type "${node.type}"!`);
     }
