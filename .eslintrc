@@ -1,9 +1,30 @@
 {
   "ignorePatterns": ["test/fixures/**"],
   "plugins": ["prettier-doc"],
-  "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended"],
+  "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
   "rules": {
-    "curly": ["error", "multi-line"]
+    "curly": ["error", "multi-line"],
+    "node/no-unsupported-features/es-builtins": [
+      "error",
+      {
+        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
+        "ignores": []
+      }
+    ],
+    "node/no-unsupported-features/node-builtins": [
+      "error",
+      {
+        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
+        "ignores": []
+      }
+    ],
+    "node/no-unsupported-features/es-syntax": [
+      "error",
+      {
+        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
+        "ignores": ["astro-prettier.test.mjs", "test-utils.mjs"]
+      }
+    ]
   },
   "parserOptions": {
     "ecmaVersion": "latest",
