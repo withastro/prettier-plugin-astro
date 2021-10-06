@@ -1,4 +1,4 @@
-const { doc } = require('prettier');
+const { doc, util } = require('prettier');
 
 // @see http://xahlee.info/js/html5_non-closing_tag.html
 const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
@@ -67,9 +67,8 @@ const isEmptyTextNode = (node) => {
 };
 
 const isPreTagContent = (path) => {
-  const stack = path.stack;
-
-  return stack.some((node) => (node.type === 'Element' && node.name.toLowerCase() === 'pre') || (node.type === 'Attribute' && !formattableAttributes.includes(node.name)));
+  if (!path || !path.stack || !Array.isArray(path.stack)) return false;
+  return path.stack.some((node) => (node.type === 'Element' && node.name.toLowerCase() === 'pre') || (node.type === 'Attribute' && !formattableAttributes.includes(node.name)));
 };
 
 function isLoneMustacheTag(node) {
@@ -171,7 +170,7 @@ function printRaw(node, originalText, stripLeadingAndTrailingNewline = false) {
 }
 
 function isNodeWithChildren(node) {
-  return !!node.children;
+  return node && Array.isArray(node.children);
 }
 
 function isInlineElement(path, options, node) {
@@ -528,37 +527,67 @@ const isObjEmpty = (obj) => {
   return true;
 };
 
+/** Recursively attach comments to nodes */
+function attachCommentsHTML(node) {
+  if (!isNodeWithChildren(node) || !node.children.some(({ type }) => type === 'Comment')) return;
+
+  const nodesToRemove = [];
+
+  // note: the .length - 1 is because we don’t need to read the last node
+  for (let n = 0; n < node.children.length - 1; n++) {
+    if (!node.children[n]) continue;
+
+    // attach comment to the next non-whitespace node
+    if (node.children[n].type === 'Comment') {
+      let next = n + 1;
+      while (isEmptyTextNode(node.children[next])) {
+        nodesToRemove.push(next); // if arbitrary whitespace between comment and node, remove
+        next++; // skip to the next non-whitespace node
+      }
+      util.addLeadingComment(node.children[next], node.children[n]);
+    }
+  }
+
+  // remove arbitrary whitespace nodes
+  nodesToRemove.reverse(); // start at back so we aren’t changing indices
+  nodesToRemove.forEach((index) => {
+    node.children.splice(index, 1);
+  });
+}
+
 module.exports = {
-  isASTNode,
-  isEmptyTextNode,
-  isPreTagContent,
-  isLoneMustacheTag,
-  isAttributeShorthand,
-  isOrCanBeConvertedToShorthand,
-  replaceEndOfLineWith,
-  getUnencodedText,
-  selfClosingTags,
-  formattableAttributes,
+  attachCommentsHTML,
+  canOmitSoftlineBeforeClosingTag,
+  endsWithLinebreak,
+  flatten,
   forceIntoExpression,
-  isInlineElement,
+  formattableAttributes,
+  getText,
+  getUnencodedText,
+  isASTNode,
+  isAttributeShorthand,
   isBlockElement,
-  isTextNodeStartingWithWhitespace,
+  isEmptyDoc,
+  isEmptyTextNode,
+  isInlineElement,
+  isLine,
+  isLoneMustacheTag,
+  isNodeWithChildren,
+  isObjEmpty,
+  isOrCanBeConvertedToShorthand,
+  isPreTagContent,
+  isTextNodeEndingWithLinebreak,
   isTextNodeEndingWithWhitespace,
   isTextNodeStartingWithLinebreak,
-  startsWithLinebreak,
-  endsWithLinebreak,
-  isTextNodeEndingWithLinebreak,
-  canOmitSoftlineBeforeClosingTag,
-  shouldHugStart,
+  isTextNodeStartingWithWhitespace,
+  printRaw,
+  replaceEndOfLineWith,
+  selfClosingTags,
   shouldHugEnd,
+  shouldHugStart,
+  startsWithLinebreak,
+  trim,
+  trimChildren,
   trimTextNodeLeft,
   trimTextNodeRight,
-  trimChildren,
-  flatten,
-  printRaw,
-  getText,
-  trim,
-  isLine,
-  isEmptyDoc,
-  isObjEmpty,
 };

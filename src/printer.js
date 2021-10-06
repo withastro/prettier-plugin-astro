@@ -6,35 +6,38 @@ const { SassFormatter } = require('sass-formatter');
 
 const { parseSortOrder } = require('./options');
 const {
+  attachCommentsHTML,
+  canOmitSoftlineBeforeClosingTag,
+  endsWithLinebreak,
+  flatten,
+  forceIntoExpression,
+  formattableAttributes,
+  getText,
+  getUnencodedText,
   isASTNode,
-  isEmptyTextNode,
-  isPreTagContent,
-  isInlineElement,
+  isAttributeShorthand,
   isEmptyDoc,
-  isTextNodeStartingWithWhitespace,
-  isTextNodeStartingWithLinebreak,
+  isEmptyTextNode,
+  isInlineElement,
+  isLine,
+  isLoneMustacheTag,
+  isNodeWithChildren,
+  isObjEmpty,
+  isOrCanBeConvertedToShorthand,
+  isPreTagContent,
   isTextNodeEndingWithWhitespace,
+  isTextNodeStartingWithLinebreak,
+  isTextNodeStartingWithWhitespace,
+  printRaw,
+  replaceEndOfLineWith,
+  selfClosingTags,
+  shouldHugEnd,
+  shouldHugStart,
+  startsWithLinebreak,
+  trim,
+  trimChildren,
   trimTextNodeLeft,
   trimTextNodeRight,
-  isLoneMustacheTag,
-  isOrCanBeConvertedToShorthand,
-  selfClosingTags,
-  formattableAttributes,
-  getUnencodedText,
-  replaceEndOfLineWith,
-  forceIntoExpression,
-  shouldHugStart,
-  shouldHugEnd,
-  canOmitSoftlineBeforeClosingTag,
-  startsWithLinebreak,
-  endsWithLinebreak,
-  printRaw,
-  trim,
-  isLine,
-  trimChildren,
-  flatten,
-  getText,
-  isObjEmpty,
 } = require('./utils');
 
 /**
@@ -44,7 +47,7 @@ const {
  * @param {import('prettier').Parseropts<any>} opts
  * @param {(path: import('prettier').AstPath<any>) => import('prettier').Doc} print
  */
-const printTopLevelParts = (node, path, opts, print) => {
+function printTopLevelParts(node, path, opts, print) {
   const parts = {
     frontmatter: [],
     markup: [],
@@ -64,10 +67,10 @@ const printTopLevelParts = (node, path, opts, print) => {
   }
 
   const docs = flatten([parts.frontmatter, ...parseSortOrder(opts.astroSortOrder).map((p) => parts[p])]).filter((doc) => '' !== doc);
-  return group([join(hardline, docs)]);
-};
+  return docs;
+}
 
-const printAttributeNodeValue = (path, print, quotes, node) => {
+function printAttributeNodeValue(path, print, quotes, node) {
   const valueDocs = path.map((childPath) => childPath.call(print), 'value');
 
   if (!quotes || !formattableAttributes.includes(node.name)) {
@@ -75,7 +78,7 @@ const printAttributeNodeValue = (path, print, quotes, node) => {
   } else {
     return indent(group(trim(valueDocs, isLine)));
   }
-};
+}
 
 function printJS(path, print, name, { forceSingleQuote, forceSingleLine }) {
   path.getValue()[name].isJS = true;
@@ -84,10 +87,18 @@ function printJS(path, print, name, { forceSingleQuote, forceSingleLine }) {
   return path.call(print, name);
 }
 
-/** @type {import('prettier').Printer['print']} */
-const print = (path, opts, print) => {
-  const node = path.getValue();
+/** @type {import('prettier').Printer['printComment']} */
+function printComment(commentPath, opts) {
+  // note(drew): this isn’t doing anything currently, but Prettier requires it anyway
+  return commentPath;
+}
 
+/** @type {import('prettier').Printer['print']} */
+function print(path, opts, print) {
+  const node = path.getValue();
+  const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
+
+  // 1. handle special node types
   switch (true) {
     case !node:
       return '';
@@ -99,26 +110,35 @@ const print = (path, opts, print) => {
       return printTopLevelParts(node, path, opts, print);
   }
 
+  // 2. attach comments shallowly to children, if any (https://prettier.io/docs/en/plugins.html#manually-attaching-a-comment)
+  if (!isPreTagContent(path) && !isMarkdownSubDoc) {
+    attachCommentsHTML(node);
+  }
+
+  // 3. handle printing
   switch (node.type) {
     case 'Fragment': {
       const text = getText(node, opts);
       if (text.length === 0) {
         return '';
       }
+
+      if (!isNodeWithChildren(node) || node.children.every(isEmptyTextNode)) return '';
+
+      // If this is the start of a markdown code block, remove arbitrary beginning whitespace
+      if (isMarkdownSubDoc) {
+        if (isEmptyTextNode(node.children[0])) node.children.shift();
+      }
+
       // If we don't see any JSX expressions, this is just embedded HTML
       // and we can skip a bunch of work. Hooray!
       const hasInlineComponent = node.children.filter((x) => x.type === 'InlineComponent').length > 0;
       if (text.indexOf('{') === -1 && !hasInlineComponent) {
         node.__isRawHTML = true;
         node.content = text;
-        return path.call(print);
+        return path.map(print, 'children');
       }
 
-      const children = node.children;
-
-      if (children.length === 0 || children.every(isEmptyTextNode)) {
-        return '';
-      }
       if (!isPreTagContent(path)) {
         trimChildren(node.children, path);
         const output = trim(
@@ -138,33 +158,10 @@ const print = (path, opts, print) => {
         return group(path.map(print, 'children'));
       }
     }
-    case 'Text':
-      if (!isPreTagContent(path)) {
-        if (isEmptyTextNode(node)) {
-          const hasWhiteSpace = getUnencodedText(node).trim().length < getUnencodedText(node).length;
-          const hasOneOrMoreNewlines = /\n/.test(getUnencodedText(node));
-          const hasTwoOrMoreNewlines = /\n\r?\s*\n\r?/.test(getUnencodedText(node));
-          if (hasTwoOrMoreNewlines) {
-            return [hardline, hardline];
-          }
-          if (hasOneOrMoreNewlines) {
-            return hardline;
-          }
-          if (hasWhiteSpace) {
-            return line;
-          }
-          return '';
-        }
+    case 'Text': {
+      const rawText = getUnencodedText(node);
 
-        /**
-         * For non-empty text nodes each sequence of non-whitespace characters (effectively,
-         * each "word") is joined by a single `line`, which will be rendered as a single space
-         * until this node's current line is out of room, at which `fill` will break at the
-         * most convenient instance of `line`.
-         */
-        return fill(splitTextToDocs(node));
-      } else {
-        const rawText = getUnencodedText(node);
+      if (isPreTagContent(path)) {
         if (path.getParentNode().type === 'Attribute') {
           // Direct child of attribute value -> add literallines at end of lines
           // so that other things don't break in unexpected places
@@ -172,6 +169,32 @@ const print = (path, opts, print) => {
         }
         return rawText;
       }
+
+      if (isEmptyTextNode(node)) {
+        const hasWhiteSpace = rawText.trim().length < getUnencodedText(node).length;
+        const hasOneOrMoreNewlines = /\n/.test(getUnencodedText(node));
+        const hasTwoOrMoreNewlines = /\n\r?\s*\n\r?/.test(getUnencodedText(node));
+        if (hasTwoOrMoreNewlines) {
+          return [hardline, hardline];
+        }
+        if (hasOneOrMoreNewlines) {
+          return hardline;
+        }
+        if (hasWhiteSpace) {
+          return line;
+        }
+        return '';
+      }
+
+      /**
+       * For non-empty text nodes each sequence of non-whitespace characters (effectively,
+       * each "word") is joined by a single `line`, which will be rendered as a single space
+       * until this node's current line is out of room, at which `fill` will break at the
+       * most convenient instance of `line`.
+       */
+      return fill(splitTextToDocs(node));
+    }
+
     case 'Element':
     case 'InlineComponent':
     case 'Slot':
@@ -321,7 +344,7 @@ const print = (path, opts, print) => {
         '}',
       ];
     case 'Comment':
-      return [`<!--`, getUnencodedText(node), `-->`];
+      return ['<!--', getUnencodedText(node), '-->'];
     case 'CodeSpan':
       return getUnencodedText(node);
     case 'CodeFence': {
@@ -335,7 +358,7 @@ const print = (path, opts, print) => {
       throw new Error(`Unhandled node type "${node.type}"!`);
     }
   }
-};
+}
 
 /**
  * Split the text into words separated by whitespace. Replace the whitespaces by lines,
@@ -373,7 +396,7 @@ function expressionParser(text, parsers, opts) {
 }
 
 /** @type {import('prettier').Printer['embed']} */
-const embed = (path, print, textToDoc, opts) => {
+function embed(path, print, textToDoc, opts) {
   const node = path.getValue();
 
   if (!node) return null;
@@ -451,20 +474,25 @@ const embed = (path, print, textToDoc, opts) => {
     return textToDoc(node.content, { ...opts, parser: 'html' });
   }
 
-  return null;
-};
+  return '';
+}
 
 /** @type {import('prettier').Printer['hasPrettierIgnore']} */
-const hasPrettierIgnore = (path) => {
+function hasPrettierIgnore(path) {
   const node = path.getNode();
-  const isSimpleIgnore = (comment) =>
-    comment.value.includes('prettier-ignore') && !comment.value.includes('prettier-ignore-start') && !comment.value.includes('prettier-ignore-end');
-  return node && node.comments && node.comments.length > 0 && node.comments.some(isSimpleIgnore);
-};
+
+  if (!node || !Array.isArray(node.comments)) return false;
+
+  const hasIgnore = node.comments.some(
+    (comment) => comment.data.includes('prettier-ignore') && !comment.data.includes('prettier-ignore-start') && !comment.data.includes('prettier-ignore-end')
+  );
+  return hasIgnore;
+}
 
 /** @type {import('prettier').Printer} */
 const printer = {
   print,
+  printComment,
   embed,
   hasPrettierIgnore,
 };

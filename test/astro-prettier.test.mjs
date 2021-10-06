@@ -123,7 +123,7 @@ test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
 test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
 
 // Supports various prettier ignore comments
-test.failing('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-html');
+test('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-html');
 
 test('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-js');
 
