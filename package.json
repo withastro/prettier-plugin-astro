@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "@astrojs/parser": "^0.20.2",
-    "prettier": "^2.4.1"
+    "prettier": "^2.4.1",
+    "sass-formatter": "^0.7.2"
   },
   "devDependencies": {
     "@changesets/cli": "^2.16.0",
