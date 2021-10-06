@@ -2,6 +2,7 @@ const {
   builders: { join, fill, line, literalline, hardline, softline, group, breakParent, indent, dedent },
   utils: { removeLines },
 } = require('prettier/doc');
+const { SassFormatter } = require('sass-formatter');
 
 const { parseSortOrder } = require('./options');
 const {
@@ -35,8 +36,6 @@ const {
   getText,
   isObjEmpty,
 } = require('./utils');
-
-const supportedStyleLangValues = ['css', 'scss'];
 
 /**
  *
@@ -406,29 +405,43 @@ const embed = (path, print, textToDoc, opts) => {
   }
 
   if (node.type === 'Style') {
-    let styleLang = '';
-    let parserLang = '';
+    const supportedStyleLangValues = ['css', 'scss', 'sass'];
+    let parserLang = 'css';
 
     if ('attributes' in node) {
       const langAttribute = node.attributes.filter((x) => x.name === 'lang');
-      if (langAttribute.length === 0) styleLang = 'css';
-      else {
-        styleLang = langAttribute[0].value[0].raw.toLowerCase();
+      if (langAttribute.length) {
+        const styleLang = langAttribute[0].value[0].raw.toLowerCase();
+        if (supportedStyleLangValues.includes(styleLang)) parserLang = styleLang;
       }
     }
-    if (styleLang in supportedStyleLangValues) parserLang = styleLang;
-    // TODO(obnoxiousnerd): Provide error handling in case of unrecognized
-    // styles language.
-    else parserLang = 'css';
 
-    // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
-    // so we remove the last element of the array
-    const [formatttedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
+    switch (parserLang) {
+      case 'css':
+      case 'scss': {
+        // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
+        // so we remove the last element of the array
+        const [formatttedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
 
-    const attributes = path.map((childPath) => childPath.call(print), 'attributes');
-    const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
+        const attributes = path.map((childPath) => childPath.call(print), 'attributes');
+        const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
 
-    return group([styleGroup, indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
+        return group([styleGroup, indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
+      }
+      case 'sass': {
+        const sassOptions = {
+          tabSize: opts.tabWidth,
+          insertSpaces: !opts.useTabs,
+          lineEnding: opts.endOfLine.toUpperCase(),
+        };
+
+        let formatttedSass = SassFormatter.Format(node.content.styles, sassOptions).trim().split('\n');
+        formatttedSass = join(hardline, formatttedSass);
+        const attributes = path.map((childPath) => childPath.call(print), 'attributes');
+        const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
+        return group([styleGroup, hardline, formatttedSass, hardline, '</style>', hardline]);
+      }
+    }
   }
 
   if (node.__isRawHTML) {

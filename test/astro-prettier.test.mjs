@@ -88,7 +88,7 @@ test('can format a basic Astro file with SCSS styles', Prettier, 'with-scss');
 // TODO make this both test "does not fail on SASS & prints the raw source & a test that specifies whether we can actually format the SASS w/ an embed"
 test.todo('can return the basic SASS style block & remove extraneous whitespace - extremely naive support');
 
-test.failing('can format a basic Astro file with styles written in Indented SASS ', Prettier, 'with-indented-sass');
+test('can format a basic Astro file with styles written in Indented SASS', Prettier, 'with-indented-sass');
 
 test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
 
