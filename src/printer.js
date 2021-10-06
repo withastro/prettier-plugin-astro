@@ -15,7 +15,6 @@ const {
   getText,
   getUnencodedText,
   isASTNode,
-  isAttributeShorthand,
   isEmptyDoc,
   isEmptyTextNode,
   isInlineElement,
@@ -88,7 +87,7 @@ function printJS(path, print, name, { forceSingleQuote, forceSingleLine }) {
 }
 
 /** @type {import('prettier').Printer['printComment']} */
-function printComment(commentPath, opts) {
+function printComment(commentPath) {
   // note(drew): this isn’t doing anything currently, but Prettier requires it anyway
   return commentPath;
 }
@@ -349,7 +348,7 @@ function print(path, opts, print) {
       return getUnencodedText(node);
     case 'CodeFence': {
       console.debug(node);
-      const lang = node.metadata.slice(3);
+      // const lang = node.metadata.slice(3);
       return [node.metadata, hardline, /** somehow call textToDoc(lang),  */ node.data, hardline, '```', hardline];
 
       // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];

@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["test/fixures/**"],
+  "ignorePatterns": ["test/**"],
   "plugins": ["prettier-doc"],
   "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
   "rules": {
@@ -16,13 +16,6 @@
       {
         "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
         "ignores": []
-      }
-    ],
-    "node/no-unsupported-features/es-syntax": [
-      "error",
-      {
-        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
-        "ignores": ["astro-prettier.test.mjs", "test-utils.mjs"]
       }
     ]
   },
