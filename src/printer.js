@@ -1,5 +1,5 @@
 const {
-  builders: { join, fill, line, literalline, hardline, softline, group, conditionalGroup, breakParent, indent, dedent },
+  builders: { join, fill, line, literalline, hardline, softline, group, breakParent, indent, dedent },
   utils: { removeLines },
 } = require('prettier/doc');
 
@@ -16,7 +16,6 @@ const {
   trimTextNodeLeft,
   trimTextNodeRight,
   isLoneMustacheTag,
-  isAttributeShorthand,
   isOrCanBeConvertedToShorthand,
   selfClosingTags,
   formattableAttributes,
@@ -190,7 +189,7 @@ const print = (path, opts, print) => {
       }
       try {
         if (node.name.toLowerCase() === '!doctype') {
-          attributesWithLowercaseHTML = attributes.map((attribute) => {
+          const attributesWithLowercaseHTML = attributes.map((attribute) => {
             if (attribute[0].type === 'line' && attribute[1].toLowerCase() === 'html') {
               attribute[1] = attribute[1].toLowerCase();
               return attribute;
