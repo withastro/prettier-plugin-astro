@@ -1,5 +1,5 @@
 const {
-  builders: { join, fill, line, literalline, hardline, softline, group, breakParent, indent, dedent },
+  builders: { breakParent, dedent, fill, group, hardline, indent, join, line, literalline, softline },
   utils: { removeLines },
 } = require('prettier/doc');
 const { SassFormatter } = require('sass-formatter');
@@ -8,12 +8,14 @@ const { parseSortOrder } = require('./options');
 const {
   attachCommentsHTML,
   canOmitSoftlineBeforeClosingTag,
+  dedent: manualDedent,
   endsWithLinebreak,
   flatten,
   forceIntoExpression,
   formattableAttributes,
   getText,
   getUnencodedText,
+  indent: manualIndent,
   isASTNode,
   isEmptyDoc,
   isEmptyTextNode,
@@ -446,12 +448,12 @@ function embed(path, print, textToDoc, opts) {
       case 'scss': {
         // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
         // so we remove the last element of the array
-        const [formatttedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
+        const [formattedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
 
         const attributes = path.map((childPath) => childPath.call(print), 'attributes');
         const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
 
-        return group([styleGroup, indent([hardline, formatttedStyles]), hardline, '</style>', hardline]);
+        return group([styleGroup, indent([hardline, formattedStyles]), hardline, '</style>', hardline]);
       }
       case 'sass': {
         const sassOptions = {
@@ -460,11 +462,19 @@ function embed(path, print, textToDoc, opts) {
           lineEnding: opts.endOfLine.toUpperCase(),
         };
 
-        let formatttedSass = SassFormatter.Format(node.content.styles, sassOptions).trim().split('\n');
-        formatttedSass = join(hardline, formatttedSass);
+        // dedent the .sass, otherwise SassFormatter gets indentation wrong
+        const { result: raw, tabSize } = manualDedent(node.content.styles);
+
+        // format + re-indent
+        let formattedSass = SassFormatter.Format(raw, sassOptions).trim();
+        const indentChar = new Array(Math.max(tabSize, 2) + 1).join(opts.useTabs ? '\t' : ' ');
+        formattedSass = manualIndent(formattedSass, indentChar);
+
+        // print
+        formattedSass = join(hardline, formattedSass.split('\n'));
         const attributes = path.map((childPath) => childPath.call(print), 'attributes');
         const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
-        return group([styleGroup, hardline, formatttedSass, hardline, '</style>', hardline]);
+        return group([styleGroup, hardline, formattedSass, hardline, '</style>', hardline]);
       }
     }
   }
