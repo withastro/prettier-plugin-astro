@@ -527,7 +527,7 @@ const isObjEmpty = (obj) => {
   return true;
 };
 
-/** Recursively attach comments to nodes */
+/** Shallowly attach comments to children */
 function attachCommentsHTML(node) {
   if (!isNodeWithChildren(node) || !node.children.some(({ type }) => type === 'Comment')) return;
 
