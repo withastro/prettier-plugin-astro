@@ -38,6 +38,8 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
 
 ```astro
 <!-- Astro Component CSS example -->
+
+<div class="circle"></div>
 <style>
   .circle {
     background-color: red;
@@ -46,7 +48,6 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
     width: 50px;
   }
 </style>
-<div class="circle"></div>
 ```
 
 ```astro
@@ -84,7 +85,6 @@ console.log("This runs at build-time, is visible in the CLI output");
 // Tip: TypeScript is also supported out-of-the-box!
 const thisWorks: number = 42;
 ---
-
 <div class="example-1">
   <h1>Hello world!</h1>
 </div>
@@ -103,7 +103,6 @@ Once imported, you can use it like any other HTML element in your template. Note
 // Import your components in your component script...
 import SomeComponent from "./SomeComponent.astro";
 ---
-
 <!-- ... then use them in your HTML! -->
 <div>
   <SomeComponent />
