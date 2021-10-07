@@ -555,15 +555,57 @@ function attachCommentsHTML(node) {
   });
 }
 
+/* dedent string & return tabSize (the last part is what we need) */
+function dedent(input) {
+  let minTabSize = Infinity;
+  let result = input;
+  // 1. normalize
+  result = result.replace(/\r\n/g, '\n');
+
+  // 2. count tabSize
+  let char = '';
+  for (const line of result.split('\n')) {
+    if (!line) continue;
+    // if any line begins with a non-whitespace char, minTabSize is 0
+    if (line[0] && /^[^\s]/.test(line[0])) {
+      minTabSize = 0;
+      break;
+    }
+    const match = line.match(/^(\s+)\S+/); // \S ensures we don’t count lines of pure whitespace
+    if (match) {
+      if (match[1] && !char) char = match[1][0];
+      if (match[1].length < minTabSize) minTabSize = match[1].length;
+    }
+  }
+
+  // 3. reformat string
+  if (minTabSize > 0 && Number.isFinite(minTabSize)) {
+    result = result.replace(new RegExp(`^${new Array(minTabSize + 1).join(char)}`, 'gm'), '');
+  }
+
+  return {
+    tabSize: minTabSize === Infinity ? 0 : minTabSize,
+    char,
+    result,
+  };
+}
+
+/* re-indent string by chars */
+function indent(input, char = ' ') {
+  return input.replace(/^(.)/gm, `${char}$1`);
+}
+
 module.exports = {
   attachCommentsHTML,
   canOmitSoftlineBeforeClosingTag,
+  dedent,
   endsWithLinebreak,
   flatten,
   forceIntoExpression,
   formattableAttributes,
   getText,
   getUnencodedText,
+  indent,
   isASTNode,
   isAttributeShorthand,
   isBlockElement,
