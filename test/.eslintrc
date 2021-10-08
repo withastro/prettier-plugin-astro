@@ -1,6 +1,0 @@
-{
-  "rules": {
-    "node/no-extraneous-import": "off",
-    "node/no-missing-import": "off"
-  }
-}
