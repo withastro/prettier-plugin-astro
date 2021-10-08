@@ -1,4 +1,5 @@
-import test from 'ava/entrypoints/main.mjs';
+// eslint-disable-next-line node/no-missing-import
+import test from 'ava';
 // eslint-disable-next-line ava/no-import-test-files
 import { format, markdownFormat } from './test-utils.mjs';
 import { promises as fs } from 'fs';
