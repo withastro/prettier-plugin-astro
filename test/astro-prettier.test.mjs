@@ -28,13 +28,13 @@ const getMarkdownFiles = async (name) => {
  */
 const Prettier = async (t, name) => {
   const [src, out] = await getFiles(name);
-  t.not(src, out);
+  t.not(src, out, 'Unformated file and formated file are the same');
 
   const formatted = format(src);
-  t.is(formatted, out);
+  t.is(formatted, out, 'Incorrect formating');
   // test that our formatting is idempotent
   const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice);
+  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
 };
 
 /**
@@ -50,26 +50,26 @@ Prettier.title = (title, name) => `${title}:
 
 const PrettierUnaltered = async (t, name) => {
   const [src, out] = await getFiles(name);
-  t.is(src, out); // the output should be unchanged
+  t.is(src, out, 'Unformated file and formated file are the same'); // the output should be unchanged
 
   const formatted = format(src);
-  t.is(formatted, out);
+  t.is(formatted, out, 'Incorrect formating');
   // test that our formatting is idempotent
   const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice);
+  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
 };
 
 PrettierUnaltered.title = Prettier.title;
 
 const PrettierMarkdown = async (t, name) => {
   const [src, out] = await getMarkdownFiles(name);
-  t.not(src, out);
+  t.not(src, out, 'Unformated file and formated file are the same');
 
   const formatted = markdownFormat(src);
-  t.not(formatted, out);
+  t.is(formatted, out, 'Incorrect formating');
   // test that our formatting is idempotent
   const formattedTwice = markdownFormat(formatted);
-  t.is(formatted, formattedTwice);
+  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
 };
 
 PrettierMarkdown.title = (title, name) => `${title}:

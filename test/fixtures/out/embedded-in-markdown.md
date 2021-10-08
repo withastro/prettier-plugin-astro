@@ -54,13 +54,9 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
 <!-- Astro Page CSS example -->
 <html>
   <head>
-    <style>
-      ...;
-    </style>
+    <style> ...; </style>
   </head>
-  <body>
-    ...
-  </body>
+  <body> ... </body>
 </html>
 ```
 
@@ -123,7 +119,6 @@ Astro components can define local variables inside of the Frontmatter script. An
 ---
 const name = "Your name here";
 ---
-
 <div>
   <h1>Hello {name}!</h1>
 </div>
@@ -149,7 +144,6 @@ const name = "Your name here";
 ---
 const items = ["Dog", "Cat", "Platipus"];
 ---
-
 <ul>
   {items.map((item) => <li>{item}</li>)}
 </ul>
@@ -182,9 +176,8 @@ export interface Props {
 }
 const { greeting = "Hello", name } = Astro.props;
 ---
-
 <div>
-    <h1>{greeting}, {name}!</h1>
+  <h1>{greeting}, {name}!</h1>
 </div>
 ```
 
@@ -195,7 +188,8 @@ const { greeting = "Hello", name } = Astro.props;
 ```astro
 <!-- Example: MyComponent.astro -->
 <div id="my-component">
-  <slot /> <!-- children will go here -->
+  <slot />
+  <!-- children will go here -->
 </div>
 
 <!-- Usage -->
@@ -255,9 +249,9 @@ An Astro component template can render as many top-level elements as you'd like.
 
 ```astro
 <!-- An Astro component can contain multiple top-level HTML elements: -->
-<div id="a" />
-<div id="b" />
-<div id="c" />
+<div id="a"></div>
+<div id="b"></div>
+<div id="c"></div>
 ```
 
 When working inside a JSX expression, however, you must wrap multiple elements inside of a **Fragment**. Fragments let you render a set of elements without adding extra nodes to the DOM. This is required in JSX expressions because of a limitation of JavaScript: You can never `return` more than one thing in a JavaScript function or expression. Using a Fragment solves this problem.
@@ -268,7 +262,6 @@ A Fragment must open with `<>` and close with `</>`. Don't worry if you forget t
 ---
 const items = ["Dog", "Cat", "Platipus"];
 ---
-
 <ul>
   {items.map((item) => <>
       <li>Red {item}</li>
@@ -326,7 +319,6 @@ The recommended approach is to place files within `public/*`. This references a 
 //  ✅ Correct: references src/thumbnail.png
 import thumbnailSrc from "./thumbnail.png";
 ---
-
 <img src={thumbnailSrc} />
 ```
 
