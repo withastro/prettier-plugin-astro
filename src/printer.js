@@ -69,7 +69,7 @@ function printTopLevelParts(node, path, opts, print) {
   }
 
   const docs = flatten([parts.frontmatter, ...parseSortOrder(opts.astroSortOrder).map((p) => parts[p])]).filter((doc) => '' !== doc);
-  return docs;
+  return group([join(softline, docs)]);
 }
 
 function printAttributeNodeValue(path, print, quotes, node) {
@@ -505,7 +505,7 @@ function embed(path, print, textToDoc, opts) {
     }
   }
 
-  return '';
+  return null;
 }
 
 /** @type {import('prettier').Printer['hasPrettierIgnore']} */
