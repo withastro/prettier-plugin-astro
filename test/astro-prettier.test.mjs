@@ -50,7 +50,7 @@ Prettier.title = (title, name) => `${title}:
 
 const PrettierUnaltered = async (t, name) => {
   const [src, out] = await getFiles(name);
-  t.is(src, out, 'Unformated file and formated file are the same'); // the output should be unchanged
+  t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
 
   const formatted = format(src);
   t.is(formatted, out, 'Incorrect formating');
