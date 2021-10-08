@@ -2,10 +2,10 @@
 let hello = 'hello';
 let space = ' ';
 let helloWorld = `${hello+space}world`;
-import Markdown from "astro/components";
+import MarkdownComponent from "astro/components/Markdown.astro";
 ---
 <div>{`${helloWorld+space}too many template strings`}</div>
-<Markdown>
+<MarkdownComponent>
 `hello i am a codespan`
 
 ```js
@@ -16,4 +16,4 @@ let story = "hello i am a codefence";
 story
 .length
 ```
-</Markdown>
+</MarkdownComponent>

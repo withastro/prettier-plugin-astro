@@ -1,6 +1,6 @@
 const {
   builders: { breakParent, dedent, fill, group, hardline, indent, join, line, literalline, softline },
-  utils: { removeLines },
+  utils: { removeLines, stripTrailingHardline },
 } = require('prettier/doc');
 const { SassFormatter } = require('sass-formatter');
 
@@ -13,6 +13,7 @@ const {
   flatten,
   forceIntoExpression,
   formattableAttributes,
+  getMarkdownName,
   getText,
   getUnencodedText,
   indent: manualIndent,
@@ -136,7 +137,6 @@ function print(path, opts, print) {
       const hasInlineComponent = node.children.filter((x) => x.type === 'InlineComponent').length > 0;
       if (text.indexOf('{') === -1 && !hasInlineComponent) {
         node.__isRawHTML = true;
-        node.content = text;
         return path.map(print, 'children');
       }
 
@@ -230,16 +230,31 @@ function print(path, opts, print) {
       const firstChild = children[0];
       const lastChild = children[children.length - 1];
 
-      const hugStart = shouldHugStart(node, opts);
-      const hugEnd = shouldHugEnd(node, opts);
+      // No hugging of content means it's either a block element and/or there's whitespace at the start/end
+      let noHugSeparatorStart = softline;
+      let noHugSeparatorEnd = softline;
+      let hugStart = shouldHugStart(node, opts);
+      let hugEnd = shouldHugEnd(node, opts);
 
       let body;
+
+      const isMarkdownComponent =
+        node.type === 'InlineComponent' && opts.__astro && opts.__astro.markdownName && opts.__astro.markdownName.has(node.name) && isNodeWithChildren(node);
 
       if (isEmpty) {
         body =
           isInlineElement(path, opts, node) && node.children.length && isTextNodeStartingWithWhitespace(node.children[0]) && !isPreTagContent(path)
             ? () => line
             : () => (opts.jsxBracketNewLine ? '' : softline);
+      } else if (isMarkdownComponent) {
+        // collapse children into raw Markdown text
+        const text = node.children.map(getUnencodedText).join('').trim();
+        node.children = [{ start: firstChild.start, end: lastChild.end - 2, type: 'Text', data: text, raw: text, __isRawMarkdown: true }];
+        body = () => path.map(print, 'children');
+
+        // set hugEnd
+        hugStart = false;
+        hugEnd = false;
       } else if (isPreTagContent(path)) {
         body = () => printRaw(node, opts.originalText);
       } else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {
@@ -256,12 +271,12 @@ function print(path, opts, print) {
         return group([...openingTag, isEmpty ? group(huggedContent) : group(indent(huggedContent)), omitSoftlineBeforeClosingTag ? '' : softline, '>']);
       }
 
-      // No hugging of content means it's either a block element and/or there's whitespace at the start/end
-      let noHugSeparatorStart = softline;
-      let noHugSeparatorEnd = softline;
       if (isPreTagContent(path)) {
         noHugSeparatorStart = '';
         noHugSeparatorEnd = '';
+      } else if (isMarkdownComponent) {
+        noHugSeparatorStart = softline;
+        noHugSeparatorEnd = softline;
       } else {
         let didSetEndSeparator = false;
 
@@ -398,9 +413,20 @@ function expressionParser(text, parsers, opts) {
 
 /** @type {import('prettier').Printer['embed']} */
 function embed(path, print, textToDoc, opts) {
+  if (!opts.__astro) opts.__astro = {};
+
   const node = path.getValue();
 
   if (!node) return null;
+
+  if (node.__isRawMarkdown) {
+    const docs = textToDoc(getUnencodedText(node), { ...opts, parser: 'markdown' });
+    return stripTrailingHardline(docs);
+  }
+
+  if (node.type === 'Script' && !opts.__astro.markdownName) {
+    opts.__astro.markdownName = getMarkdownName(node.content);
+  }
 
   if (node.isJS) {
     try {
@@ -477,10 +503,6 @@ function embed(path, print, textToDoc, opts) {
         return group([styleGroup, hardline, formattedSass, hardline, '</style>', hardline]);
       }
     }
-  }
-
-  if (node.__isRawHTML) {
-    return textToDoc(node.content, { ...opts, parser: 'html' });
   }
 
   return '';
