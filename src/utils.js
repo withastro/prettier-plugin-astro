@@ -555,7 +555,7 @@ function attachCommentsHTML(node) {
   });
 }
 
-/* dedent string & return tabSize (the last part is what we need) */
+/** dedent string & return tabSize (the last part is what we need) */
 function dedent(input) {
   let minTabSize = Infinity;
   let result = input;
@@ -590,9 +590,35 @@ function dedent(input) {
   };
 }
 
-/* re-indent string by chars */
+/** re-indent string by chars */
 function indent(input, char = ' ') {
   return input.replace(/^(.)/gm, `${char}$1`);
+}
+
+/** scan code for Markdown name(s) */
+function getMarkdownName(script) {
+  // default import: could be named anything
+  let defaultMatch;
+  while ((defaultMatch = /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(script))) {
+    if (defaultMatch[1]) return new Set([defaultMatch[1].trim()]);
+  }
+
+  // named component: must have "Markdown" in specifier, but can be renamed via "as"
+  let namedMatch;
+  while ((namedMatch = /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))) {
+    if (namedMatch[1] && !namedMatch[1].includes('Markdown')) continue;
+    // if "Markdown" was imported, find out whether or not it was renamed
+    const rawImports = namedMatch[1].trim().replace(/^\{/, '').replace(/\}$/, '').trim();
+    let importName = 'Markdown';
+    for (const spec of rawImports.split(',')) {
+      const [original, renamed] = spec.split(' as ').map((s) => s.trim());
+      if (original !== 'Markdown') continue;
+      importName = renamed || original;
+      break;
+    }
+    return new Set([importName]);
+  }
+  return new Set(['Markdown']);
 }
 
 module.exports = {
@@ -603,6 +629,7 @@ module.exports = {
   flatten,
   forceIntoExpression,
   formattableAttributes,
+  getMarkdownName,
   getText,
   getUnencodedText,
   indent,

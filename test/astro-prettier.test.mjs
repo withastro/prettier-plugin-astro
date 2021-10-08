@@ -97,13 +97,12 @@ test('can format an Astro file with embedded JSX expressions', Prettier, 'embedd
 
 test('can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions', Prettier, 'doctype-with-embedded-expr');
 
+// note(drew): this should be fixed in new Parser. And as this is an HTML4 / deprecated / extreme edge case, probably fine to ignore?
 test.failing('can format an Astro file with `<!DOCTYPE>` with extraneous attributes', Prettier, 'doctype-with-extra-attributes');
 
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
 test('does not alter html comments', PrettierUnaltered, 'html-comment');
-
-test.todo("properly follow prettier' advice on formatting comments");
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
 
@@ -112,8 +111,6 @@ test('can format an Astro file containing an Astro file embedded in a codeblock'
 test('converts valid shorthand variables into shorthand', Prettier, 'converts-to-shorthand');
 
 test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
-
-test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
 
 test('can format an Astro file with components that are the uppercase version of html elements', Prettier, 'preserve-tag-case');
 
@@ -126,4 +123,10 @@ test('Can format an Astro file with a HTML style prettier ignore comment: https:
 
 test('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-js');
 
-test.failing(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');
+test(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');
+
+// note(drew): this _may_ be covered under the 'prettier-ignore-html' test. But if any bugs arise, let’s add more tests!
+test.todo("properly follow prettier' advice on formatting comments");
+
+// note(drew): I think this is a function of Astro’s parser, not Prettier. We’ll have to handle helpful error messages there!
+test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
