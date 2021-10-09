@@ -10,7 +10,6 @@ const {
   canOmitSoftlineBeforeClosingTag,
   dedent: manualDedent,
   endsWithLinebreak,
-  flatten,
   forceIntoExpression,
   formattableAttributes,
   getMarkdownName,
@@ -24,7 +23,6 @@ const {
   isLine,
   isLoneMustacheTag,
   isNodeWithChildren,
-  isObjEmpty,
   isOrCanBeConvertedToShorthand,
   isPreTagContent,
   isTextNodeEndingWithWhitespace,
@@ -50,26 +48,38 @@ const {
  * @param {(path: import('prettier').AstPath<any>) => import('prettier').Doc} print
  */
 function printTopLevelParts(node, path, opts, print) {
-  const parts = {
-    frontmatter: [],
-    markup: [],
-    styles: [],
-  };
+  let docs = [];
 
+  const normalize = (doc) => [stripTrailingHardline(doc), softline];
+
+  // frontmatter always comes first
   if (node.module) {
-    parts.frontmatter.push(path.call(print, 'module'));
+    const subDoc = normalize(path.call(print, 'module'));
+    docs.push(subDoc);
   }
 
-  if (node.css && node.css.length) {
-    parts.styles.push(path.call(print, 'css'));
+  // markup and styles follow, whichever the user prefers (default: markup, styles)
+  for (const section of parseSortOrder(opts.astroSortOrder)) {
+    switch (section) {
+      case 'markup': {
+        const subDoc = path.call(print, 'html');
+        if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
+        break;
+      }
+      case 'styles': {
+        const subDoc = path.call(print, 'css');
+        if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
+        break;
+      }
+    }
   }
 
-  if (node.html && !isObjEmpty(node.html)) {
-    parts.markup.push(path.call(print, 'html'));
-  }
+  // remove trailing softline, if any
+  const lastDoc = docs[docs.length - 1];
+  const lastItem = lastDoc[lastDoc.length - 1];
+  if (lastItem.type === 'line') docs[docs.length - 1].pop();
 
-  const docs = flatten([parts.frontmatter, ...parseSortOrder(opts.astroSortOrder).map((p) => parts[p])]).filter((doc) => '' !== doc);
-  return group([join(softline, docs)]);
+  return join(softline, docs);
 }
 
 function printAttributeNodeValue(path, print, quotes, node) {
@@ -205,7 +215,7 @@ function print(path, opts, print) {
     case 'Title': {
       const isEmpty = node.children.every((child) => isEmptyTextNode(child));
       const isSelfClosingTag = isEmpty && (node.type !== 'Element' || selfClosingTags.indexOf(node.name) !== -1);
-      const attributes = path.map((childPath) => childPath.call(print), 'attributes');
+      const attributes = path.map(print, 'attributes');
 
       if (isSelfClosingTag) {
         return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
@@ -476,10 +486,10 @@ function embed(path, print, textToDoc, opts) {
         // so we remove the last element of the array
         const [formattedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
 
-        const attributes = path.map((childPath) => childPath.call(print), 'attributes');
-        const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
-
-        return group([styleGroup, indent([hardline, formattedStyles]), hardline, '</style>', hardline]);
+        // print
+        const attributes = path.map(print, 'attributes');
+        const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
+        return [openingTag, indent([hardline, formattedStyles]), hardline, '</style>'];
       }
       case 'sass': {
         const sassOptions = {
@@ -498,9 +508,9 @@ function embed(path, print, textToDoc, opts) {
 
         // print
         formattedSass = join(hardline, formattedSass.split('\n'));
-        const attributes = path.map((childPath) => childPath.call(print), 'attributes');
-        const styleGroup = group(['<style', indent(group(attributes)), softline, '>']);
-        return group([styleGroup, hardline, formattedSass, hardline, '</style>', hardline]);
+        const attributes = path.map(print, 'attributes');
+        const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
+        return [openingTag, hardline, formattedSass, hardline, '</style>'];
       }
     }
   }
