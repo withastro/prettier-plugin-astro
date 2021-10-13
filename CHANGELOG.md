@@ -1,5 +1,18 @@
 # prettier-plugin-astro
 
+## 0.0.9
+
+### Patch Changes
+
+- 8820423: Fix test macro 'PrettierMarkdown'
+- a30ddcd: Bump @astrojs/parser from 0.15.0 to 0.20.2
+- 695fc07: Add formatting for <Markdown> components
+- 1bf9f7c: Support arbitrary attributes in style tags
+- 395b3bd: Add basic support for indented sass
+- 672afef: Add new line at the end of the file
+- 20a298e: Add support for .sass formatting
+- 915a6e2: Add support for prettier-ignore comments
+
 ## 0.0.8
 
 ### Patch Changes
