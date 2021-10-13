@@ -50,7 +50,7 @@ const {
 function printTopLevelParts(node, path, opts, print) {
   let docs = [];
 
-  const normalize = (doc) => [stripTrailingHardline(doc), softline];
+  const normalize = (doc) => [stripTrailingHardline(doc), hardline];
 
   // frontmatter always comes first
   if (node.module) {
