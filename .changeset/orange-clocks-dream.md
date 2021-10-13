@@ -1,5 +1,5 @@
 ---
-'prettier-plugin-astro': minor
+'prettier-plugin-astro': patch
 ---
 
 Add support for .sass formatting

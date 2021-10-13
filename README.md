@@ -22,6 +22,7 @@ To get setup:
 1. Lint code with `yarn lint`
 1. Format code with `yarn format`
 1. Run `yarn changeset` to add your changes to the changelog on version bump.
+   Most changes to the plugin should be `patch` changes while we're before `1.0.0`.
 
 ## Resources for contributing
 

@@ -2,4 +2,4 @@
 'prettier-plugin-astro': patch
 ---
 
-support attributes in style tag
+Support arbitrary attributes in style tags
