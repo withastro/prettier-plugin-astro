@@ -40,6 +40,7 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
 <!-- Astro Component CSS example -->
 
 <div class="circle"></div>
+
 <style>
   .circle {
     background-color: red;
@@ -81,6 +82,7 @@ console.log("This runs at build-time, is visible in the CLI output");
 // Tip: TypeScript is also supported out-of-the-box!
 const thisWorks: number = 42;
 ---
+
 <div class="example-1">
   <h1>Hello world!</h1>
 </div>
@@ -99,6 +101,7 @@ Once imported, you can use it like any other HTML element in your template. Note
 // Import your components in your component script...
 import SomeComponent from "./SomeComponent.astro";
 ---
+
 <!-- ... then use them in your HTML! -->
 <div>
   <SomeComponent />
@@ -119,6 +122,7 @@ Astro components can define local variables inside of the Frontmatter script. An
 ---
 const name = "Your name here";
 ---
+
 <div>
   <h1>Hello {name}!</h1>
 </div>
@@ -130,6 +134,7 @@ const name = "Your name here";
 ---
 const name = "Your name here";
 ---
+
 <div>
   <div data-name={name}>Attribute expressions supported</div>
   <div data-hint={`Use JS template strings to mix ${"variables"}.`}>
@@ -144,6 +149,7 @@ const name = "Your name here";
 ---
 const items = ["Dog", "Cat", "Platipus"];
 ---
+
 <ul>
   {items.map((item) => <li>{item}</li>)}
 </ul>
@@ -158,6 +164,7 @@ An Astro component can define and accept props. Props are available on the `Astr
 // Example: <SomeComponent greeting="(Optional) Hello" name="Required Name" />
 const { greeting = "Hello", name } = Astro.props;
 ---
+
 <div>
   <h1>{greeting}, {name}!</h1>
 </div>
@@ -176,6 +183,7 @@ export interface Props {
 }
 const { greeting = "Hello", name } = Astro.props;
 ---
+
 <div>
   <h1>{greeting}, {name}!</h1>
 </div>
@@ -262,6 +270,7 @@ A Fragment must open with `<>` and close with `</>`. Don't worry if you forget t
 ---
 const items = ["Dog", "Cat", "Platipus"];
 ---
+
 <ul>
   {items.map((item) => <>
       <li>Red {item}</li>
@@ -319,6 +328,7 @@ The recommended approach is to place files within `public/*`. This references a 
 //  ✅ Correct: references src/thumbnail.png
 import thumbnailSrc from "./thumbnail.png";
 ---
+
 <img src={thumbnailSrc} />
 ```
 

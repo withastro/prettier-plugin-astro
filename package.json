@@ -3,6 +3,9 @@
   "version": "0.0.8",
   "description": "A Prettier Plugin for formatting Astro files",
   "main": "src/index.js",
+  "files": [
+    "src/**"
+  ],
   "type": "commonjs",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
