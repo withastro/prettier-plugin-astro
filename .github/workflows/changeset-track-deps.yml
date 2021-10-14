@@ -1,0 +1,39 @@
+name: Changeset dependency upgrades
+
+on: pull_request_target
+
+permissions:
+  pull-requests: write
+  contents: write
+
+env:
+  node_version: 14
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v1.1.1
+        with:
+          github-token: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.node_version }}
+      - run: yarn --frozen-lockfile --ignore-engines
+        env:
+          CI: true
+      - name: Create the changeset file
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const script = require('./scripts/add-dep-changeset.js')
+            console.log(script({github, context}))
+      # magically run a step that creates a `.changeset/*.md` file w/ a description of the dependency upgrade
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[ci] Add changeset for ${{steps.dependabot-metadata.outputs.dependency-names}} version bump'
+          branch: ${{ github.head_ref }}
