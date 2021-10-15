@@ -1,5 +1,5 @@
 {
-  "ignorePatterns": ["test/fixtures/**"],
+  "ignorePatterns": ["test/**", "dist/**", "rollup.config.js"],
   "plugins": ["prettier-doc"],
   "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
   "rules": {

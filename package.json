@@ -2,11 +2,10 @@
   "name": "prettier-plugin-astro",
   "version": "0.0.9",
   "description": "A Prettier Plugin for formatting Astro files",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "files": [
-    "src/**"
+    "dist/**"
   ],
-  "type": "commonjs",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
     "npm": ">=6.14.0"
@@ -27,7 +26,10 @@
     "url": "https://github.com/snowpackjs/prettier-plugin-astro.git"
   },
   "scripts": {
-    "test": "ava test/*.test.mjs",
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "ava test/*.test.ts",
+    "test:w": "ava -w test/*.test.ts",
     "release": "changeset publish",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
@@ -40,11 +42,18 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.16.0",
+    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.5",
     "@types/prettier": "^2.4.1",
     "ava": "^4.0.0-alpha.2",
     "eslint": "^8.0.0",
     "eslint-plugin-ava": "^13.0.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier-doc": "^1.0.1"
+    "eslint-plugin-prettier-doc": "^1.0.1",
+    "rollup": "^2.58.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "ts-node": "^10.2.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.3"
   }
 }
