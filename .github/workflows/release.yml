@@ -20,8 +20,10 @@ jobs:
         with:
           node-version: 14.x
 
-      - name: Install dependencies
-        run: yarn --frozen-lockfile --ignore-engines
+      - name: Install dependencies and build
+        run: | 
+          yarn --frozen-lockfile --ignore-engines
+          yarn build
         env:
           CI: true
 

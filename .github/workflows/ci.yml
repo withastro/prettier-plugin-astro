@@ -20,6 +20,7 @@ jobs:
       - run: yarn --frozen-lockfile --ignore-engines
         env:
           CI: true
+      - run: yarn build
       - run: yarn test
   lint:
     runs-on: ubuntu-latest
