@@ -560,7 +560,6 @@ function embed(path: AstPath<anyNode>, print: printFn, textToDoc: (text: string,
 
         // print
         const attributes = path.map(print, 'attributes');
-        debugger;
         const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
         return [openingTag, indent([hardline, formattedStyles]), hardline, '</style>'];
       }

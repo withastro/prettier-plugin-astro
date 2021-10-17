@@ -1,8 +1,6 @@
 import prettier from 'prettier';
 import { fileURLToPath } from 'url';
 
-// TODO: REMOVE IGNORE COMMENTS
-
 /**
  * format the contents of an astro file
  */
@@ -11,9 +9,7 @@ export function format(contents: string, options: prettier.Options = {}): string
   try {
     return prettier.format(contents, {
       parser: 'astro',
-      // TODO: FIX THIS TS ERROR
-      // @ts-ignore
-      plugins: [fileURLToPath(new URL('../', import.meta.url))],
+      plugins: [fileURLToPath(new URL('../', import.meta.url).toString())],
       ...options,
     });
   } catch (e) {
@@ -31,9 +27,7 @@ export function markdownFormat(contents: string): string {
   try {
     return prettier.format(contents, {
       parser: 'markdown',
-      // TODO: FIX THIS TS ERROR
-      // @ts-ignore
-      plugins: [fileURLToPath(new URL('../', import.meta.url))],
+      plugins: [fileURLToPath(new URL('../', import.meta.url).toString())],
     });
   } catch (e) {
     if (e instanceof Error) {
