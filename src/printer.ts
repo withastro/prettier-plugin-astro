@@ -172,7 +172,9 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
       if (text.indexOf('{') === -1 && !hasInlineComponent) {
         // TODO:CHECK 'node.__isRawHTML'
         node.__isRawHTML = true;
-        return path.map(print, 'children');
+        node.content = text;
+        return path.call(print);
+        // return path.map(print, 'children');
       }
 
       if (!isPreTagContent(path)) {
@@ -586,6 +588,14 @@ function embed(path: AstPath<anyNode>, print: printFn, textToDoc: (text: string,
         return [openingTag, hardline, formattedSass, hardline, '</style>'];
       }
     }
+  }
+
+  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+  // @ts-ignore
+  if (node.__isRawHTML) {
+    // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+    // @ts-ignore
+    return textToDoc(node.content, { ...opts, parser: 'html' });
   }
 
   return null;
