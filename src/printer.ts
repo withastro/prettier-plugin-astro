@@ -1,5 +1,4 @@
-import { Ast } from '@astrojs/parser';
-import { AstPath, Doc, ParserOptions, Printer } from 'prettier';
+import { AstPath as AstP, Doc, ParserOptions as ParserOpts, Printer } from 'prettier';
 import _doc from 'prettier/doc';
 const {
   builders: { breakParent, dedent, fill, group, hardline, indent, join, line, literalline, softline },
@@ -7,8 +6,11 @@ const {
 } = _doc;
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 
-import { parseSortOrder, options } from './options';
-import { anyNode, AttributeNode } from './nodes';
+import { parseSortOrder } from './options';
+import { Ast, anyNode, AttributeNode, CommentNode, NodeWithText, selfClosingTags } from './nodes';
+
+type ParserOptions = ParserOpts<anyNode>;
+type AstPath = AstP<anyNode>;
 
 import {
   attachCommentsHTML,
@@ -37,7 +39,6 @@ import {
   isTextNodeStartingWithWhitespace,
   printRaw,
   replaceEndOfLineWith,
-  selfClosingTags,
   shouldHugEnd,
   shouldHugStart,
   startsWithLinebreak,
@@ -47,7 +48,7 @@ import {
   trimTextNodeRight,
 } from './utils';
 
-function printTopLevelParts(node: Ast, path: AstPath<anyNode>, opts: ParserOptions, print: printFn): Doc {
+function printTopLevelParts(node: Ast, path: AstPath, opts: ParserOptions, print: printFn): Doc {
   let docs = [];
 
   const normalize = (doc: Doc) => [stripTrailingHardline(doc), hardline];
@@ -83,7 +84,7 @@ function printTopLevelParts(node: Ast, path: AstPath<anyNode>, opts: ParserOptio
   return join(softline, docs);
 }
 
-function printAttributeNodeValue(path: AstPath<anyNode>, print: printFn, quotes: boolean, node: AttributeNode): Doc[] | _doc.builders.Indent {
+function printAttributeNodeValue(path: AstPath, print: printFn, quotes: boolean, node: AttributeNode): Doc[] | _doc.builders.Indent {
   const valueDocs = path.map((childPath) => childPath.call(print), 'value');
 
   if (!quotes || !formattableAttributes.includes(node.name)) {
@@ -94,7 +95,7 @@ function printAttributeNodeValue(path: AstPath<anyNode>, print: printFn, quotes:
 }
 
 // TODO: USE ASTPATH GENERIC
-function printJS(path: AstPath, print: printFn, name: string, { forceSingleQuote, forceSingleLine }: { forceSingleQuote: boolean; forceSingleLine: boolean }) {
+function printJS(path: AstP, print: printFn, name: string, { forceSingleQuote, forceSingleLine }: { forceSingleQuote: boolean; forceSingleLine: boolean }) {
   path.getValue()[name].isJS = true;
   path.getValue()[name].forceSingleQuote = forceSingleQuote;
   path.getValue()[name].forceSingleLine = forceSingleLine;
@@ -110,7 +111,7 @@ function printComment(commentPath: AstPath, options: ParserOptions): Doc {
 
 export type printFn = (path: AstPath) => Doc;
 
-function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: printFn): Doc {
+function print(unknowPath: AstPath, opts: ParserOptions, print: printFn): Doc {
   const unknowNode = unknowPath.getValue();
   // const node = path.getValue();
   const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
@@ -133,7 +134,7 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
   }
 
   const node = unknowNode as anyNode;
-  const path = unknowPath as AstPath<anyNode>;
+  const path = unknowPath as AstPath;
 
   // switch (true) {
   //   case !node:
@@ -178,7 +179,7 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
       }
 
       if (!isPreTagContent(path)) {
-        trimChildren(node.children, path);
+        trimChildren(node.children);
         const output = trim(
           [path.map(print, 'children')],
           (n) =>
@@ -299,6 +300,8 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
                 () => softline;
         } else if (isMarkdownComponent) {
           // collapse children into raw Markdown text
+          // TODO: CHECK TYPE
+          // @ts-ignore
           const text = node.children.map(getUnencodedText).join('').trim();
           node.children = [{ start: firstChild.start, end: lastChild.end - 2, type: 'Text', data: text, raw: text, __isRawMarkdown: true }];
           body = () => path.map(print, 'children');
@@ -320,7 +323,7 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
         if (hugStart && hugEnd) {
           const huggedContent = [softline, group(['>', body(), `</${node.name}`])];
 
-          const omitSoftlineBeforeClosingTag = isEmpty || canOmitSoftlineBeforeClosingTag(node, path, opts);
+          const omitSoftlineBeforeClosingTag = isEmpty || canOmitSoftlineBeforeClosingTag(path, opts);
           // const omitSoftlineBeforeClosingTag = (isEmpty && opts.jsxBracketNewLine) || canOmitSoftlineBeforeClosingTag(node, path, opts);
           return group([...openingTag, isEmpty ? group(huggedContent) : group(indent(huggedContent)), omitSoftlineBeforeClosingTag ? '' : softline, '>']);
         }
@@ -357,13 +360,7 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
         }
 
         if (hugEnd) {
-          return group([
-            ...openingTag,
-            '>',
-            indent([noHugSeparatorStart, group([body(), `</${node.name}`])]),
-            canOmitSoftlineBeforeClosingTag(node, path, opts) ? '' : softline,
-            '>',
-          ]);
+          return group([...openingTag, '>', indent([noHugSeparatorStart, group([body(), `</${node.name}`])]), canOmitSoftlineBeforeClosingTag(path, opts) ? '' : softline, '>']);
         }
 
         if (isEmpty) {
@@ -440,7 +437,7 @@ function print(unknowPath: AstPath, opts: ParserOptions<typeof options>, print: 
  *
  * If the text starts or ends with multiple newlines, two of those should be kept.
  */
-function splitTextToDocs(node: anyNode): Doc[] {
+function splitTextToDocs(node: NodeWithText): Doc[] {
   const text = getUnencodedText(node);
 
   let textLines = text.split(/[\t\n\f\r ]+/);
@@ -471,7 +468,7 @@ function expressionParser(text: string, parsers: any, opts: ParserOptions) {
   return { ...ast, program: ast.program.body[0].expression };
 }
 
-function embed(path: AstPath<anyNode>, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
+function embed(path: AstPath, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
   // @ts-ignore
   if (!opts.__astro) opts.__astro = {};
@@ -483,6 +480,8 @@ function embed(path: AstPath<anyNode>, print: printFn, textToDoc: (text: string,
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
   // @ts-ignore
   if (node.__isRawMarkdown) {
+    // TODO: CHECK TYPE
+    // @ts-ignore
     const docs = textToDoc(getUnencodedText(node), { ...opts, parser: 'markdown' });
     return stripTrailingHardline(docs);
   }
@@ -601,14 +600,12 @@ function embed(path: AstPath<anyNode>, print: printFn, textToDoc: (text: string,
   return null;
 }
 
-// TODO: USE ASTPATH GENERIC
-function hasPrettierIgnore(path: AstPath) {
+function hasPrettierIgnore(path: AstP<CommentNode>) {
   const node = path.getNode();
 
   if (!node || !Array.isArray(node.comments)) return false;
 
   const hasIgnore = node.comments.some(
-    // TODO: ADD 'comment' TYPE
     (comment: any) => comment.data.includes('prettier-ignore') && !comment.data.includes('prettier-ignore-start') && !comment.data.includes('prettier-ignore-end')
   );
   return hasIgnore;

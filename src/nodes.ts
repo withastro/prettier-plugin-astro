@@ -1,22 +1,82 @@
-// TODO: MAYBE WE SHOULD USE TYPES FROM THE PARSER WHEN 0.21 RELEASES
+// TODO: MAYBE WE SHOULD USE TYPES FROM THE PARSER
 
-import {
-  BaseNode,
-  CodeFence as CodeFenceNode,
-  Fragment as FragmentNode,
-  Text as TextNode,
-  CodeSpan as CodeSpanNode,
-  Transition as TransitionNode,
-  Expression as ExpressionNode,
-  Script as ScriptNode,
-  Style as StyleNode,
-  TemplateNode,
-} from '@astrojs/parser';
+export interface Ast {
+  html: anyNode;
+  css: StyleNode[];
+  module: ScriptNode;
+  meta: {
+    features: number;
+  };
+}
+
+export interface BaseNode {
+  start: number;
+  end: number;
+  type: string;
+  children?: anyNode[];
+  // TODO: ADD BETTER TYPE
+  [prop_name: string]: any;
+}
 
 export type attributeValue = TextNode[] | AttributeShorthandNode[] | MustacheTagNode[] | true;
 
 export interface NodeWithChildren {
-  children: TemplateNode[] | BaseNode[];
+  children: anyNode[];
+}
+
+export interface NodeWithText {
+  data: string;
+  raw?: string;
+}
+
+export interface FragmentNode extends BaseNode {
+  type: 'Fragment';
+  children: anyNode[];
+}
+
+export interface TextNode extends BaseNode {
+  type: 'Text';
+  data: string;
+  raw: string;
+}
+
+export interface CodeFenceNode extends BaseNode {
+  type: 'CodeFence';
+  metadata: string;
+  data: string;
+  raw: string;
+}
+
+export interface CodeSpanNode extends BaseNode {
+  type: 'CodeFence';
+  metadata: string;
+  data: string;
+  raw: string;
+}
+
+export interface ExpressionNode {
+  type: 'Expression';
+  start: number;
+  end: number;
+  codeChunks: string[];
+  children: anyNode[];
+}
+
+export interface ScriptNode extends BaseNode {
+  type: 'Script';
+  context: 'runtime' | 'setup';
+  content: string;
+}
+
+export interface StyleNode extends BaseNode {
+  type: 'Style';
+  // TODO: ADD BETTER TYPE
+  attributes: any[];
+  content: {
+    start: number;
+    end: number;
+    styles: string;
+  };
 }
 
 export interface AttributeNode extends BaseNode {
@@ -40,18 +100,6 @@ export interface MustacheTagNode extends BaseNode {
   expression: ExpressionNode;
 }
 
-export interface ElementNode extends BaseNode {
-  type: 'Element';
-  name: string;
-  attributes: AttributeNode[];
-}
-
-export interface InlineComponentNode extends BaseNode {
-  type: 'InlineComponent';
-  name: string;
-  attributes: AttributeNode[];
-}
-
 export interface SlotNode extends BaseNode {
   type: 'Slot';
   name: string;
@@ -68,21 +116,145 @@ export interface CommentNode extends BaseNode {
   nodeDescription?: string;
 }
 
+export interface ElementNode extends BaseNode {
+  type: 'Element';
+  name: string;
+  attributes: AttributeNode[];
+}
+
+export interface InlineComponentNode extends BaseNode {
+  type: 'InlineComponent';
+  name: string;
+  attributes: AttributeNode[];
+}
+
+export interface BlockElementNode extends ElementNode {
+  name: typeof blockElementsT[number];
+}
+
+export interface InlineElementNode extends ElementNode {
+  name: typeof inlineElementsT[number];
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
+const blockElementsT = [
+  'address',
+  'article',
+  'aside',
+  'blockquote',
+  'details',
+  'dialog',
+  'dd',
+  'div',
+  'dl',
+  'dt',
+  'fieldset',
+  'figcaption',
+  'figure',
+  'footer',
+  'form',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'header',
+  'hgroup',
+  'hr',
+  'li',
+  'main',
+  'nav',
+  'ol',
+  'p',
+  'pre',
+  'section',
+  'table',
+  'ul',
+] as const;
+// https://github.com/microsoft/TypeScript/issues/31018
+export const blockElements: string[] = [...blockElementsT];
+
+// https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
+const inlineElementsT = [
+  'a',
+  'abbr',
+  'acronym',
+  'audio',
+  'b',
+  'bdi',
+  'bdo',
+  'big',
+  'br',
+  'button',
+  'canvas',
+  'cite',
+  'code',
+  'data',
+  'datalist',
+  'del',
+  'dfn',
+  'em',
+  'embed',
+  'i',
+  'iframe',
+  'img',
+  'input',
+  'ins',
+  'kbd',
+  'label',
+  'map',
+  'mark',
+  'meter',
+  'noscript',
+  'object',
+  'output',
+  'picture',
+  'progress',
+  'q',
+  'ruby',
+  's',
+  'samp',
+  'script',
+  'select',
+  'slot',
+  'small',
+  'span',
+  'strong',
+  'sub',
+  'sup',
+  'svg',
+  'template',
+  'textarea',
+  'time',
+  'u',
+  'tt',
+  'var',
+  'video',
+  'wbr',
+] as const;
+// https://github.com/microsoft/TypeScript/issues/31018
+export const inlineElements: string[] = [...inlineElementsT];
+
+// @see http://xahlee.info/js/html5_non-closing_tag.html
+export const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
 export type anyNode =
-  | CommentNode
-  | FragmentNode
-  | ElementNode
-  | TextNode
+  | AttributeNode
+  | AttributeShorthandNode
+  | BlockElementNode
   | CodeFenceNode
   | CodeSpanNode
-  | AttributeNode
-  | MustacheTagNode
-  | TransitionNode
+  | CommentNode
+  | ElementNode
   | ExpressionNode
-  | ScriptNode
-  | StyleNode
+  | FragmentNode
   | IdentifierNode
-  | AttributeShorthandNode
-  | MustacheTagNode
   | InlineComponentNode
-  | SlotNode;
+  | InlineElementNode
+  | MustacheTagNode
+  | MustacheTagNode
+  | ScriptNode
+  | SlotNode
+  | StyleNode
+  | TextNode;
