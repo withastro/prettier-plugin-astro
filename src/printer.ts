@@ -111,30 +111,26 @@ function printComment(commentPath: AstPath, options: ParserOptions): Doc {
 
 export type printFn = (path: AstPath) => Doc;
 
-function print(unknowPath: AstPath, opts: ParserOptions, print: printFn): Doc {
-  const unknowNode = unknowPath.getValue();
-  // const node = path.getValue();
+function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
+  const node = path.getValue();
   const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
 
   // 1. handle special node types
-  if (!unknowNode) {
+  if (!node) {
     return '';
   }
 
-  if (typeof unknowNode === 'string') {
-    return unknowNode;
+  if (typeof node === 'string') {
+    return node;
   }
 
-  if (Array.isArray(unknowNode)) {
-    return unknowPath.map((childPath) => childPath.call(print));
+  if (Array.isArray(node)) {
+    return path.map((childPath) => childPath.call(print));
   }
 
-  if (isASTNode(unknowNode)) {
-    return printTopLevelParts(unknowNode, unknowPath, opts, print);
+  if (isASTNode(node)) {
+    return printTopLevelParts(node, path, opts, print);
   }
-
-  const node = unknowNode as anyNode;
-  const path = unknowPath as AstPath;
 
   // switch (true) {
   //   case !node:
