@@ -276,11 +276,13 @@ const items = ["Dog", "Cat", "Platipus"];
 ---
 
 <ul>
-  {items.map((item) => <>
+  {items.map((item) => (
+    <>
       <li>Red {item}</li>
       <li>Blue {item}</li>
       <li>Green {item}</li>
-    </>)}
+    </>
+  ))}
 </ul>
 ```
 

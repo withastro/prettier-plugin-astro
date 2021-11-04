@@ -21,7 +21,7 @@ For example, this three-line file is a valid Astro component:
 
 ```astro
 <!-- Example1.astro - Static HTML is a valid Astro component! -->
-<div class="example-1">
+  <div class="example-1">
   <h1>Hello world!</h1>
 </div>
 ```

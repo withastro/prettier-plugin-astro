@@ -1,73 +1,5 @@
-import test, { Macro } from 'ava';
-import { format, markdownFormat } from './test-utils.js';
-import { promises as fs } from 'fs';
-import { fileURLToPath, URL } from 'url';
-
-const readFile = (path: string) => fs.readFile(fileURLToPath(new URL(`./fixtures${path}`, import.meta.url))).then((res) => res.toString().replace(/\r\n/g, '\n'));
-
-/**
- * Utility to get `[src, out]` files
- */
-const getFiles = async (name: string) => {
-  const [src, out] = await Promise.all([readFile(`/in/${name}.astro`), readFile(`/out/${name}.astro`)]);
-  return [src, out];
-};
-
-const getMarkdownFiles = async (name: string) => {
-  const [src, out] = await Promise.all([readFile(`/in/${name}.md`), readFile(`/out/${name}.md`)]);
-  return [src, out];
-};
-
-/**
- * Macro for testing fixtures
- */
-const Prettier: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
-
-  const formatted = format(src);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
-
-/**
- * Macro title function for nice formatting
- */
-Prettier.title = (title, name) => `${title}:
-
-  - input: fixtures/in/${name}.astro
-  - output: fixtures/out/${name}.astro`;
-
-const PrettierUnaltered: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
-
-  const formatted = format(src);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
-
-PrettierUnaltered.title = Prettier.title;
-
-const PrettierMarkdown: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getMarkdownFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
-
-  const formatted = markdownFormat(src);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = markdownFormat(formatted);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
-
-PrettierMarkdown.title = (title, name) => `${title}:
-
-- input: fixtures/in/${name}.md
-- output: fixtures/out/${name}.md`;
+import test from 'ava';
+import { Prettier, PrettierMarkdown, PrettierUnaltered } from './test-utils.js';
 
 test('can format a basic Astro file', Prettier, 'basic');
 
@@ -122,3 +54,101 @@ test.todo("properly follow prettier' advice on formatting comments");
 
 // note(drew): I think this is a function of Astro’s parser, not Prettier. We’ll have to handle helpful error messages there!
 test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
+
+// https://prettier.io/docs/en/options.html#print-width
+test('Can format an Astro file with prettier "printWidth" option', Prettier, 'option-print-width');
+
+// https://prettier.io/docs/en/options.html#tab-width
+test('Can format an Astro file with prettier "tabWidth" option', Prettier, 'option-tab-width');
+
+// https://prettier.io/docs/en/options.html#tabs
+test('Can format an Astro file with prettier "useTabs: true" option', Prettier, 'option-use-tabs-true');
+
+// https://prettier.io/docs/en/options.html#tabs
+test('Can format an Astro file with prettier "useTabs: false" option', Prettier, 'option-use-tabs-false');
+
+// https://prettier.io/docs/en/options.html#semicolons
+test('Can format an Astro file with prettier "semi: true" option', Prettier, 'option-semicolon-true');
+
+// https://prettier.io/docs/en/options.html#semicolons
+test('Can format an Astro file with prettier "semi: false" option', Prettier, 'option-semicolon-false');
+
+// https://prettier.io/docs/en/options.html#quotes
+test('Can format an Astro file with prettier "singleQuote: false" option', Prettier, 'option-single-quote-false');
+
+// https://prettier.io/docs/en/options.html#quotes
+test('Can format an Astro file with prettier "singleQuote: true" option', Prettier, 'option-single-quote-true');
+
+// https://prettier.io/docs/en/options.html#quote-props
+test('Can format an Astro file with prettier "quoteProps: as-needed" option', Prettier, 'option-quote-props-as-needed');
+
+// https://prettier.io/docs/en/options.html#quote-props
+test('Can format an Astro file with prettier "quoteProps: consistent" option', Prettier, 'option-quote-props-consistent');
+
+// https://prettier.io/docs/en/options.html#quote-props
+test('Can format an Astro file with prettier "quoteProps: preserve" option', Prettier, 'option-quote-props-preserve');
+
+// https://prettier.io/docs/en/options.html#jsx-quotes
+test('Can format an Astro file with prettier "jsxSingleQuote: false" option', Prettier, 'option-jsx-single-quote-false');
+
+// https://prettier.io/docs/en/options.html#jsx-quotes
+test('Can format an Astro file with prettier "jsxSingleQuote: true" option', Prettier, 'option-jsx-single-quote-true');
+
+// https://prettier.io/docs/en/options.html#trailing-commas
+test('Can format an Astro file with prettier "trailingComma: es5" option', Prettier, 'option-trailing-comma-es5');
+
+// https://prettier.io/docs/en/options.html#trailing-commas
+test('Can format an Astro file with prettier "trailingComma: none" option', Prettier, 'option-trailing-comma-none');
+
+// https://prettier.io/docs/en/options.html#bracket-spacing
+test('Can format an Astro file with prettier "bracketSpacing: true" option', Prettier, 'option-bracket-spacing-true');
+
+// https://prettier.io/docs/en/options.html#bracket-spacing
+test('Can format an Astro file with prettier "bracketSpacing: false" option', Prettier, 'option-bracket-spacing-false');
+
+// https://prettier.io/docs/en/options.html#bracket-line
+test('Can format an Astro file with prettier "bracketSameLine: false" option', Prettier, 'option-bracket-same-line-false');
+
+// https://prettier.io/docs/en/options.html#bracket-line
+test('Can format an Astro file with prettier "bracketSameLine: true" option', Prettier, 'option-bracket-same-line-true');
+
+// https://prettier.io/docs/en/options.html#arrow-function-parentheses
+test('Can format an Astro file with prettier "arrowParens: always" option', Prettier, 'option-arrow-parens-always');
+
+// https://prettier.io/docs/en/options.html#arrow-function-parentheses
+test('Can format an Astro file with prettier "arrowParens: avoid" option', Prettier, 'option-arrow-parens-avoid');
+
+// https://prettier.io/docs/en/options.html#prose-wrap
+test('Can format an Astro file with prettier "proseWrap: preserve" option', PrettierMarkdown, 'option-prose-wrap-preserve');
+
+// https://prettier.io/docs/en/options.html#prose-wrap
+test('Can format an Astro file with prettier "proseWrap: always" option', PrettierMarkdown, 'option-prose-wrap-always');
+
+// https://prettier.io/docs/en/options.html#prose-wrap
+test('Can format an Astro file with prettier "proseWrap: never" option', PrettierMarkdown, 'option-prose-wrap-never');
+
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test('Can format an Astro file with prettier "htmlWhitespaceSensitivity: css" option', Prettier, 'option-html-whitespace-sensitivity-css');
+
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test('Can format an Astro file with prettier "htmlWhitespaceSensitivity: strict" option', Prettier, 'option-html-whitespace-sensitivity-strict');
+
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test('Can format an Astro file with prettier "htmlWhitespaceSensitivity: ignore" option', Prettier, 'option-html-whitespace-sensitivity-ignore');
+
+// astro option: astroSortOrder
+test('Can format an Astro file with prettier "astroSortOrder: markup | styles" option', Prettier, 'option-astro-sort-order-markup-styles');
+
+// astro option: astroSortOrder
+test('Can format an Astro file with prettier "astroSortOrder: styles | markup" option', Prettier, 'option-astro-sort-order-styles-markup');
+
+// TODO: COMMENT OPTIONS https://prettier.io/blog/2018/11/07/1.15.0.html#whitespace-sensitive-formatting
+// TODO: https://prettier.io/docs/en/options.html#range
+// TODO: https://prettier.io/docs/en/options.html#parser
+// TODO: https://prettier.io/docs/en/options.html#file-path
+// TODO: https://prettier.io/docs/en/options.html#require-pragma
+// TODO: https://prettier.io/docs/en/options.html#insert-pragma
+// TODO: https://prettier.io/docs/en/options.html#embedded-language-formatting
+// TODO: https://prettier.io/docs/en/options.html#end-of-line
+// should 'option-trailing-comma-all' be implemented?
+// TODO: https://prettier.io/docs/en/options.html#trailing-commas
