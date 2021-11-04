@@ -1,33 +1,27 @@
-// eslint-disable-next-line node/no-missing-import
-import test from 'ava';
-// eslint-disable-next-line ava/no-import-test-files
-import { format, markdownFormat } from './test-utils.mjs';
+import test, { Macro } from 'ava';
+import { format, markdownFormat } from './test-utils.js';
 import { promises as fs } from 'fs';
 import { fileURLToPath, URL } from 'url';
 
-const readFile = (path) => fs.readFile(fileURLToPath(new URL(`./fixtures${path}`, import.meta.url))).then((res) => res.toString().replace(/\r\n/g, '\n'));
+const readFile = (path: string) => fs.readFile(fileURLToPath(new URL(`./fixtures${path}`, import.meta.url))).then((res) => res.toString().replace(/\r\n/g, '\n'));
 
 /**
  * Utility to get `[src, out]` files
- * @param name {string}
- * @param ctx {any}
  */
-const getFiles = async (name) => {
+const getFiles = async (name: string) => {
   const [src, out] = await Promise.all([readFile(`/in/${name}.astro`), readFile(`/out/${name}.astro`)]);
   return [src, out];
 };
 
-const getMarkdownFiles = async (name) => {
+const getMarkdownFiles = async (name: string) => {
   const [src, out] = await Promise.all([readFile(`/in/${name}.md`), readFile(`/out/${name}.md`)]);
   return [src, out];
 };
 
 /**
  * Macro for testing fixtures
- * @param t {TestInterface<unknown>}
- * @param name {string}
  */
-const Prettier = async (t, name) => {
+const Prettier: Macro<[string]> = async (t, name) => {
   const [src, out] = await getFiles(name);
   t.not(src, out, 'Unformated file and formated file are the same');
 
@@ -40,16 +34,13 @@ const Prettier = async (t, name) => {
 
 /**
  * Macro title function for nice formatting
- * @param title {string}
- * @param name {string}
- * @returns {string}
  */
 Prettier.title = (title, name) => `${title}:
 
   - input: fixtures/in/${name}.astro
   - output: fixtures/out/${name}.astro`;
 
-const PrettierUnaltered = async (t, name) => {
+const PrettierUnaltered: Macro<[string]> = async (t, name) => {
   const [src, out] = await getFiles(name);
   t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
 
@@ -62,7 +53,7 @@ const PrettierUnaltered = async (t, name) => {
 
 PrettierUnaltered.title = Prettier.title;
 
-const PrettierMarkdown = async (t, name) => {
+const PrettierMarkdown: Macro<[string]> = async (t, name) => {
   const [src, out] = await getMarkdownFiles(name);
   t.not(src, out, 'Unformated file and formated file are the same');
 

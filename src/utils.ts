@@ -1,126 +1,96 @@
-const { doc, util } = require('prettier');
+import { AstPath as AstP, doc, Doc, ParserOptions as ParserOpts, util } from 'prettier';
 
-// @see http://xahlee.info/js/html5_non-closing_tag.html
-const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+import {
+  anyNode,
+  Ast,
+  AttributeNode,
+  AttributeShorthandNode,
+  attributeValue,
+  BlockElementNode,
+  blockElements,
+  InlineElementNode,
+  MustacheTagNode,
+  NodeWithChildren,
+  NodeWithText,
+  TextNode,
+} from './nodes';
 
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
-const blockElements = [
-  'address',
-  'article',
-  'aside',
-  'blockquote',
-  'details',
-  'dialog',
-  'dd',
-  'div',
-  'dl',
-  'dt',
-  'fieldset',
-  'figcaption',
-  'figure',
-  'footer',
-  'form',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'header',
-  'hgroup',
-  'hr',
-  'li',
-  'main',
-  'nav',
-  'ol',
-  'p',
-  'pre',
-  'section',
-  'table',
-  'ul',
-];
+type ParserOptions = ParserOpts<anyNode>;
+type AstPath = AstP<anyNode>;
 
 /**
  * HTML attributes that we may safely reformat (trim whitespace, add or remove newlines)
  */
-const formattableAttributes = [
+export const formattableAttributes: string[] = [
   // None at the moment
   // Prettier HTML does not format attributes at all
   // and to be consistent we leave this array empty for now
 ];
 
 const rootNodeKeys = new Set(['html', 'css', 'module']);
-/**
- *
- * @param {any} node
- * @returns {node is import('@astrojs/parser').Ast}
- */
-const isASTNode = (node) => typeof node === 'object' && Object.keys(node).filter((key) => rootNodeKeys.has(key)).length === rootNodeKeys.size;
 
-/**
- *
- * @param {any} node
- * @returns {boolean}
- */
-const isEmptyTextNode = (node) => {
+export const isASTNode = (node: anyNode | Ast): node is Ast => typeof node === 'object' && Object.keys(node).filter((key) => rootNodeKeys.has(key)).length === rootNodeKeys.size;
+
+export const isEmptyTextNode = (node: anyNode): boolean => {
   return !!node && node.type === 'Text' && getUnencodedText(node).trim() === '';
 };
 
-const isPreTagContent = (path) => {
+export const isPreTagContent = (path: AstPath): boolean => {
   if (!path || !path.stack || !Array.isArray(path.stack)) return false;
-  return path.stack.some((node) => (node.type === 'Element' && node.name.toLowerCase() === 'pre') || (node.type === 'Attribute' && !formattableAttributes.includes(node.name)));
+  return path.stack.some(
+    (node: anyNode) => (node.type === 'Element' && node.name.toLowerCase() === 'pre') || (node.type === 'Attribute' && !formattableAttributes.includes(node.name))
+  );
 };
 
-function isLoneMustacheTag(node) {
+export function isLoneMustacheTag(node: attributeValue): node is [MustacheTagNode] {
   return node !== true && node.length === 1 && node[0].type === 'MustacheTag';
 }
 
-function isAttributeShorthand(node) {
+function isAttributeShorthand(node: attributeValue): node is [AttributeShorthandNode] {
   return node !== true && node.length === 1 && node[0].type === 'AttributeShorthand';
 }
 
 /**
  * True if node is of type `{a}` or `a={a}`
  */
-function isOrCanBeConvertedToShorthand(node) {
+export function isOrCanBeConvertedToShorthand(node: AttributeNode): boolean {
   if (isAttributeShorthand(node.value)) {
     return true;
   }
 
   if (isLoneMustacheTag(node.value)) {
     const expression = node.value[0].expression;
-    return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
+    return expression.codeChunks[0] === node.name;
+    // return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
   }
 
   return false;
 }
 
-const flatten = (arrays) => [].concat.apply([], arrays);
-
-/**
- *
- * @param {any} node
- * @param {import('prettier').ParserOptions} options
- */
-function getText(node, options) {
-  const leadingComments = node.leadingComments;
-
-  return options.originalText.slice(
-    options.locStart(
-      // if there are comments before the node they are not included
-      // in the `start` of the node itself
-      (leadingComments && leadingComments[0]) || node
-    ),
-    options.locEnd(node)
-  );
+export function flatten<T>(arrays: T[][]): T[] {
+  return ([] as T[]).concat.apply([], arrays);
 }
 
-function getUnencodedText(node) {
+export function getText(node: anyNode, opts: ParserOptions): string {
+  return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
+  // const leadingComments = node.leadingComments;
+
+  // return options.originalText.slice(
+  //   options.locStart(
+  //     // if there are comments before the node they are not included
+  //     // in the `start` of the node itself
+  //     (leadingComments && leadingComments[0]) || node
+  //   ),
+  //   options.locEnd(node)
+  // );
+}
+
+export function getUnencodedText(node: NodeWithText): string {
   // `raw` will contain HTML entities in unencoded form
   return node.raw || node.data;
 }
 
-function replaceEndOfLineWith(text, replacement) {
+export function replaceEndOfLineWith(text: string, replacement: doc.builders.DocCommand): Doc[] {
   const parts = [];
   for (const part of text.split('\n')) {
     if (parts.length > 0) {
@@ -135,14 +105,11 @@ function replaceEndOfLineWith(text, replacement) {
   return parts;
 }
 
-/**
- *
- * @param { ElementNode | InlineComponentNode | SlotNode | WindowNode | HeadNode | TitleNode | SlotTemplateNode } node
- * @param {string} originalText string
- * @param {boolean} stripLeadingAndTrailingNewline boolean
- * @returns {string}
- */
-function printRaw(node, originalText, stripLeadingAndTrailingNewline = false) {
+export function printRaw(node: anyNode, originalText: string, stripLeadingAndTrailingNewline: boolean = false): string {
+  if (!isNodeWithChildren(node)) {
+    return '';
+  }
+
   if (node.children.length === 0) {
     return '';
   }
@@ -169,50 +136,55 @@ function printRaw(node, originalText, stripLeadingAndTrailingNewline = false) {
   return raw;
 }
 
-function isNodeWithChildren(node) {
+export function isNodeWithChildren(node: anyNode): node is anyNode & NodeWithChildren {
   return node && Array.isArray(node.children);
 }
 
-function isInlineElement(path, options, node) {
-  return node && node.type === 'Element' && !isBlockElement(node, options) && !isPreTagContent(path);
+export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): node is InlineElementNode {
+  return node && node.type === 'Element' && !isBlockElement(node, opts) && !isPreTagContent(path);
 }
 
-function isBlockElement(node, options) {
-  return node && node.type === 'Element' && options.htmlWhitespaceSensitivity !== 'strict' && (options.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name));
+export function isBlockElement(node: anyNode, opts: ParserOptions): node is BlockElementNode {
+  return node && node.type === 'Element' && opts.htmlWhitespaceSensitivity !== 'strict' && (opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name));
 }
 
-function isTextNodeStartingWithLinebreak(node, nrLines = 1) {
-  return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
+export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines: number = 1): node is TextNode {
+  return startsWithLinebreak(getUnencodedText(node), nrLines);
+  // return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
-function startsWithLinebreak(text, nrLines = 1) {
+export function startsWithLinebreak(text: string, nrLines: number = 1): boolean {
   return new RegExp(`^([\\t\\f\\r ]*\\n){${nrLines}}`).test(text);
 }
 
-function isTextNodeEndingWithLinebreak(node, nrLines = 1) {
+export function isTextNodeEndingWithLinebreak(node: TextNode, nrLines: number = 1) {
   return node.type === 'Text' && endsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
-function endsWithLinebreak(text, nrLines = 1) {
+export function endsWithLinebreak(text: string, nrLines: number = 1): boolean {
   return new RegExp(`(\\n[\\t\\f\\r ]*){${nrLines}}$`).test(text);
 }
 
-function isTextNodeStartingWithWhitespace(node) {
+export function isTextNodeStartingWithWhitespace(node: anyNode): node is TextNode {
   return node.type === 'Text' && /^\s/.test(getUnencodedText(node));
 }
 
-function isTextNodeEndingWithWhitespace(node) {
+export function isTextNodeEndingWithWhitespace(node: anyNode): node is TextNode {
   return node.type === 'Text' && /\s$/.test(getUnencodedText(node));
 }
 
-function forceIntoExpression(statement) {
+export function forceIntoExpression(statement: string): string {
   // note the trailing newline: if the statement ends in a // comment,
   // we can't add the closing bracket right afterwards
   return `(${statement}\n)`;
 }
 
-function shouldHugStart(node, options) {
-  if (isBlockElement(node, options)) {
+/**
+ * Check if given node's starg tag should hug its first child. This is the case for inline elements when there's
+ * no whitespace between the `>` and the first child.
+ */
+export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
+  if (isBlockElement(node, opts)) {
     return false;
   }
 
@@ -233,8 +205,8 @@ function shouldHugStart(node, options) {
  * Check if given node's end tag should hug its last child. This is the case for inline elements when there's
  * no whitespace between the last child and the `</`.
  */
-function shouldHugEnd(node, options) {
-  if (isBlockElement(node, options)) {
+export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
+  if (isBlockElement(node, opts)) {
     return false;
   }
 
@@ -254,30 +226,32 @@ function shouldHugEnd(node, options) {
 /**
  * Returns true if the softline between `</tagName` and `>` can be omitted.
  */
-function canOmitSoftlineBeforeClosingTag(node, path, options) {
-  return !options.svelteBracketNewLine && (!hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options));
+export function canOmitSoftlineBeforeClosingTag(path: AstPath, opts: ParserOptions): boolean {
+  return isLastChildWithinParentBlockElement(path, opts);
+  // return !hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options);
+  // return !options.svelteBracketNewLine && (!hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options));
 }
 
 /**
  * Return true if given node does not hug the next node, meaning there's whitespace
  * or the end of the doc afterwards.
  */
-function hugsStartOfNextNode(node, options) {
-  if (node.end === options.originalText.length) {
+function hugsStartOfNextNode(node: anyNode, opts: ParserOptions): boolean {
+  if (node.end === opts.originalText.length) {
     // end of document
     return false;
   }
 
-  return !options.originalText.substring(node.end).match(/^\s/);
+  return !opts.originalText.substring(node.end).match(/^\s/);
 }
 
-function getChildren(node) {
+function getChildren(node: anyNode): anyNode[] {
   return isNodeWithChildren(node) ? node.children : [];
 }
 
-function isLastChildWithinParentBlockElement(path, options) {
+function isLastChildWithinParentBlockElement(path: AstPath, opts: ParserOptions): boolean {
   const parent = path.getParentNode();
-  if (!parent || !isBlockElement(parent, options)) {
+  if (!parent || !isBlockElement(parent, opts)) {
     return false;
   }
 
@@ -286,17 +260,17 @@ function isLastChildWithinParentBlockElement(path, options) {
   return lastChild === path.getNode();
 }
 
-function trimTextNodeLeft(node) {
+export function trimTextNodeLeft(node: TextNode): void {
   node.raw = node.raw && node.raw.trimLeft();
   node.data = node.data && node.data.trimLeft();
 }
 
-function trimTextNodeRight(node) {
+export function trimTextNodeRight(node: TextNode): void {
   node.raw = node.raw && node.raw.trimRight();
   node.data = node.data && node.data.trimRight();
 }
 
-function findLastIndex(isMatch, items) {
+export function findLastIndex<T>(isMatch: (item: T, idx: number) => boolean, items: T[]) {
   for (let i = items.length - 1; i >= 0; i--) {
     if (isMatch(items[i], i)) {
       return i;
@@ -310,27 +284,30 @@ function findLastIndex(isMatch, items) {
  * Remove all leading whitespace up until the first non-empty text node,
  * and all trailing whitepsace from the last non-empty text node onwards.
  */
-function trimChildren(children, path) {
-  let firstNonEmptyNode = children.findIndex((n) => !isEmptyTextNode(n) && !doesEmbedStartAfterNode(n, path));
+export function trimChildren(children: anyNode[]) {
+  // export function trimChildren(children: anyNode[], path: AstPath<anyNode>) {
+  let firstNonEmptyNode = children.findIndex((n) => !isEmptyTextNode(n));
+  // let firstNonEmptyNode = children.findIndex((n) => !isEmptyTextNode(n) && !doesEmbedStartAfterNode(n, path));
   firstNonEmptyNode = firstNonEmptyNode === -1 ? children.length - 1 : firstNonEmptyNode;
 
   let lastNonEmptyNode = findLastIndex((n, idx) => {
     // Last node is ok to end at the start of an embedded region,
     // if it's not a comment (which should stick to the region)
-    return !isEmptyTextNode(n) && ((idx === children.length - 1 && n.type !== 'Comment') || !doesEmbedStartAfterNode(n, path));
+    return !isEmptyTextNode(n);
+    // return !isEmptyTextNode(n) && ((idx === children.length - 1 && n.type !== 'Comment') || !doesEmbedStartAfterNode(n, path));
   }, children);
   lastNonEmptyNode = lastNonEmptyNode === -1 ? 0 : lastNonEmptyNode;
 
   for (let i = 0; i <= firstNonEmptyNode; i++) {
     const n = children[i];
-    if (n.type === 'Text') {
+    if (isTextNode(n)) {
       trimTextNodeLeft(n);
     }
   }
 
   for (let i = children.length - 1; i >= lastNonEmptyNode; i--) {
     const n = children[i];
-    if (n.type === 'Text') {
+    if (isTextNode(n)) {
       trimTextNodeRight(n);
     }
   }
@@ -339,8 +316,9 @@ function trimChildren(children, path) {
 /**
  * Returns siblings, that is, the children of the parent.
  */
-function getSiblings(path) {
+export function getSiblings(path: AstPath): anyNode[] {
   let parent = path.getParentNode();
+  if (!parent) return [];
 
   if (isASTNode(parent)) {
     parent = parent.html;
@@ -353,40 +331,41 @@ function getSiblings(path) {
  * Did there use to be any embedded object (that has been snipped out of the AST to be moved)
  * at the specified position?
  */
-function doesEmbedStartAfterNode(node, path, siblings = getSiblings(path)) {
-  // If node is not at the top level of html, an embed cannot start after it,
-  // because embeds are only at the top level
-  if (!isNodeTopLevelHTML(node, path)) {
-    return false;
-  }
+// function doesEmbedStartAfterNode(node: anyNode, path: AstPath<anyNode>, siblings = getSiblings(path)): boolean {
+//   // If node is not at the top level of html, an embed cannot start after it,
+//   // because embeds are only at the top level
+//   if (!isNodeTopLevelHTML(node, path)) {
+//     return false;
+//   }
 
-  const position = node.end;
-  const root = path.stack[0];
+//   const position = node.end;
+//   const root = path.stack[0];
 
-  const embeds = [root.module, root.html, root.css];
+//   const embeds = [root.module, root.html, root.css];
 
-  const nextNode = siblings[siblings.indexOf(node) + 1];
-  return embeds.find((n) => n && n.start >= position && (!nextNode || n.end <= nextNode.start));
-}
+//   const nextNode = siblings[siblings.indexOf(node) + 1];
+//   return embeds.find((n) => n && n.start >= position && (!nextNode || n.end <= nextNode.start));
+// }
 
-function isNodeTopLevelHTML(node, path) {
-  const root = path.stack[0];
-  return !!root.html && !!root.html.children && root.html.children.includes(node);
-}
+// function isNodeTopLevelHTML(node: anyNode, path: AstPath<anyNode>) {
+//   const root = path.stack[0];
+//   return !!root.html && !!root.html.children && root.html.children.includes(node);
+// }
 
 /**
  * Check if doc is a hardline.
  * We can't just rely on a simple equality check because the doc could be created with another
  * runtime version of prettier than what we import, making a reference check fail.
  */
-function isHardline(docToCheck) {
+
+function isHardline(docToCheck: Doc): boolean {
   return docToCheck === doc.builders.hardline || deepEqual(docToCheck, doc.builders.hardline);
 }
 
 /**
  * Simple deep equal function which suits our needs. Only works properly on POJOs without cyclic deps.
  */
-function deepEqual(x, y) {
+function deepEqual(x: any, y: any): boolean {
   if (x === y) {
     return true;
   } else if (typeof x == 'object' && x != null && typeof y == 'object' && y != null) {
@@ -406,55 +385,55 @@ function deepEqual(x, y) {
   }
 }
 
-function isLine(docToCheck) {
+export function isLine(docToCheck: Doc): boolean {
   return (
     isHardline(docToCheck) ||
-    (typeof docToCheck === 'object' && docToCheck.type === 'line') ||
-    (typeof docToCheck === 'object' && docToCheck.type === 'concat' && docToCheck.parts.every(isLine))
+    (typeof docToCheck === 'object' && isDocCommand(docToCheck) && docToCheck.type === 'line') ||
+    (typeof docToCheck === 'object' && isDocCommand(docToCheck) && docToCheck.type === 'concat' && docToCheck.parts.every(isLine))
   );
 }
 
 /**
  * Check if the doc is empty, i.e. consists of nothing more than empty strings (possibly nested).
  */
-function isEmptyDoc(doc) {
+export function isEmptyDoc(doc: Doc): boolean {
   if (typeof doc === 'string') {
     return doc.length === 0;
   }
 
-  if (doc.type === 'line') {
-    return !doc.keepIfLonely;
-  }
+  // if (doc.type === 'line') {
+  //   return !doc.keepIfLonely;
+  // }
 
   // Since Prettier 2.3.0, concats are represented as flat arrays
   if (Array.isArray(doc)) {
     return doc.length === 0;
   }
 
-  const { contents } = doc;
+  // const { contents } = doc;
 
-  if (contents) {
-    return isEmptyDoc(contents);
-  }
+  // if (contents) {
+  //   return isEmptyDoc(contents);
+  // }
 
-  const { parts } = doc;
+  // const { parts } = doc;
 
-  if (parts) {
-    return isEmptyGroup(parts);
-  }
+  // if (parts) {
+  //   return isEmptyGroup(parts);
+  // }
 
   return false;
 }
 
-function isEmptyGroup(group) {
-  return !group.find((doc) => !isEmptyDoc(doc));
-}
+// function isEmptyGroup(group: any) {
+//   return !group.find((doc: any) => !isEmptyDoc(doc));
+// }
 
 /**
  * Trims both leading and trailing nodes matching `isWhitespace` independent of nesting level
  * (though all trimmed adjacent nodes need to be a the same level). Modifies the `docs` array.
  */
-function trim(docs, isWhitespace) {
+export function trim(docs: Doc[], isWhitespace: (doc: Doc) => boolean): Doc[] {
   trimLeft(docs, isWhitespace);
   trimRight(docs, isWhitespace);
 
@@ -465,7 +444,7 @@ function trim(docs, isWhitespace) {
  * Trims the leading nodes matching `isWhitespace` independent of nesting level (though all nodes need to be a the same level).
  * If there are empty docs before the first whitespace, they are removed, too.
  */
-function trimLeft(group, isWhitespace) {
+function trimLeft(group: Doc[], isWhitespace: (doc: Doc) => boolean): void {
   let firstNonWhitespace = group.findIndex((doc) => !isEmptyDoc(doc) && !isWhitespace(doc));
 
   if (firstNonWhitespace < 0 && group.length) {
@@ -490,8 +469,8 @@ function trimLeft(group, isWhitespace) {
  * Trims the trailing nodes matching `isWhitespace` independent of nesting level (though all nodes need to be a the same level).
  * If there are empty docs after the last whitespace, they are removed, too.
  */
-function trimRight(group, isWhitespace) {
-  let lastNonWhitespace = group.length ? findLastIndex((doc) => !isEmptyDoc(doc) && !isWhitespace(doc), group) : 0;
+function trimRight(group: Doc[], isWhitespace: (doc: Doc) => boolean): void {
+  let lastNonWhitespace = group.length ? findLastIndex((doc: any) => !isEmptyDoc(doc) && !isWhitespace(doc), group) : 0;
 
   if (lastNonWhitespace < group.length - 1) {
     const removed = group.splice(lastNonWhitespace + 1);
@@ -507,7 +486,7 @@ function trimRight(group, isWhitespace) {
   }
 }
 
-function getParts(doc) {
+function getParts(doc: Doc): Doc[] | undefined {
   if (typeof doc === 'object') {
     // Since Prettier 2.3.0, concats are represented as flat arrays
     if (Array.isArray(doc)) {
@@ -522,13 +501,13 @@ function getParts(doc) {
   }
 }
 
-const isObjEmpty = (obj) => {
+export const isObjEmpty = (obj: object): boolean => {
   for (let i in obj) return false;
   return true;
 };
 
 /** Shallowly attach comments to children */
-function attachCommentsHTML(node) {
+export function attachCommentsHTML(node: anyNode): void {
   if (!isNodeWithChildren(node) || !node.children.some(({ type }) => type === 'Comment')) return;
 
   const nodesToRemove = [];
@@ -556,7 +535,7 @@ function attachCommentsHTML(node) {
 }
 
 /** dedent string & return tabSize (the last part is what we need) */
-function dedent(input) {
+export function dedent(input: string): { tabSize: number; char: string; result: string } {
   let minTabSize = Infinity;
   let result = input;
   // 1. normalize
@@ -591,12 +570,12 @@ function dedent(input) {
 }
 
 /** re-indent string by chars */
-function indent(input, char = ' ') {
+export function indent(input: string, char: string = ' '): string {
   return input.replace(/^(.)/gm, `${char}$1`);
 }
 
 /** scan code for Markdown name(s) */
-function getMarkdownName(script) {
+export function getMarkdownName(script: string): Set<string> {
   // default import: could be named anything
   let defaultMatch;
   while ((defaultMatch = /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(script))) {
@@ -621,42 +600,21 @@ function getMarkdownName(script) {
   return new Set(['Markdown']);
 }
 
-module.exports = {
-  attachCommentsHTML,
-  canOmitSoftlineBeforeClosingTag,
-  dedent,
-  endsWithLinebreak,
-  flatten,
-  forceIntoExpression,
-  formattableAttributes,
-  getMarkdownName,
-  getText,
-  getUnencodedText,
-  indent,
-  isASTNode,
-  isAttributeShorthand,
-  isBlockElement,
-  isEmptyDoc,
-  isEmptyTextNode,
-  isInlineElement,
-  isLine,
-  isLoneMustacheTag,
-  isNodeWithChildren,
-  isObjEmpty,
-  isOrCanBeConvertedToShorthand,
-  isPreTagContent,
-  isTextNodeEndingWithLinebreak,
-  isTextNodeEndingWithWhitespace,
-  isTextNodeStartingWithLinebreak,
-  isTextNodeStartingWithWhitespace,
-  printRaw,
-  replaceEndOfLineWith,
-  selfClosingTags,
-  shouldHugEnd,
-  shouldHugStart,
-  startsWithLinebreak,
-  trim,
-  trimChildren,
-  trimTextNodeLeft,
-  trimTextNodeRight,
-};
+export function isTextNode(node: anyNode): node is TextNode {
+  return node.type === 'Text';
+}
+
+export function isMustacheNode(node: anyNode): node is MustacheTagNode {
+  return node.type === 'MustacheTag';
+}
+
+export function isDocCommand(doc: Doc): doc is doc.builders.DocCommand {
+  if (typeof doc === 'string') return false;
+  if (Array.isArray(doc)) return false;
+  return true;
+}
+
+export function isInsideQuotedAttribute(path: AstPath): boolean {
+  const stack = path.stack as anyNode[];
+  return stack.some((node) => node.type === 'Attribute' && !isLoneMustacheTag(node.value));
+}
