@@ -48,7 +48,7 @@ export interface CodeFenceNode extends BaseNode {
 }
 
 export interface CodeSpanNode extends BaseNode {
-  type: 'CodeFence';
+  type: 'CodeSpan';
   metadata: string;
   data: string;
   raw: string;

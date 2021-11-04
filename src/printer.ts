@@ -411,9 +411,8 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     //   ];
     case 'Comment':
       return ['<!--', getUnencodedText(node), '-->'];
-    // TODO: ADD TEST OR REMOVE
-    // case 'CodeSpan':
-    //   return getUnencodedText(node);
+    case 'CodeSpan':
+      return getUnencodedText(node);
     case 'CodeFence': {
       console.debug(node);
       // const lang = node.metadata.slice(3);
