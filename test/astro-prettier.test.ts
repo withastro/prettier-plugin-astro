@@ -141,14 +141,3 @@ test('Can format an Astro file with prettier "astroSortOrder: markup | styles" o
 
 // astro option: astroSortOrder
 test('Can format an Astro file with prettier "astroSortOrder: styles | markup" option', Prettier, 'option-astro-sort-order-styles-markup');
-
-// TODO: COMMENT OPTIONS https://prettier.io/blog/2018/11/07/1.15.0.html#whitespace-sensitive-formatting
-// TODO: https://prettier.io/docs/en/options.html#range
-// TODO: https://prettier.io/docs/en/options.html#parser
-// TODO: https://prettier.io/docs/en/options.html#file-path
-// TODO: https://prettier.io/docs/en/options.html#require-pragma
-// TODO: https://prettier.io/docs/en/options.html#insert-pragma
-// TODO: https://prettier.io/docs/en/options.html#embedded-language-formatting
-// TODO: https://prettier.io/docs/en/options.html#end-of-line
-// should 'option-trailing-comma-all' be implemented?
-// TODO: https://prettier.io/docs/en/options.html#trailing-commas
