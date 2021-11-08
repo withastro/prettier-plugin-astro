@@ -28,6 +28,7 @@ import {
   isEmptyDoc,
   isEmptyTextNode,
   isInlineElement,
+  isInsideQuotedAttribute,
   isLine,
   isLoneMustacheTag,
   isNodeWithChildren,
@@ -241,7 +242,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       const isSelfClosingTag = isEmpty && (node.type !== 'Element' || selfClosingTags.indexOf(node.name) !== -1);
       const attributes = path.map(print, 'attributes');
       if (isSelfClosingTag) {
-        return group(['<', node.name, indent(group([...attributes, ''])), ...[' ', `/>`]]);
+        return group(['<', node.name, indent(group(attributes)), line, `/>`]);
         // return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
       }
       try {
@@ -313,7 +314,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
           body = () => path.map(print, 'children');
         }
 
-        const openingTag = ['<', node.name, indent(group([...attributes, hugStart ? '' : !isPreTagContent(path) ? dedent(softline) : '']))];
+        const openingTag = ['<', node.name, indent(group([...attributes, hugStart ? '' : !isPreTagContent(path) && !opts.bracketSameLine ? dedent(softline) : '']))];
         // const openingTag = ['<', node.name, indent(group([...attributes, hugStart ? '' : opts.jsxBracketNewLine && !isPreTagContent(path) ? dedent(softline) : '']))];
 
         if (hugStart && hugEnd) {
@@ -393,8 +394,8 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       return [
         '{',
         printJS(path, print, 'expression', {
-          forceSingleLine: true,
-          forceSingleQuote: false,
+          forceSingleLine: isInsideQuotedAttribute(path),
+          forceSingleQuote: opts.jsxSingleQuote,
         }),
         '}',
       ];
