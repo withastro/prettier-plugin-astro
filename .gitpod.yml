@@ -2,8 +2,7 @@
 # Commands to start on workspace startup
 tasks:
   - init: yarn install
-    # no build step for us atm
-    # command: yarn build
+    command: yarn build
 vscode:
   extensions:
     # TODO Once astro is on [vsx](https://open-vsx.org/), we should be able to specify it as an extension as well!
