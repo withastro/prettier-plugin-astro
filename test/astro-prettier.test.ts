@@ -147,3 +147,6 @@ test('Can format an Astro file with prettier "astroAllowShorthand: true" option'
 
 // astro option: astroAllowShorthand
 test('Can format an Astro file with prettier "astroAllowShorthand: false" option', Prettier, 'option-astro-allow-shorthand-false');
+test('Format nested style tag content', Prettier, 'format-nested-style-tag-content');
+
+test('Format nested sass style tag content', Prettier, 'format-nested-sass-style-tag-content');

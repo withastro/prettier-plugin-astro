@@ -7,7 +7,7 @@ const {
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 
 import { parseSortOrder } from './options';
-import { Ast, anyNode, AttributeNode, CommentNode, NodeWithText, selfClosingTags } from './nodes';
+import { Ast, anyNode, AttributeNode, CommentNode, NodeWithText, selfClosingTags, TextNode } from './nodes';
 
 type ParserOptions = ParserOpts<anyNode>;
 type AstPath = AstP<anyNode>;
@@ -532,7 +532,17 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     }
   }
 
-  if (node.type === 'Style') {
+  // type style is top level style tag
+  // type element is nested style tag
+  if (node.type === 'Style' || (node.type === 'Element' && node.name === 'style')) {
+    let styleTagContent = '';
+    if (node.type === 'Style') {
+      styleTagContent = node.content.styles;
+    } else if (node.children) {
+      const children = node.children[0] as TextNode;
+      styleTagContent = getUnencodedText(children);
+    }
+
     const supportedStyleLangValues = ['css', 'scss', 'sass'];
     let parserLang = 'css';
 
@@ -549,11 +559,10 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
       case 'scss': {
         // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
         // so we remove the last element of the array
-        let formattedStyles = textToDoc(node.content.styles, { ...opts, parser: parserLang });
+        let formattedStyles = textToDoc(styleTagContent, { ...opts, parser: parserLang });
         if (typeof formattedStyles === 'string') return formattedStyles;
         if (isDocCommand(formattedStyles)) return formattedStyles;
         formattedStyles = formattedStyles[0];
-        // const [formattedStyles, ,] = textToDoc(node.content.styles, { ...opts, parser: parserLang });
 
         // print
         const attributes = path.map(print, 'attributes');
@@ -569,18 +578,16 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
         };
 
         // dedent the .sass, otherwise SassFormatter gets indentation wrong
-        const { result: raw, tabSize } = manualDedent(node.content.styles);
+        const { result: raw } = manualDedent(styleTagContent);
 
-        // format + re-indent
+        // format
         let formattedSassIndented = SassFormatter.Format(raw, sassOptions).trim();
-        const indentChar = new Array(Math.max(tabSize, 2) + 1).join(opts.useTabs ? '\t' : ' ');
-        formattedSassIndented = manualIndent(formattedSassIndented, indentChar);
 
         // print
         const formattedSass = join(hardline, formattedSassIndented.split('\n'));
         const attributes = path.map(print, 'attributes');
         const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
-        return [openingTag, hardline, formattedSass, hardline, '</style>'];
+        return [openingTag, indent(group([hardline, formattedSass])), hardline, '</style>'];
       }
     }
   }
