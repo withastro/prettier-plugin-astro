@@ -30,7 +30,7 @@
     "dev": "rollup -c -w",
     "test": "ava test/*.test.ts",
     "test:w": "ava -w test/*.test.ts",
-    "release": "changeset publish",
+    "release": "yarn build && changeset publish",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
     "format": "prettier -w ."
