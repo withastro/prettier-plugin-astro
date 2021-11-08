@@ -6,30 +6,66 @@ on:
       - main
   pull_request:
 
-env:
-  node_version: 14
-
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node_version: [12, 14, 16]
+        include:
+          - os: windows-latest
+            node_version: 16
+          - os: macos-latest
+            node_version: 16
+      fail-fast: false
+    env:
+      LANG: en-us
+    name: 'Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - name: Check out code using Git
+        uses: actions/checkout@v2
+
+      - name: Set Node version to ${{ matrix.node_version }}
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.node_version }}
-      - run: yarn --frozen-lockfile --ignore-engines
-        env:
-          CI: true
-      - run: yarn build
-      - run: yarn test
+          node-version: ${{ matrix.node_version }}
+          cache: 'yarn'
+
+      - name: Debug
+        run: yarn versions
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+
+      - name: Build prettier-plugin-astro
+        run: yarn build
+
+      - name: Test
+        run: yarn test
+
   lint:
     runs-on: ubuntu-latest
+    name: 'Lint: node-16, ubuntu-latest'
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.node_version }}
-      - run: yarn --frozen-lockfile --ignore-engines
-        env:
-          CI: true
-      - run: yarn lint
+          fetch-depth: 0
+
+      - name: Set Node version to 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: 'yarn'
+
+      - name: Debug
+        run: yarn versions
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --ignore-engines
+
+      - name: Build prettier-plugin-astro
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
