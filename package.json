@@ -45,7 +45,7 @@
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@types/prettier": "^2.4.1",
-    "ava": "4.0.0-alpha.2",
+    "ava": "4.0.0-rc.1",
     "eslint": "^8.0.0",
     "eslint-plugin-ava": "^13.0.0",
     "eslint-plugin-node": "^11.1.0",
