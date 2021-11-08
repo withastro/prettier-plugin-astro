@@ -31,7 +31,7 @@
     "test": "ava test/*.test.ts",
     "test:w": "ava -w test/*.test.ts",
     "release": "changeset publish",
-    "lint": "eslint .",
+    "lint": "eslint --ext .js,.ts .",
     "fix": "yarn lint --fix",
     "format": "prettier -w ."
   },
@@ -45,6 +45,8 @@
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@types/prettier": "^2.4.1",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
     "ava": "4.0.0-alpha.2",
     "eslint": "^8.0.0",
     "eslint-plugin-ava": "^13.0.0",
