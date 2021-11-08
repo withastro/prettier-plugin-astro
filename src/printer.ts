@@ -50,7 +50,7 @@ import {
 } from './utils';
 
 function printTopLevelParts(node: Ast, path: AstPath, opts: ParserOptions, print: printFn): Doc {
-  let docs = [];
+  const docs = [];
 
   const normalize = (doc: Doc) => [stripTrailingHardline(doc), hardline];
 
@@ -436,7 +436,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 function splitTextToDocs(node: NodeWithText): Doc[] {
   const text = getUnencodedText(node);
 
-  let textLines = text.split(/[\t\n\f\r ]+/);
+  const textLines = text.split(/[\t\n\f\r ]+/);
 
   let docs = join(line, textLines).parts.filter((s) => s !== '');
 

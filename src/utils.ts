@@ -105,7 +105,7 @@ export function replaceEndOfLineWith(text: string, replacement: doc.builders.Doc
   return parts;
 }
 
-export function printRaw(node: anyNode, originalText: string, stripLeadingAndTrailingNewline: boolean = false): string {
+export function printRaw(node: anyNode, originalText: string, stripLeadingAndTrailingNewline = false): string {
   if (!isNodeWithChildren(node)) {
     return '';
   }
@@ -148,20 +148,20 @@ export function isBlockElement(node: anyNode, opts: ParserOptions): node is Bloc
   return node && node.type === 'Element' && opts.htmlWhitespaceSensitivity !== 'strict' && (opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name));
 }
 
-export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines: number = 1): node is TextNode {
+export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines = 1): node is TextNode {
   return startsWithLinebreak(getUnencodedText(node), nrLines);
   // return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
-export function startsWithLinebreak(text: string, nrLines: number = 1): boolean {
+export function startsWithLinebreak(text: string, nrLines = 1): boolean {
   return new RegExp(`^([\\t\\f\\r ]*\\n){${nrLines}}`).test(text);
 }
 
-export function isTextNodeEndingWithLinebreak(node: TextNode, nrLines: number = 1) {
+export function isTextNodeEndingWithLinebreak(node: TextNode, nrLines = 1) {
   return node.type === 'Text' && endsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
-export function endsWithLinebreak(text: string, nrLines: number = 1): boolean {
+export function endsWithLinebreak(text: string, nrLines = 1): boolean {
   return new RegExp(`(\\n[\\t\\f\\r ]*){${nrLines}}$`).test(text);
 }
 
@@ -371,7 +371,7 @@ function deepEqual(x: any, y: any): boolean {
   } else if (typeof x == 'object' && x != null && typeof y == 'object' && y != null) {
     if (Object.keys(x).length != Object.keys(y).length) return false;
 
-    for (var prop in x) {
+    for (const prop in x) {
       if (Object.prototype.hasOwnProperty.call(y, prop)) {
         if (!deepEqual(x[prop], y[prop])) return false;
       } else {
@@ -470,7 +470,7 @@ function trimLeft(group: Doc[], isWhitespace: (doc: Doc) => boolean): void {
  * If there are empty docs after the last whitespace, they are removed, too.
  */
 function trimRight(group: Doc[], isWhitespace: (doc: Doc) => boolean): void {
-  let lastNonWhitespace = group.length ? findLastIndex((doc: any) => !isEmptyDoc(doc) && !isWhitespace(doc), group) : 0;
+  const lastNonWhitespace = group.length ? findLastIndex((doc: any) => !isEmptyDoc(doc) && !isWhitespace(doc), group) : 0;
 
   if (lastNonWhitespace < group.length - 1) {
     const removed = group.splice(lastNonWhitespace + 1);
@@ -502,7 +502,7 @@ function getParts(doc: Doc): Doc[] | undefined {
 }
 
 export const isObjEmpty = (obj: object): boolean => {
-  for (let i in obj) return false;
+  for (const i in obj) return false;
   return true;
 };
 
@@ -570,7 +570,7 @@ export function dedent(input: string): { tabSize: number; char: string; result: 
 }
 
 /** re-indent string by chars */
-export function indent(input: string, char: string = ' '): string {
+export function indent(input: string, char = ' '): string {
   return input.replace(/^(.)/gm, `${char}$1`);
 }
 
