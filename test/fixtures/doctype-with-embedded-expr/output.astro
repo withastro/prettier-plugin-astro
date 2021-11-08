@@ -16,8 +16,10 @@ const colors = ["red", "yellow", "blue"];
 
     {"I'm some super long text and oh boy I sure do hope this formatter doesn't break me!"}
 
-    {colors.map((color) => <div>
+    {colors.map((color) => (
+      <div>
         <Color name={color} />
-      </div>)}
+      </div>
+    ))}
   </body>
 </html>
