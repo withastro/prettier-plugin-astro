@@ -1,7 +1,7 @@
 import prettier from 'prettier';
 import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
-import { Macro } from 'ava';
+import { Macro, TitleFn } from 'ava';
 
 /**
  * format the contents of an astro file
@@ -71,58 +71,63 @@ async function getMarkdownFiles(name: string) {
 }
 
 /**
- * Macro for testing fixtures
- */
-export const Prettier: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
-
-  const options = await getOptions(name);
-
-  const formatted = format(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted, options);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
-
-/**
  * Macro title function for nice formatting
  */
-Prettier.title = (title, name) => `${title}:
+const title: TitleFn<[string]> = (providedTitle, name: string | undefined) => `${providedTitle}:
 
-  - input: fixtures/${name}/input.astro
-  - output: fixtures/${name}/output.astro`;
+ - input: fixtures/${name}/input.astro
+ - output: fixtures/${name}/output.astro`;
 
-export const PrettierUnaltered: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
+/**
+ * Macro for testing fixtures
+ */
+export const Prettier: Macro<[string]> = {
+  exec: async (t, name) => {
+    const [src, out] = await getFiles(name);
+    t.not(src, out, 'Unformated file and formated file are the same');
 
-  const options = await getOptions(name);
+    const options = await getOptions(name);
 
-  const formatted = format(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+    const formatted = format(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = format(formatted, options);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  title,
 };
 
-PrettierUnaltered.title = Prettier.title;
+export const PrettierUnaltered: Macro<[string]> = {
+  exec: async (t, name) => {
+    const [src, out] = await getFiles(name);
+    t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
 
-export const PrettierMarkdown: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getMarkdownFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
+    const options = await getOptions(name);
 
-  const options = await getOptions(name);
-
-  const formatted = markdownFormat(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = markdownFormat(formatted, options);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+    const formatted = format(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = format(formatted);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  title,
 };
 
-PrettierMarkdown.title = (title, name) => `${title}:
+export const PrettierMarkdown: Macro<[string]> = {
+  exec: async (t, name) => {
+    const [src, out] = await getMarkdownFiles(name);
+    t.not(src, out, 'Unformated file and formated file are the same');
+
+    const options = await getOptions(name);
+
+    const formatted = markdownFormat(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = markdownFormat(formatted, options);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  title: (providedTitle, name) => `${providedTitle}:
 
 - input: fixtures/${name}/input.md
-- output: fixtures/${name}/output.md`;
+- output: fixtures/${name}/output.md`,
+};
