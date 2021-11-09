@@ -141,3 +141,9 @@ test('Can format an Astro file with prettier "astroSortOrder: markup | styles" o
 
 // astro option: astroSortOrder
 test('Can format an Astro file with prettier "astroSortOrder: styles | markup" option', Prettier, 'option-astro-sort-order-styles-markup');
+
+// astro option: astroAllowShorthand
+test('Can format an Astro file with prettier "astroAllowShorthand: true" option', Prettier, 'option-astro-allow-shorthand-true');
+
+// astro option: astroAllowShorthand
+test('Can format an Astro file with prettier "astroAllowShorthand: false" option', Prettier, 'option-astro-allow-shorthand-false');

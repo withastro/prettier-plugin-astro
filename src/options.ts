@@ -6,6 +6,7 @@ declare module 'prettier' {
 
 export interface PluginOptions {
   astroSortOrder: SortOrder;
+  astroAllowShorthand: boolean;
 }
 
 export const options: Record<keyof PluginOptions, SupportOption> = {
@@ -25,6 +26,13 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
         description: 'styles | markup',
       },
     ],
+  },
+  astroAllowShorthand: {
+    since: '0.0.10',
+    category: 'Astro',
+    type: 'boolean',
+    default: true,
+    description: 'Enable/disable attribute shorthand if attribute name and expression are the same',
   },
 };
 

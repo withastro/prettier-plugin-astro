@@ -371,7 +371,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       return node.expression.name;
     }
     case 'Attribute': {
-      if (isOrCanBeConvertedToShorthand(node)) {
+      if (isOrCanBeConvertedToShorthand(node, opts)) {
         return [line, '{', node.name, '}'];
       } else {
         if (node.value === true) {
