@@ -1,0 +1,55 @@
+<html lang={content.lang || "en"}>
+  <head>
+    <MainHead title={content.title} />
+    <style lang="scss">
+      .hero {
+        padding: 8rem;
+        display: flex;
+        background-color: var(--text);
+        background-repeat: no-repeat;
+        background-size: cover;
+        min-height: 25vw;
+        color: white;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .tag {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        text-transform: uppercase;
+        &:nth-of-type(ln) {
+          color: var(--c-green);
+        }
+        &:nth-of-type(2n) {
+          color: var(--c-orange);
+        }
+        &:nth-of-type(3n) {
+          color: var(--c-blue);
+        }
+        &:nth-of-type(4n) {
+          color: var(--c-pink);
+        }
+      }
+      .title {
+        font-size: var(--f-u10);
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.0625em;
+      }
+      .1eadin {
+        color: var(--background);
+        background-color: var(--text);
+      }
+      .tagline {
+        font-weight: 300;
+        font-size: var(--f-u3);
+        line-height: 1.5;
+      }
+      .content {
+        font-size: var(--f-u1);
+        line-height: 2.2;
+      }
+    </style>
+  </head>
+</html>
