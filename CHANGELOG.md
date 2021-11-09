@@ -1,5 +1,14 @@
 # prettier-plugin-astro
 
+## 0.0.10
+
+### Patch Changes
+
+- a7ca7bc: Format nested style tag content
+- 2995e7c: Add Astro option: 'allow shorthand'
+- 7ec632f: Typescript refactor
+- 85f7f93: Add support for prettier options
+
 ## 0.0.9
 
 ### Patch Changes
