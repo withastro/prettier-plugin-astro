@@ -53,7 +53,8 @@ function isAttributeShorthand(node: attributeValue): node is [AttributeShorthand
 /**
  * True if node is of type `{a}` or `a={a}`
  */
-export function isOrCanBeConvertedToShorthand(node: AttributeNode): boolean {
+export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserOptions): boolean {
+  if (!opts.astroAllowShorthand) return false;
   if (isAttributeShorthand(node.value)) {
     return true;
   }
