@@ -22,7 +22,6 @@ import {
   getMarkdownName,
   getText,
   getUnencodedText,
-  indent as manualIndent,
   isASTNode,
   isDocCommand,
   isEmptyDoc,
@@ -76,12 +75,6 @@ function printTopLevelParts(node: Ast, path: AstPath, opts: ParserOptions, print
     }
   }
 
-  // remove trailing softline, if any
-  // const lastDoc = docs[docs.length - 1];
-  // const lastItem = lastDoc[lastDoc.length - 1];
-
-  // if (lastItem.type === 'line') docs[docs.length - 1].pop();
-
   return join(softline, docs);
 }
 
@@ -133,17 +126,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     return printTopLevelParts(node, path, opts, print);
   }
 
-  // switch (true) {
-  //   case !node:
-  //     return '';
-  //   case typeof node === 'string':
-  //     return node;
-  //   case Array.isArray(node):
-  //     return path.map((childPath) => childPath.call(print));
-  //   case isASTNode(node):
-  //     return printTopLevelParts(node, path, opts, print);
-  // }
-
   // 2. attach comments shallowly to children, if any (https://prettier.io/docs/en/plugins.html#manually-attaching-a-comment)
   if (!isPreTagContent(path) && !isMarkdownSubDoc) {
     attachCommentsHTML(node);
@@ -158,11 +140,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       }
 
       if (!isNodeWithChildren(node) || node.children.every(isEmptyTextNode)) return '';
-
-      // If this is the start of a markdown code block, remove arbitrary beginning whitespace
-      if (isMarkdownSubDoc) {
-        if (isEmptyTextNode(node.children[0])) node.children.shift();
-      }
 
       // If we don't see any JSX expressions, this is just embedded HTML
       // and we can skip a bunch of work. Hooray!
@@ -231,10 +208,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       return fill(splitTextToDocs(node));
     }
 
-    // case 'SlotTemplate':
-    // case 'Window':
-    // case 'Head':
-    // case 'Title':
     case 'Element':
     case 'InlineComponent':
     case 'Slot': {
@@ -284,28 +257,12 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
         let body;
 
-        const isMarkdownComponent =
-          // TODO: opts.__astro & opts.__astro.markdownName
-          // @ts-ignore
-          node.type === 'InlineComponent' && opts.__astro && opts.__astro.markdownName && opts.__astro.markdownName.has(node.name) && isNodeWithChildren(node);
-
         if (isEmpty) {
           body =
             isInlineElement(path, opts, node) && node.children.length && isTextNodeStartingWithWhitespace(node.children[0]) && !isPreTagContent(path)
               ? () => line
               : // () => (opts.jsxBracketNewLine ? '' : softline);
                 () => softline;
-        } else if (isMarkdownComponent) {
-          // collapse children into raw Markdown text
-          // TODO: CHECK TYPE
-          // @ts-ignore
-          const text = node.children.map(getUnencodedText).join('').trim();
-          node.children = [{ start: firstChild.start, end: lastChild.end - 2, type: 'Text', data: text, raw: text, __isRawMarkdown: true }];
-          body = () => path.map(print, 'children');
-
-          // set hugEnd
-          hugStart = false;
-          hugEnd = false;
         } else if (isPreTagContent(path)) {
           body = () => printRaw(node, opts.originalText);
         } else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {
@@ -328,9 +285,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
         if (isPreTagContent(path)) {
           noHugSeparatorStart = '';
           noHugSeparatorEnd = '';
-        } else if (isMarkdownComponent) {
-          noHugSeparatorStart = softline;
-          noHugSeparatorEnd = softline;
         } else {
           let didSetEndSeparator = false;
 
@@ -463,6 +417,8 @@ function expressionParser(text: string, parsers: any, opts: ParserOptions) {
   return { ...ast, program: ast.program.body[0].expression };
 }
 
+let markdownComponentName = new Set();
+
 function embed(path: AstPath, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
   // @ts-ignore
@@ -471,23 +427,6 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   const node = path.getValue();
 
   if (!node) return null;
-
-  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-  // @ts-ignore
-  if (node.__isRawMarkdown) {
-    // TODO: CHECK TYPE
-    // @ts-ignore
-    const docs = textToDoc(getUnencodedText(node), { ...opts, parser: 'markdown' });
-    return stripTrailingHardline(docs);
-  }
-
-  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-  // @ts-ignore
-  if (node.type === 'Script' && !opts.__astro.markdownName) {
-    // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-    // @ts-ignore
-    opts.__astro.markdownName = getMarkdownName(node.content);
-  }
 
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
   // @ts-ignore
@@ -514,6 +453,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   }
 
   if (node.type === 'Script' && node.context === 'setup') {
+    markdownComponentName = getMarkdownName(node.content);
     return group(['---', hardline, textToDoc(node.content, { ...opts, parser: 'typescript' }), '---', hardline]);
   }
 
@@ -523,11 +463,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
     if (parent && parent.type === 'Element' && parent.name === 'script') {
       const formatttedScript = textToDoc(node.data, { ...opts, parser: 'typescript' });
-      if (typeof formatttedScript === 'string') return formatttedScript;
-      if (isDocCommand(formatttedScript)) return formatttedScript;
-      return group(formatttedScript[0]);
-      // const [formatttedScript, ,] = textToDoc(node.data, { ...opts, parser: 'typescript' });
-      // return group(formatttedScript);
+      return stripTrailingHardline(formatttedScript);
     }
   }
 
@@ -559,9 +495,8 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
         // the css parser appends an extra indented hardline, which we want outside of the `indent()`,
         // so we remove the last element of the array
         let formattedStyles = textToDoc(styleTagContent, { ...opts, parser: parserLang });
-        if (typeof formattedStyles === 'string') return formattedStyles;
-        if (isDocCommand(formattedStyles)) return formattedStyles;
-        formattedStyles = formattedStyles[0];
+
+        formattedStyles = stripTrailingHardline(formattedStyles);
 
         // print
         const attributes = path.map(print, 'attributes');
@@ -589,6 +524,28 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
         return [openingTag, indent(group([hardline, formattedSass])), hardline, '</style>'];
       }
     }
+  }
+
+  // MARKDOWN COMPONENT
+  if (node.type === 'InlineComponent' && markdownComponentName.has(node.name)) {
+    let content = getText(node, opts);
+    // remove tags from content
+    const re = new RegExp(`<${node.name}.*>`);
+    content = content.replace(re, '').replace(`</${node.name}>`, '');
+
+    // dedent the content
+    content = content.replace(/\r\n/g, '\n');
+    const contentArr = content.split('\n').map((s) => s.trimStart());
+    content = contentArr.join('\n');
+
+    // format
+    let formatttedMarkdown = textToDoc(content, { ...opts, parser: 'markdown' });
+    formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
+
+    // return formatttedMarkdown;
+    const attributes = path.map(print, 'attributes');
+    const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
+    return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
   }
 
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
