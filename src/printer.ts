@@ -528,10 +528,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
   // MARKDOWN COMPONENT
   if (node.type === 'InlineComponent' && markdownComponentName.has(node.name)) {
-    let content = getText(node, opts);
-    // remove tags from content
-    const re = new RegExp(`<${node.name}.*>`);
-    content = content.replace(re, '').replace(`</${node.name}>`, '');
+    let content = printRaw(node, opts.originalText);
 
     // dedent the content
     content = content.replace(/\r\n/g, '\n');
