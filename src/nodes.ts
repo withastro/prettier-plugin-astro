@@ -54,6 +54,11 @@ export interface CodeSpanNode extends BaseNode {
   raw: string;
 }
 
+export interface SpreadNode extends BaseNode {
+  type: 'Spread';
+  expression: ExpressionNode;
+}
+
 export interface ExpressionNode {
   type: 'Expression';
   start: number;
@@ -256,5 +261,6 @@ export type anyNode =
   | MustacheTagNode
   | ScriptNode
   | SlotNode
+  | SpreadNode
   | StyleNode
   | TextNode;
