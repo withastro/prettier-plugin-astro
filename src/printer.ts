@@ -399,17 +399,16 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
         }),
         '}',
       ];
-    // TODO: ADD TEST OR REMOVE
-    // case 'Spread':
-    //   return [
-    //     line,
-    //     '{...',
-    //     printJS(path, print, 'expression', {
-    //       forceSingleQuote: true,
-    //       forceSingleLine: false,
-    //     }),
-    //     '}',
-    //   ];
+    case 'Spread':
+      return [
+        line,
+        '{...',
+        printJS(path, print, 'expression', {
+          forceSingleQuote: true,
+          forceSingleLine: false,
+        }),
+        '}',
+      ];
     case 'Comment':
       return ['<!--', getUnencodedText(node), '-->'];
     case 'CodeSpan':
