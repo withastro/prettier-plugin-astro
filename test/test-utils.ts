@@ -1,7 +1,7 @@
 import prettier from 'prettier';
 import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
-import { Macro } from 'ava';
+import test, { Macro } from 'ava';
 
 /**
  * format the contents of an astro file
@@ -73,56 +73,65 @@ async function getMarkdownFiles(name: string) {
 /**
  * Macro for testing fixtures
  */
-export const Prettier: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
+export const Prettier = test.macro({
+  async exec(t, name: string) {
+    const [src, out] = await getFiles(name);
+    t.not(src, out, 'Unformated file and formated file are the same');
 
-  const options = await getOptions(name);
+    const options = await getOptions(name);
 
-  const formatted = format(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted, options);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
+    const formatted = format(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = format(formatted, options);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  /**
+   * Macro title function for nice formatting
+   */
+  title(title, name) {
+    return `${title}:
+    - input: fixtures/in/${name}.astro
+    - output: fixtures/out/${name}.astro`;
+  },
+});
 
-/**
- * Macro title function for nice formatting
- */
-Prettier.title = (title, name) => `${title}:
+export const PrettierUnaltered = test.macro({
+  async exec(t, name: string) {
+    const [src, out] = await getFiles(name);
+    t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
 
-  - input: fixtures/${name}/input.astro
-  - output: fixtures/${name}/output.astro`;
+    const options = await getOptions(name);
 
-export const PrettierUnaltered: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getFiles(name);
-  t.is(src, out, 'Unformated file and formated file are not the same'); // the output should be unchanged
+    const formatted = format(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = format(formatted);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  title(title, name) {
+    return `${title}:
+    - input: fixtures/in/${name}.astro
+    - output: fixtures/out/${name}.astro`;
+  },
+});
 
-  const options = await getOptions(name);
+export const PrettierMarkdown = test.macro({
+  async exec(t, name: string) {
+    const [src, out] = await getMarkdownFiles(name);
+    t.not(src, out, 'Unformated file and formated file are the same');
 
-  const formatted = format(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = format(formatted);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
+    const options = await getOptions(name);
 
-PrettierUnaltered.title = Prettier.title;
-
-export const PrettierMarkdown: Macro<[string]> = async (t, name) => {
-  const [src, out] = await getMarkdownFiles(name);
-  t.not(src, out, 'Unformated file and formated file are the same');
-
-  const options = await getOptions(name);
-
-  const formatted = markdownFormat(src, options);
-  t.is(formatted, out, 'Incorrect formating');
-  // test that our formatting is idempotent
-  const formattedTwice = markdownFormat(formatted, options);
-  t.is(formatted, formattedTwice, 'Formatting is not idempotent');
-};
-
-PrettierMarkdown.title = (title, name) => `${title}:
-
-- input: fixtures/${name}/input.md
-- output: fixtures/${name}/output.md`;
+    const formatted = markdownFormat(src, options);
+    t.is(formatted, out, 'Incorrect formating');
+    // test that our formatting is idempotent
+    const formattedTwice = markdownFormat(formatted, options);
+    t.is(formatted, formattedTwice, 'Formatting is not idempotent');
+  },
+  title(title, name) {
+    return `${title}:
+    - input: fixtures/in/${name}.astro
+    - output: fixtures/out/${name}.astro`;
+  },
+});
