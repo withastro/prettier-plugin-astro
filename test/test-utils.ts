@@ -1,7 +1,7 @@
 import prettier from 'prettier';
 import { fileURLToPath } from 'url';
 import { promises as fs } from 'fs';
-import test, { Macro } from 'ava';
+import test from 'ava';
 
 /**
  * format the contents of an astro file
