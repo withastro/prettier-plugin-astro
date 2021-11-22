@@ -3,9 +3,9 @@
 
 
 "@astrojs/parser@^0.20.2":
-  version "0.20.2"
-  resolved "https://registry.yarnpkg.com/@astrojs/parser/-/parser-0.20.2.tgz#93747172c8acd738cad4a4c8240c5c1bf73d49de"
-  integrity sha512-HLATK/Bezd1lX/ph9WmMmVGUa/m79BC8bdjAbVE2iCPDnIeWSpPiERA5kYfRtxCcXp/EySllxECccHtrvT3hCQ==
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/@astrojs/parser/-/parser-0.20.3.tgz#2c23e583c0fef906cb597fd411c4679625a708b8"
+  integrity sha512-GyNWuVJU/VecbhDMlGFP+bNfvXvkN8w9fwOehNUa26fT3ONwb/qBS+TRQW034N05y/N5it0wGFT0MU+wzq+XSw==
   dependencies:
     acorn "^7.4.0"
     locate-character "^2.0.5"
