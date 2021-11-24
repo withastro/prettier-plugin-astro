@@ -1,5 +1,14 @@
 # prettier-plugin-astro
 
+## 0.0.11
+
+### Patch Changes
+
+- 4a7d602: Bump ava
+- d07451c: Bump @astrojs/parser from 0.20.2 to 0.20.3
+- 2c164f7: Format spread operator
+- f7cf7c1: Format markdown component content
+
 ## 0.0.10
 
 ### Patch Changes
