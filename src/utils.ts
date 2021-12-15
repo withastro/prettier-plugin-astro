@@ -68,6 +68,17 @@ export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserO
   return false;
 }
 
+/**
+ *  True if node is of type `{a}` and astroAllowShorthand is false
+ */
+export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeNode, opts: ParserOptions): boolean {
+  if (opts.astroAllowShorthand) return false;
+  if (isAttributeShorthand(node.value)) {
+    return true;
+  }
+  return false;
+}
+
 export function flatten<T>(arrays: T[][]): T[] {
   return ([] as T[]).concat.apply([], arrays);
 }
