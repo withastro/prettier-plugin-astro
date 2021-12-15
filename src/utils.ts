@@ -61,7 +61,7 @@ export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserO
 
   if (isLoneMustacheTag(node.value)) {
     const expression = node.value[0].expression;
-    return expression.codeChunks[0] === node.name;
+    return expression.codeChunks[0].trim() === node.name;
     // return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
   }
 
