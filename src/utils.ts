@@ -61,10 +61,21 @@ export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserO
 
   if (isLoneMustacheTag(node.value)) {
     const expression = node.value[0].expression;
-    return expression.codeChunks[0] === node.name;
+    return expression.codeChunks[0].trim() === node.name;
     // return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
   }
 
+  return false;
+}
+
+/**
+ *  True if node is of type `{a}` and astroAllowShorthand is false
+ */
+export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeNode, opts: ParserOptions): boolean {
+  if (opts.astroAllowShorthand) return false;
+  if (isAttributeShorthand(node.value)) {
+    return true;
+  }
   return false;
 }
 

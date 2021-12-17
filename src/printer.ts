@@ -33,6 +33,7 @@ import {
   isNodeWithChildren,
   isOrCanBeConvertedToShorthand,
   isPreTagContent,
+  isShorthandAndMustBeConvertedToBinaryExpression,
   isTextNode,
   isTextNodeEndingWithWhitespace,
   isTextNodeStartingWithLinebreak,
@@ -327,18 +328,19 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     case 'Attribute': {
       if (isOrCanBeConvertedToShorthand(node, opts)) {
         return [line, '{', node.name, '}'];
-      } else {
-        if (node.value === true) {
-          return [line, node.name];
-        }
+      } else if (isShorthandAndMustBeConvertedToBinaryExpression(node, opts)) {
+        const attrNodeValue = printAttributeNodeValue(path, print, true, node);
+        return [line, node.name, '=', '{', attrNodeValue, '}'];
+      } else if (node.value === true) {
+        return [line, node.name];
+      }
 
-        const quotes = !isLoneMustacheTag(node.value);
-        const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
-        if (quotes) {
-          return [line, node.name, '=', '"', attrNodeValue, '"'];
-        } else {
-          return [line, node.name, '=', attrNodeValue];
-        }
+      const quotes = !isLoneMustacheTag(node.value);
+      const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
+      if (quotes) {
+        return [line, node.name, '=', '"', attrNodeValue, '"'];
+      } else {
+        return [line, node.name, '=', attrNodeValue];
       }
     }
     case 'Expression':
