@@ -1,4 +1,4 @@
-# Beta Prettier Plugin for [Astro](https://github.com/snowpackjs/astro)
+# Beta Prettier Plugin for [Astro](https://github.com/withastro/prettier-plugin-astro)
 
 ## Install [prettier-plugin-astro](https://www.npmjs.com/package/prettier-plugin-astro)
 
@@ -16,7 +16,7 @@ to your `package.json` and create a `.prettierignore` to ignore any files.
 
 To get setup:
 
-1. `git clone git@github.com:snowpackjs/prettier-plugin-astro.git`
+1. `git clone git@github.com:withastro/prettier-plugin-astro.git`
 1. `yarn`
 1. `yarn build`
 1. Run tests with [`yarn test`](https://github.com/avajs/ava/tree/main/docs)
