@@ -1,4 +1,4 @@
-# Beta Prettier Plugin for [Astro](https://github.com/withastro/prettier-plugin-astro)
+# Beta Prettier Plugin for [Astro](https://github.com/withastro/astro)
 
 ## Install [prettier-plugin-astro](https://www.npmjs.com/package/prettier-plugin-astro)
 
