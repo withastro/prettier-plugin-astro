@@ -142,17 +142,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
       if (!isNodeWithChildren(node) || node.children.every(isEmptyTextNode)) return '';
 
-      // If we don't see any JSX expressions, this is just embedded HTML
-      // and we can skip a bunch of work. Hooray!
-      const hasInlineComponent = node.children.filter((x) => x.type === 'InlineComponent').length > 0;
-      if (text.indexOf('{') === -1 && !hasInlineComponent) {
-        // TODO:CHECK 'node.__isRawHTML'
-        node.__isRawHTML = true;
-        node.content = text;
-        return path.call(print);
-        // return path.map(print, 'children');
-      }
-
       if (!isPreTagContent(path)) {
         trimChildren(node.children);
         const output = trim(
@@ -545,14 +534,6 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     const attributes = path.map(print, 'attributes');
     const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
     return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
-  }
-
-  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-  // @ts-ignore
-  if (node.__isRawHTML) {
-    // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-    // @ts-ignore
-    return textToDoc(node.content, { ...opts, parser: 'html' });
   }
 
   return null;
