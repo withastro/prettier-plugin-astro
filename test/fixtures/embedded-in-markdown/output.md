@@ -59,9 +59,7 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
       ...;
     </style>
   </head>
-  <body>
-    ...
-  </body>
+  <body> ... </body>
 </html>
 ```
 
@@ -261,9 +259,9 @@ An Astro component template can render as many top-level elements as you'd like.
 
 ```astro
 <!-- An Astro component can contain multiple top-level HTML elements: -->
-<div id="a" />
-<div id="b" />
-<div id="c" />
+<div id="a"></div>
+<div id="b"></div>
+<div id="c"></div>
 ```
 
 When working inside a JSX expression, however, you must wrap multiple elements inside of a **Fragment**. Fragments let you render a set of elements without adding extra nodes to the DOM. This is required in JSX expressions because of a limitation of JavaScript: You can never `return` more than one thing in a JavaScript function or expression. Using a Fragment solves this problem.
