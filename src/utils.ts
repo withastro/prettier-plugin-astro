@@ -535,7 +535,11 @@ export function attachCommentsHTML(node: anyNode): void {
         nodesToRemove.push(next); // if arbitrary whitespace between comment and node, remove
         next++; // skip to the next non-whitespace node
       }
-      util.addLeadingComment(node.children[next], node.children[n]);
+      const commentNode = node.children[next];
+      const comment = node.children[n];
+      if (commentNode) {
+        util.addLeadingComment(commentNode, comment);
+      }
     }
   }
 

@@ -159,3 +159,5 @@ test('Can format the content of a markdown component as markdown', Prettier, 'ma
 test.todo("Don't escape '*' inside markdown");
 
 test.todo('Format jsx inside markdown');
+
+test('Can format nested comment', Prettier, 'nested-comment');
