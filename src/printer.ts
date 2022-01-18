@@ -128,7 +128,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   }
 
   // 2. attach comments shallowly to children, if any (https://prettier.io/docs/en/plugins.html#manually-attaching-a-comment)
-  if (!isPreTagContent(path) && !isMarkdownSubDoc) {
+  if (!isPreTagContent(path) && !isMarkdownSubDoc && node.type === 'Fragment') {
     attachCommentsHTML(node);
   }
 
