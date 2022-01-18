@@ -536,8 +536,8 @@ export function attachCommentsHTML(node: anyNode): void {
         next++; // skip to the next non-whitespace node
       }
       const commentNode = node.children[next];
-      const comment = node.children[n];
       if (commentNode) {
+        const comment = node.children[n];
         util.addLeadingComment(commentNode, comment);
       }
     }
