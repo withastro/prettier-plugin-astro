@@ -1,5 +1,14 @@
 # prettier-plugin-astro
 
+## 0.0.12
+
+### Patch Changes
+
+- ab70152: Fix a bug in "allow shorthand" option (#87)
+- 08c5fc6: Bump ava to v4.0.1
+- 4eebc6c: Fix comment error when nested
+- e28d1cf: Format html using only the plugin itself
+
 ## 0.0.11
 
 ### Patch Changes
