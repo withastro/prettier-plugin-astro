@@ -1137,9 +1137,9 @@ eslint-plugin-node@^11.1.0:
     semver "^6.1.0"
 
 eslint-plugin-prettier-doc@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier-doc/-/eslint-plugin-prettier-doc-1.0.1.tgz#3895a8ec4ef99327e7f0349d184cd08476321e35"
-  integrity sha512-co8h9jpIuspOgPXiJW+2IYt2RecB6ivkCv+aaT6mIsBdY7K0VPIksG+MEvyRTCNczqIy63jxXnOUTRNr7bWJ4g==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-prettier-doc/-/eslint-plugin-prettier-doc-1.0.2.tgz#db73556c04fdcc4acbd226da54f6e7a555306946"
+  integrity sha512-YAq9IrXhRiY6iqWB//qWFM+CLLJRj3z14jpD3JlRjDxSLC2E3eVWcQDZK3vQh4lOUltvBmmUbN3O43Xbv3VWOA==
 
 eslint-scope@^7.1.0:
   version "7.1.0"
