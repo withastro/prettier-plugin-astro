@@ -2435,9 +2435,9 @@ s.color@0.0.15:
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
 sass-formatter@^0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/sass-formatter/-/sass-formatter-0.7.2.tgz#bfac14c17dd7d3fb3967a5a80f5c34d27ed60daa"
-  integrity sha512-ZGpZC5bWJbv0tiu2glZeLhN85sg3wSySyHxhqov/HZX1/2coczLkY0HXIshrmRC7+G8qiFkeW8Ipl5mS54nl0w==
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/sass-formatter/-/sass-formatter-0.7.3.tgz#713a91d3a29d6ae0bed425b997ed8ccd6d6b0231"
+  integrity sha512-juMI+CLPFGDcxF6Cd2wCL4tyiQDp5Jvqrlwpzrydvf3NiJeX5ja8zJufCt/EGxxGUJEbzd18S/Ie1P26QINAWg==
   dependencies:
     suf-log "^2.5.3"
     suf-regex "^0.3.4"
