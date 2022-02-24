@@ -1,145 +1,145 @@
-// TODO: MAYBE WE SHOULD USE TYPES FROM THE PARSER
+export { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, ExpressionNode, TextNode, FrontmatterNode, DoctypeNode, CommentNode } from '@astrojs/compiler/types'
 
-export interface Ast {
-  html: anyNode;
-  css: StyleNode[];
-  module: ScriptNode;
-  meta: {
-    features: number;
-  };
-}
+// export interface Ast {
+//   html: anyNode;
+//   css: StyleNode[];
+//   module: ScriptNode;
+//   meta: {
+//     features: number;
+//   };
+// }
 
-export interface BaseNode {
-  start: number;
-  end: number;
-  type: string;
-  children?: anyNode[];
-  // TODO: ADD BETTER TYPE
-  [prop_name: string]: any;
-}
+// export interface BaseNode {
+//   start: number;
+//   end: number;
+//   type: string;
+//   children?: anyNode[];
+//   // TODO: ADD BETTER TYPE
+//   [prop_name: string]: any;
+// }
 
-export type attributeValue = TextNode[] | AttributeShorthandNode[] | MustacheTagNode[] | true;
+// export type attributeValue = TextNode[] | AttributeShorthandNode[] | MustacheTagNode[] | true;
 
-export interface NodeWithChildren {
-  children: anyNode[];
-}
+// export interface NodeWithChildren {
+//   children: anyNode[];
+// }
 
-export interface NodeWithText {
-  data: string;
-  raw?: string;
-}
+// export interface NodeWithText {
+//   data: string;
+//   raw?: string;
+// }
 
-export interface FragmentNode extends BaseNode {
-  type: 'Fragment';
-  children: anyNode[];
-}
+// export interface FragmentNode extends BaseNode {
+//   type: 'Fragment';
+//   children: anyNode[];
+// }
 
-export interface TextNode extends BaseNode {
-  type: 'Text';
-  data: string;
-  raw: string;
-}
+// export interface TextNode extends BaseNode {
+//   type: 'Text';
+//   data: string;
+//   raw: string;
+// }
 
-export interface CodeFenceNode extends BaseNode {
-  type: 'CodeFence';
-  metadata: string;
-  data: string;
-  raw: string;
-}
+// export interface CodeFenceNode extends BaseNode {
+//   type: 'CodeFence';
+//   metadata: string;
+//   data: string;
+//   raw: string;
+// }
 
-export interface CodeSpanNode extends BaseNode {
-  type: 'CodeSpan';
-  metadata: string;
-  data: string;
-  raw: string;
-}
+// export interface CodeSpanNode extends BaseNode {
+//   type: 'CodeSpan';
+//   metadata: string;
+//   data: string;
+//   raw: string;
+// }
 
-export interface SpreadNode extends BaseNode {
-  type: 'Spread';
-  expression: ExpressionNode;
-}
+// export interface SpreadNode extends BaseNode {
+//   type: 'Spread';
+//   expression: ExpressionNode;
+// }
 
-export interface ExpressionNode {
-  type: 'Expression';
-  start: number;
-  end: number;
-  codeChunks: string[];
-  children: anyNode[];
-}
+// export interface ExpressionNode {
+//   type: 'Expression';
+//   start: number;
+//   end: number;
+//   codeChunks: string[];
+//   children: anyNode[];
+// }
 
-export interface ScriptNode extends BaseNode {
-  type: 'Script';
-  context: 'runtime' | 'setup';
-  content: string;
-}
+// export interface ScriptNode extends BaseNode {
+//   type: 'Script';
+//   context: 'runtime' | 'setup';
+//   content: string;
+// }
 
-export interface StyleNode extends BaseNode {
-  type: 'Style';
-  // TODO: ADD BETTER TYPE
-  attributes: any[];
-  content: {
-    start: number;
-    end: number;
-    styles: string;
-  };
-}
+// export interface StyleNode extends BaseNode {
+//   type: 'Style';
+//   // TODO: ADD BETTER TYPE
+//   attributes: any[];
+//   content: {
+//     start: number;
+//     end: number;
+//     styles: string;
+//   };
+// }
 
-export interface AttributeNode extends BaseNode {
-  type: 'Attribute';
-  name: string;
-  value: attributeValue;
-}
+// export interface AttributeNode extends BaseNode {
+//   type: 'Attribute';
+//   name: string;
+//   value: attributeValue;
+// }
 
-export interface AttributeShorthandNode extends BaseNode {
-  type: 'AttributeShorthand';
-  expression: IdentifierNode;
-}
+// export interface AttributeShorthandNode extends BaseNode {
+//   type: 'AttributeShorthand';
+//   expression: IdentifierNode;
+// }
 
-export interface IdentifierNode extends BaseNode {
-  type: 'Identifier';
-  name: string;
-}
+// export interface IdentifierNode extends BaseNode {
+//   type: 'Identifier';
+//   name: string;
+// }
 
-export interface MustacheTagNode extends BaseNode {
-  type: 'MustacheTag';
-  expression: ExpressionNode;
-}
+// export interface MustacheTagNode extends BaseNode {
+//   type: 'MustacheTag';
+//   expression: ExpressionNode;
+// }
 
-export interface SlotNode extends BaseNode {
-  type: 'Slot';
-  name: string;
-  attributes: AttributeNode[];
-}
+// export interface SlotNode extends BaseNode {
+//   type: 'Slot';
+//   name: string;
+//   attributes: AttributeNode[];
+// }
 
-export interface CommentNode extends BaseNode {
-  type: 'Comment';
-  data: string;
-  name?: string;
-  leading?: boolean;
-  trailing?: boolean;
-  printed?: boolean;
-  nodeDescription?: string;
-}
+// export interface CommentNode extends BaseNode {
+//   type: 'Comment';
+//   data: string;
+//   name?: string;
+//   leading?: boolean;
+//   trailing?: boolean;
+//   printed?: boolean;
+//   nodeDescription?: string;
+// }
 
-export interface ElementNode extends BaseNode {
-  type: 'Element';
-  name: string;
-  attributes: AttributeNode[];
-}
+// export interface ElementNode extends BaseNode {
+//   type: 'Element';
+//   name: string;
+//   attributes: AttributeNode[];
+// }
 
-export interface InlineComponentNode extends BaseNode {
-  type: 'InlineComponent';
-  name: string;
-  attributes: AttributeNode[];
-}
+// export interface InlineComponentNode extends BaseNode {
+//   type: 'InlineComponent';
+//   name: string;
+//   attributes: AttributeNode[];
+// }
 
-export interface BlockElementNode extends ElementNode {
-  name: typeof blockElementsT[number];
-}
+// export interface BlockElementNode extends ElementNode {
+//   name: typeof blockElementsT[number];
+// }
 
-export interface InlineElementNode extends ElementNode {
-  name: typeof inlineElementsT[number];
-}
+// export interface InlineElementNode extends ElementNode {
+//   name: typeof inlineElementsT[number];
+// }
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
 const blockElementsT = [
@@ -243,24 +243,3 @@ export const inlineElements: string[] = [...inlineElementsT];
 
 // @see http://xahlee.info/js/html5_non-closing_tag.html
 export const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-
-export type anyNode =
-  | AttributeNode
-  | AttributeShorthandNode
-  | BlockElementNode
-  | CodeFenceNode
-  | CodeSpanNode
-  | CommentNode
-  | ElementNode
-  | ExpressionNode
-  | FragmentNode
-  | IdentifierNode
-  | InlineComponentNode
-  | InlineElementNode
-  | MustacheTagNode
-  | MustacheTagNode
-  | ScriptNode
-  | SlotNode
-  | SpreadNode
-  | StyleNode
-  | TextNode;

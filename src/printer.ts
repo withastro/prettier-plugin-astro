@@ -7,6 +7,7 @@ const {
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 
 import { parseSortOrder } from './options';
+// TODO: update these imports
 import { Ast, anyNode, AttributeNode, CommentNode, NodeWithText, selfClosingTags, TextNode } from './nodes';
 
 type ParserOptions = ParserOpts<anyNode>;
