@@ -1,4 +1,4 @@
-export { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, ExpressionNode, TextNode, FrontmatterNode, DoctypeNode, CommentNode } from '@astrojs/compiler/types'
+export type { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, ExpressionNode, TextNode, FrontmatterNode, DoctypeNode, CommentNode } from '@astrojs/compiler/types'
 
 // export interface Ast {
 //   html: anyNode;
