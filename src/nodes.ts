@@ -1,4 +1,22 @@
-export type { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, ExpressionNode, TextNode, FrontmatterNode, DoctypeNode, CommentNode } from '@astrojs/compiler/types'
+import {
+  Node,
+  AttributeNode,
+  RootNode,
+  ElementNode,
+  ComponentNode,
+  CustomElementNode,
+  ExpressionNode,
+  TextNode,
+  FrontmatterNode,
+  DoctypeNode,
+  CommentNode,
+} from '@astrojs/compiler/types';
+
+// MISSING ATTRIBUTE NODE FROM THE NODE TYPE
+
+export interface NodeWithText {
+  value: string;
+}
 
 // export interface Ast {
 //   html: anyNode;
@@ -20,9 +38,10 @@ export type { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, Exp
 
 // export type attributeValue = TextNode[] | AttributeShorthandNode[] | MustacheTagNode[] | true;
 
-// export interface NodeWithChildren {
-//   children: anyNode[];
-// }
+export interface NodeWithChildren {
+  // children: anyNode[];
+  children: Node[];
+}
 
 // export interface NodeWithText {
 //   data: string;
@@ -133,13 +152,13 @@ export type { Node, RootNode, ElementNode, ComponentNode, CustomElementNode, Exp
 //   attributes: AttributeNode[];
 // }
 
-// export interface BlockElementNode extends ElementNode {
-//   name: typeof blockElementsT[number];
-// }
+export interface BlockElementNode extends ElementNode {
+  name: typeof blockElementsT[number];
+}
 
-// export interface InlineElementNode extends ElementNode {
-//   name: typeof inlineElementsT[number];
-// }
+export interface InlineElementNode extends ElementNode {
+  name: typeof inlineElementsT[number];
+}
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
 const blockElementsT = [
@@ -243,3 +262,19 @@ export const inlineElements: string[] = [...inlineElementsT];
 
 // @see http://xahlee.info/js/html5_non-closing_tag.html
 export const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
+
+export type anyNode = RootNode | AttributeNode | ElementNode | ComponentNode | CustomElementNode | ExpressionNode | TextNode | DoctypeNode | CommentNode;
+
+export type {
+  AttributeNode,
+  Node,
+  RootNode,
+  ElementNode,
+  ComponentNode,
+  CustomElementNode,
+  ExpressionNode,
+  TextNode,
+  FrontmatterNode,
+  DoctypeNode,
+  CommentNode,
+} from '@astrojs/compiler/types';

@@ -7,31 +7,31 @@ const {
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 
 import { parseSortOrder } from './options';
-// TODO: update these imports
-import { Ast, anyNode, AttributeNode, CommentNode, NodeWithText, selfClosingTags, TextNode } from './nodes';
+
+import { RootNode, Node, AttributeNode, CommentNode, NodeWithText, selfClosingTags, TextNode, anyNode } from './nodes';
 
 type ParserOptions = ParserOpts<anyNode>;
 type AstPath = AstP<anyNode>;
 
 import {
-  attachCommentsHTML,
+  // attachCommentsHTML,
   canOmitSoftlineBeforeClosingTag,
-  dedent as manualDedent,
+  // dedent as manualDedent,
   endsWithLinebreak,
-  forceIntoExpression,
+  // forceIntoExpression,
   formattableAttributes,
-  getMarkdownName,
-  getText,
+  // getMarkdownName,
+  // getText,
   getUnencodedText,
-  isASTNode,
-  isDocCommand,
-  isEmptyDoc,
+  isRootNode,
+  // isDocCommand,
+  // isEmptyDoc,
   isEmptyTextNode,
   isInlineElement,
-  isInsideQuotedAttribute,
-  isLine,
+  // isInsideQuotedAttribute,
+  // isLine,
   isLoneMustacheTag,
-  isNodeWithChildren,
+  // isNodeWithChildren,
   isOrCanBeConvertedToShorthand,
   isPreTagContent,
   isShorthandAndMustBeConvertedToBinaryExpression,
@@ -40,55 +40,55 @@ import {
   isTextNodeStartingWithLinebreak,
   isTextNodeStartingWithWhitespace,
   printRaw,
-  replaceEndOfLineWith,
+  // replaceEndOfLineWith,
   shouldHugEnd,
   shouldHugStart,
   startsWithLinebreak,
-  trim,
-  trimChildren,
+  // trim,
+  // trimChildren,
   trimTextNodeLeft,
   trimTextNodeRight,
 } from './utils';
 
-function printTopLevelParts(node: Ast, path: AstPath, opts: ParserOptions, print: printFn): Doc {
-  let docs = [];
+// function printTopLevelParts(node: RootNode, path: AstPath, opts: ParserOptions, print: printFn): Doc {
+//   let docs = [];
 
-  const normalize = (doc: Doc) => [stripTrailingHardline(doc), hardline];
+//   const normalize = (doc: Doc) => [stripTrailingHardline(doc), hardline];
 
-  // frontmatter always comes first
-  if (node.module) {
-    const subDoc = normalize(path.call(print, 'module'));
-    docs.push(subDoc);
-  }
+//   // frontmatter always comes first
+//   if (node.module) {
+//     const subDoc = normalize(path.call(print, 'module'));
+//     docs.push(subDoc);
+//   }
 
-  // markup and styles follow, whichever the user prefers (default: markup, styles)
-  for (const section of parseSortOrder(opts.astroSortOrder)) {
-    switch (section) {
-      case 'markup': {
-        const subDoc = path.call(print, 'html');
-        if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
-        break;
-      }
-      case 'styles': {
-        const subDoc = path.call(print, 'css');
-        if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
-        break;
-      }
-    }
-  }
+//   // markup and styles follow, whichever the user prefers (default: markup, styles)
+//   for (const section of parseSortOrder(opts.astroSortOrder)) {
+//     switch (section) {
+//       case 'markup': {
+//         const subDoc = path.call(print, 'html');
+//         if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
+//         break;
+//       }
+//       case 'styles': {
+//         const subDoc = path.call(print, 'css');
+//         if (!isEmptyDoc(subDoc)) docs.push(normalize(subDoc));
+//         break;
+//       }
+//     }
+//   }
 
-  return join(softline, docs);
-}
+//   return join(softline, docs);
+// }
 
-function printAttributeNodeValue(path: AstPath, print: printFn, quotes: boolean, node: AttributeNode): Doc[] | _doc.builders.Indent {
-  const valueDocs = path.map((childPath) => childPath.call(print), 'value');
+// function printAttributeNodeValue(path: AstPath, print: printFn, quotes: boolean, node: AttributeNode): Doc[] | _doc.builders.Indent {
+//   const valueDocs = path.map((childPath) => childPath.call(print), 'value');
 
-  if (!quotes || !formattableAttributes.includes(node.name)) {
-    return valueDocs;
-  } else {
-    return indent(group(trim(valueDocs, isLine)));
-  }
-}
+//   if (!quotes || !formattableAttributes.includes(node.name)) {
+//     return valueDocs;
+//   } else {
+//     return indent(group(trim(valueDocs, isLine)));
+//   }
+// }
 
 // TODO: USE ASTPATH GENERIC
 function printJS(path: AstP, print: printFn, name: string, { forceSingleQuote, forceSingleLine }: { forceSingleQuote: boolean; forceSingleLine: boolean }) {
@@ -109,7 +109,7 @@ export type printFn = (path: AstPath) => Doc;
 
 function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   const node = path.getValue();
-  const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
+  // const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
 
   // 1. handle special node types
   if (!node) {
@@ -120,59 +120,64 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     return node;
   }
 
-  if (Array.isArray(node)) {
-    return path.map((childPath) => childPath.call(print));
-  }
+  // if (Array.isArray(node)) {
+  //   return path.map((childPath) => childPath.call(print));
+  // }
 
-  if (isASTNode(node)) {
-    return printTopLevelParts(node, path, opts, print);
-  }
+  // if (isASTNode(node)) {
+  //   return printTopLevelParts(node, path, opts, print);
+  // }
 
   // 2. attach comments shallowly to children, if any (https://prettier.io/docs/en/plugins.html#manually-attaching-a-comment)
-  if (!isPreTagContent(path) && !isMarkdownSubDoc && node.type === 'Fragment') {
-    attachCommentsHTML(node);
-  }
+  // if (!isPreTagContent(path) && !isMarkdownSubDoc && node.type === 'Fragment') {
+  //   attachCommentsHTML(node);
+  // }
 
   // 3. handle printing
   switch (node.type) {
-    case 'Fragment': {
-      const text = getText(node, opts);
-      if (text.length === 0) {
-        return '';
-      }
-
-      if (!isNodeWithChildren(node) || node.children.every(isEmptyTextNode)) return '';
-
-      if (!isPreTagContent(path)) {
-        trimChildren(node.children);
-        const output = trim(
-          [path.map(print, 'children')],
-          (n) =>
-            isLine(n) ||
-            (typeof n === 'string' && n.trim() === '') ||
-            // Because printChildren may append this at the end and
-            // may hide other lines before it
-            n === breakParent
-        );
-        if (output.every((doc) => isEmptyDoc(doc))) {
-          return '';
-        }
-        return group([...output, hardline]);
-      } else {
-        return group(path.map(print, 'children'));
-      }
+    case 'root': {
+      return path.map(print, 'children');
     }
-    case 'Text': {
+
+    // case 'Fragment': {
+    //   const text = getText(node, opts);
+    //   if (text.length === 0) {
+    //     return '';
+    //   }
+
+    //   if (!isNodeWithChildren(node) || node.children.every(isEmptyTextNode)) return '';
+
+    //   if (!isPreTagContent(path)) {
+    //     trimChildren(node.children);
+    //     const output = trim(
+    //       [path.map(print, 'children')],
+    //       (n) =>
+    //         isLine(n) ||
+    //         (typeof n === 'string' && n.trim() === '') ||
+    //         // Because printChildren may append this at the end and
+    //         // may hide other lines before it
+    //         n === breakParent
+    //     );
+    //     if (output.every((doc) => isEmptyDoc(doc))) {
+    //       return '';
+    //     }
+    //     return group([...output, hardline]);
+    //   } else {
+    //     return group(path.map(print, 'children'));
+    //   }
+    // }
+    case 'text': {
       const rawText = getUnencodedText(node);
 
-      if (isPreTagContent(path)) {
-        if (path.getParentNode()?.type === 'Attribute') {
-          // Direct child of attribute value -> add literallines at end of lines
-          // so that other things don't break in unexpected places
-          return replaceEndOfLineWith(rawText, literalline);
-        }
-        return rawText;
-      }
+      // TODO: TEST PRE TAGS
+      // if (isPreTagContent(path)) {
+      //   if (path.getParentNode()?.type === 'Attribute') {
+      //     // Direct child of attribute value -> add literallines at end of lines
+      //     // so that other things don't break in unexpected places
+      //     return replaceEndOfLineWith(rawText, literalline);
+      //   }
+      //   return rawText;
+      // }
 
       if (isEmptyTextNode(node)) {
         const hasWhiteSpace = rawText.trim().length < getUnencodedText(node).length;
@@ -199,41 +204,50 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       return fill(splitTextToDocs(node));
     }
 
-    case 'Element':
-    case 'InlineComponent':
-    case 'Slot': {
-      const isEmpty = node.children?.every((child) => isEmptyTextNode(child));
-      const isSelfClosingTag = isEmpty && (node.type !== 'Element' || selfClosingTags.indexOf(node.name) !== -1);
-      const attributes = path.map(print, 'attributes');
+    // case 'InlineComponent':
+    // case 'Slot':
+    case 'element': {
+      // const isEmpty = node.children?.every((child) => isEmptyTextNode(child));
+      let isEmpty: boolean;
+      if (!node.children) {
+        isEmpty = true;
+      } else {
+        isEmpty = node.children.every((child) => isEmptyTextNode(child));
+      }
+      const isSelfClosingTag = isEmpty && (node.type !== 'element' || selfClosingTags.indexOf(node.name) !== -1);
+
+      const attributes = node.attributes ? path.map(print, 'attributes') : [];
       if (isSelfClosingTag) {
         return group(['<', node.name, indent(group(attributes)), line, `/>`]);
         // return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
       }
-      try {
-        if (node.name.toLowerCase() === '!doctype') {
-          const attributesWithLowercaseHTML = attributes.map((attribute) => {
-            if (typeof attribute === 'string') return attribute;
-            if (isDocCommand(attribute)) return attribute;
-            attribute = attribute.map((attrValue) => {
-              if (typeof attrValue !== 'string') return attrValue;
-              if (attrValue.toLowerCase() === 'html') {
-                attrValue = attrValue.toLowerCase();
-              }
-              return attrValue;
-            });
 
-            // if (attribute[0].type === 'line' && attribute[1].toLowerCase() === 'html') {
-            //   attribute[1] = attribute[1].toLowerCase();
-            //   return attribute;
-            // }
-            return attribute;
-          });
+      // TODO: ADD CASE FOR DOCTYPE
+      // try {
+      //   if (node.name.toLowerCase() === '!doctype') {
+      //     const attributesWithLowercaseHTML = attributes.map((attribute) => {
+      //       if (typeof attribute === 'string') return attribute;
+      //       if (isDocCommand(attribute)) return attribute;
+      //       attribute = attribute.map((attrValue) => {
+      //         if (typeof attrValue !== 'string') return attrValue;
+      //         if (attrValue.toLowerCase() === 'html') {
+      //           attrValue = attrValue.toLowerCase();
+      //         }
+      //         return attrValue;
+      //       });
 
-          return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, `>`]);
-        }
-      } catch (e) {
-        console.warn(`error ${e} in the doctype printing`);
-      }
+      //       // if (attribute[0].type === 'line' && attribute[1].toLowerCase() === 'html') {
+      //       //   attribute[1] = attribute[1].toLowerCase();
+      //       //   return attribute;
+      //       // }
+      //       return attribute;
+      //     });
+
+      //     return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, `>`]);
+      //   }
+      // } catch (e) {
+      //   console.warn(`error ${e} in the doctype printing`);
+      // }
 
       if (node.children) {
         const children = node.children;
@@ -311,61 +325,66 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
         return group([...openingTag, '>', indent([noHugSeparatorStart, body()]), noHugSeparatorEnd, `</${node.name}>`]);
       }
+      // TODO: WIP
+      return '';
     }
-    case 'AttributeShorthand': {
-      return node.expression.name;
-    }
-    case 'Attribute': {
+    // case 'AttributeShorthand': {
+    //   return node.expression.name;
+    // }
+    case 'attribute': {
       if (isOrCanBeConvertedToShorthand(node, opts)) {
         return [line, '{', node.name, '}'];
       } else if (isShorthandAndMustBeConvertedToBinaryExpression(node, opts)) {
-        const attrNodeValue = printAttributeNodeValue(path, print, true, node);
+        const attrNodeValue = node.value;
+        // const attrNodeValue = printAttributeNodeValue(path, print, true, node);
         return [line, node.name, '=', '{', attrNodeValue, '}'];
-      } else if (node.value === true) {
-        return [line, node.name];
       }
+      // else if (node.value === true) {
+      //   return [line, node.name];
+      // }
 
-      const quotes = !isLoneMustacheTag(node.value);
-      const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
+      const quotes = !isLoneMustacheTag(node);
+      const attrNodeValue = node.value;
+      // const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
       if (quotes) {
         return [line, node.name, '=', '"', attrNodeValue, '"'];
       } else {
         return [line, node.name, '=', attrNodeValue];
       }
     }
-    case 'Expression':
-      // missing test ?
-      return [];
-    case 'MustacheTag':
-      return [
-        '{',
-        printJS(path, print, 'expression', {
-          forceSingleLine: isInsideQuotedAttribute(path),
-          forceSingleQuote: opts.jsxSingleQuote,
-        }),
-        '}',
-      ];
-    case 'Spread':
-      return [
-        line,
-        '{...',
-        printJS(path, print, 'expression', {
-          forceSingleQuote: true,
-          forceSingleLine: false,
-        }),
-        '}',
-      ];
-    case 'Comment':
-      return ['<!--', getUnencodedText(node), '-->'];
-    case 'CodeSpan':
-      return getUnencodedText(node);
-    case 'CodeFence': {
-      console.debug(node);
-      // const lang = node.metadata.slice(3);
-      return [node.metadata, hardline, /** somehow call textToDoc(lang),  */ node.data, hardline, '```', hardline];
+    // case 'Expression':
+    //   // missing test ?
+    //   return [];
+    // case 'MustacheTag':
+    //   return [
+    //     '{',
+    //     printJS(path, print, 'expression', {
+    //       forceSingleLine: isInsideQuotedAttribute(path),
+    //       forceSingleQuote: opts.jsxSingleQuote,
+    //     }),
+    //     '}',
+    //   ];
+    // case 'Spread':
+    //   return [
+    //     line,
+    //     '{...',
+    //     printJS(path, print, 'expression', {
+    //       forceSingleQuote: true,
+    //       forceSingleLine: false,
+    //     }),
+    //     '}',
+    //   ];
+    // case 'Comment':
+    //   return ['<!--', getUnencodedText(node), '-->'];
+    // case 'CodeSpan':
+    //   return getUnencodedText(node);
+    // case 'CodeFence': {
+    //   console.debug(node);
+    //   // const lang = node.metadata.slice(3);
+    //   return [node.metadata, hardline, /** somehow call textToDoc(lang),  */ node.data, hardline, '```', hardline];
 
-      // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];
-    }
+    //   // We should use `node.metadata` to select a parser to embed with... something like return [node.metadata, hardline textToDoc(node.getMetadataLanguage()), hardline, `\`\`\``];
+    // }
     default: {
       throw new Error(`Unhandled node type "${node.type}"!`);
     }
