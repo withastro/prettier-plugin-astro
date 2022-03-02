@@ -214,11 +214,11 @@ export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
   return node.type === 'text' && /\s$/.test(getUnencodedText(node));
 }
 
-// export function forceIntoExpression(statement: string): string {
-//   // note the trailing newline: if the statement ends in a // comment,
-//   // we can't add the closing bracket right afterwards
-//   return `(${statement}\n)`;
-// }
+export function forceIntoExpression(statement: string): string {
+  // note the trailing newline: if the statement ends in a // comment,
+  // we can't add the closing bracket right afterwards
+  return `(${statement}\n)`;
+}
 
 /**
  * Check if given node's starg tag should hug its first child. This is the case for inline elements when there's
@@ -662,7 +662,7 @@ export function isTextNode(node: Node): node is TextNode {
 //   return true;
 // }
 
-// export function isInsideQuotedAttribute(path: AstPath): boolean {
-//   const stack = path.stack as anyNode[];
-//   return stack.some((node) => node.type === 'attribute' && !isLoneMustacheTag(node.value));
-// }
+export function isInsideQuotedAttribute(path: AstPath): boolean {
+  const stack = path.stack as anyNode[];
+  return stack.some((node) => node.type === 'attribute' && !isLoneMustacheTag(node));
+}

@@ -18,7 +18,7 @@ import {
   canOmitSoftlineBeforeClosingTag,
   // dedent as manualDedent,
   endsWithLinebreak,
-  // forceIntoExpression,
+  forceIntoExpression,
   formattableAttributes,
   // getMarkdownName,
   // getText,
@@ -28,7 +28,7 @@ import {
   // isEmptyDoc,
   isEmptyTextNode,
   isInlineElement,
-  // isInsideQuotedAttribute,
+  isInsideQuotedAttribute,
   // isLine,
   isLoneMustacheTag,
   // isNodeWithChildren,
@@ -406,7 +406,7 @@ function expressionParser(text: string, parsers: any, opts: ParserOptions) {
   return { ...ast, program: ast.program.body[0].expression };
 }
 
-let markdownComponentName = new Set();
+// let markdownComponentName = new Set();
 
 function embed(path: AstPath, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
@@ -417,44 +417,56 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
   if (!node) return null;
 
-  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-  // @ts-ignore
-  if (node.isJS) {
-    try {
-      const embeddedopts = {
-        parser: expressionParser,
-      };
-      // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-      // @ts-ignore
-      if (node.forceSingleQuote) {
-        // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-        // @ts-ignore
-        embeddedopts.singleQuote = true;
-      }
-
-      const docs = textToDoc(forceIntoExpression(getText(node, opts)), embeddedopts);
-      // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
-      // @ts-ignore
-      return node.forceSingleLine ? removeLines(docs) : docs;
-    } catch (e) {
-      return getText(node, opts);
-    }
+  if (node.type === 'expression') {
+    return [
+      '{',
+      // printJS(path, print, 'expression', {
+      //   forceSingleLine: isInsideQuotedAttribute(path),
+      //   forceSingleQuote: opts.jsxSingleQuote,
+      // }),
+      textToDoc(forceIntoExpression(node.children[0].value), { parser: expressionParser }),
+      '}',
+    ];
   }
 
-  if (node.type === 'Script' && node.context === 'setup') {
-    markdownComponentName = getMarkdownName(node.content);
-    return group(['---', hardline, textToDoc(node.content, { ...opts, parser: 'typescript' }), '---', hardline]);
+  // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+  // @ts-ignore
+  // if (node.isJS) {
+  //   try {
+  //     const embeddedopts = {
+  //       parser: expressionParser,
+  //     };
+  //     // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+  //     // @ts-ignore
+  //     if (node.forceSingleQuote) {
+  //       // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+  //       // @ts-ignore
+  //       embeddedopts.singleQuote = true;
+  //     }
+
+  //     const docs = textToDoc(forceIntoExpression(getText(node, opts)), embeddedopts);
+  //     // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
+  //     // @ts-ignore
+  //     return node.forceSingleLine ? removeLines(docs) : docs;
+  //   } catch (e) {
+  //     return getText(node, opts);
+  //   }
+  // }
+
+  if (node.type === 'frontmatter') {
+    // markdownComponentName = getMarkdownName(node);
+    return [group(['---', hardline, textToDoc(node.value, { ...opts, parser: 'typescript' }), '---', hardline]), hardline];
   }
 
   // format <script type="module"> content
-  if (isTextNode(node)) {
-    const parent = path.getParentNode();
+  // if (isTextNode(node)) {
+  //   const parent = path.getParentNode();
 
-    if (parent && parent.type === 'Element' && parent.name === 'script') {
-      const formatttedScript = textToDoc(node.data, { ...opts, parser: 'typescript' });
-      return stripTrailingHardline(formatttedScript);
-    }
-  }
+  //   if (parent && parent.type === 'Element' && parent.name === 'script') {
+  //     const formatttedScript = textToDoc(node.data, { ...opts, parser: 'typescript' });
+  //     return stripTrailingHardline(formatttedScript);
+  //   }
+  // }
 
   // type style is top level style tag
   // type element is nested style tag
@@ -510,23 +522,23 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   }
 
   // MARKDOWN COMPONENT
-  if (node.type === 'InlineComponent' && markdownComponentName.has(node.name)) {
-    let content = printRaw(node, opts.originalText);
+  // if (node.type === 'InlineComponent' && markdownComponentName.has(node.name)) {
+  //   let content = printRaw(node, opts.originalText);
 
-    // dedent the content
-    content = content.replace(/\r\n/g, '\n');
-    const contentArr = content.split('\n').map((s) => s.trimStart());
-    content = contentArr.join('\n');
+  //   // dedent the content
+  //   content = content.replace(/\r\n/g, '\n');
+  //   const contentArr = content.split('\n').map((s) => s.trimStart());
+  //   content = contentArr.join('\n');
 
-    // format
-    let formatttedMarkdown = textToDoc(content, { ...opts, parser: 'markdown' });
-    formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
+  //   // format
+  //   let formatttedMarkdown = textToDoc(content, { ...opts, parser: 'markdown' });
+  //   formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
 
-    // return formatttedMarkdown;
-    const attributes = path.map(print, 'attributes');
-    const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
-    return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
-  }
+  //   // return formatttedMarkdown;
+  //   const attributes = path.map(print, 'attributes');
+  //   const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
+  //   return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
+  // }
 
   return null;
 }

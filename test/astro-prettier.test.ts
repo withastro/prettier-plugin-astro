@@ -15,7 +15,7 @@ test('can format an Astro file with a single style element', Prettier, 'single-s
 
 // test('can format a basic Astro file with styles written in .sass', Prettier, 'with-indented-sass');
 
-// test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
+test('can format an Astro file with frontmatter', Prettier, 'frontmatter');
 
 // test('can format an Astro file with embedded JSX expressions', Prettier, 'embedded-expr');
 
