@@ -37,7 +37,7 @@
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@astrojs/compiler": "^0.12.0-next.7",
+    "@astrojs/compiler": "^0.12.0-next.8",
     "make-synchronous": "0.1.1",
     "prettier": "^2.4.1",
     "sass-formatter": "^0.7.2"

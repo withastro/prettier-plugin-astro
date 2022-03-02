@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@astrojs/compiler@^0.12.0-next.7":
-  version "0.12.0-next.7"
-  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.12.0-next.7.tgz#6a453ba6b91bfd3c868fbf06cf1330105ac67b85"
-  integrity sha512-GMFJJyMMolv/5CpLbqDyb/oKAgelNDUpK/Of25S8ltr0aTcMjIlHyslvFck5H6ow2BDIVY0SxeSlr5q5w184Cw==
+"@astrojs/compiler@^0.12.0-next.8":
+  version "0.12.0-next.8"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.12.0-next.8.tgz#a15792791790aaeeaf944797635a40a56f806975"
+  integrity sha512-HeREaw5OR5J7zML+/LxhrqUr57571kyNXL4HD2pU929oevhx3PQ37PQ0FkD5N65X9YfO+gcoEO6whl76vtSZag==
   dependencies:
     typescript "^4.3.5"
 
