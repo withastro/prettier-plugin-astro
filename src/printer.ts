@@ -136,7 +136,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   // 3. handle printing
   switch (node.type) {
     case 'root': {
-      return [path.map(print, 'children'), hardline];
+      return [stripTrailingHardline(path.map(print, 'children')), hardline];
     }
 
     // case 'Fragment': {
@@ -458,14 +458,8 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
   // type style is top level style tag
   // type element is nested style tag
-  if (node.type === 'Style' || (node.type === 'Element' && node.name === 'style')) {
-    let styleTagContent = '';
-    if (node.type === 'Style') {
-      styleTagContent = node.content.styles;
-    } else if (node.children) {
-      const children = node.children[0] as TextNode;
-      styleTagContent = getUnencodedText(children);
-    }
+  if (node.type === 'element' && node.name === 'style') {
+    let styleTagContent = node.children[0].value.trim();
 
     const supportedStyleLangValues = ['css', 'scss', 'sass'];
     let parserLang = 'css';
@@ -473,7 +467,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     if ('attributes' in node) {
       const langAttribute = node.attributes.filter((x) => x.name === 'lang');
       if (langAttribute.length) {
-        const styleLang = langAttribute[0].value[0].raw.toLowerCase();
+        const styleLang = langAttribute[0].value[0].toLowerCase();
         if (supportedStyleLangValues.includes(styleLang)) parserLang = styleLang;
       }
     }
@@ -488,7 +482,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
         formattedStyles = stripTrailingHardline(formattedStyles);
 
         // print
-        const attributes = path.map(print, 'attributes');
+        const attributes = node.attributes ? path.map(print, 'attributes') : [];
         const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
         return [openingTag, indent([hardline, formattedStyles]), hardline, '</style>'];
       }

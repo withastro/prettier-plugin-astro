@@ -3,7 +3,7 @@ import { Prettier, PrettierMarkdown, PrettierUnaltered } from './test-utils.js';
 
 test('can format a basic Astro file', Prettier, 'basic');
 
-// test('can format an Astro file with a single style element', Prettier, 'single-style-element');
+test('can format an Astro file with a single style element', Prettier, 'single-style-element');
 
 // test('can format a basic Astro file with styles', Prettier, 'with-styles');
 
