@@ -195,6 +195,9 @@ const blockElementsT = [
   'section',
   'table',
   'ul',
+  // TODO: WIP
+  'title',
+  'html',
 ] as const;
 // https://github.com/microsoft/TypeScript/issues/31018
 export const blockElements: string[] = [...blockElementsT];

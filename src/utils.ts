@@ -17,7 +17,6 @@ import {
   blockElements,
   // attributeValue,
   BlockElementNode,
-  // blockElements,
   InlineElementNode,
   // MustacheTagNode,
   NodeWithChildren,
@@ -261,8 +260,11 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
     return true;
   }
 
-  const lastChild = children[children.length - 1];
-  return !isTextNodeEndingWithWhitespace(lastChild);
+  return false;
+
+  // TODO: WIP
+  // const lastChild = children[children.length - 1];
+  // return !isTextNodeEndingWithWhitespace(lastChild);
 }
 
 /**

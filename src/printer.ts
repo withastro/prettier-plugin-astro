@@ -136,7 +136,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   // 3. handle printing
   switch (node.type) {
     case 'root': {
-      return path.map(print, 'children');
+      return [path.map(print, 'children'), hardline];
     }
 
     // case 'Fragment': {
@@ -221,33 +221,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
         return group(['<', node.name, indent(group(attributes)), line, `/>`]);
         // return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
       }
-
-      // TODO: ADD CASE FOR DOCTYPE
-      // try {
-      //   if (node.name.toLowerCase() === '!doctype') {
-      //     const attributesWithLowercaseHTML = attributes.map((attribute) => {
-      //       if (typeof attribute === 'string') return attribute;
-      //       if (isDocCommand(attribute)) return attribute;
-      //       attribute = attribute.map((attrValue) => {
-      //         if (typeof attrValue !== 'string') return attrValue;
-      //         if (attrValue.toLowerCase() === 'html') {
-      //           attrValue = attrValue.toLowerCase();
-      //         }
-      //         return attrValue;
-      //       });
-
-      //       // if (attribute[0].type === 'line' && attribute[1].toLowerCase() === 'html') {
-      //       //   attribute[1] = attribute[1].toLowerCase();
-      //       //   return attribute;
-      //       // }
-      //       return attribute;
-      //     });
-
-      //     return group(['<', node.name.toUpperCase(), ...attributesWithLowercaseHTML, `>`]);
-      //   }
-      // } catch (e) {
-      //   console.warn(`error ${e} in the doctype printing`);
-      // }
 
       if (node.children) {
         const children = node.children;
@@ -351,6 +324,11 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       } else {
         return [line, node.name, '=', attrNodeValue];
       }
+    }
+
+    case 'doctype': {
+      // https://www.w3.org/wiki/Doctypes_and_markup_styles
+      return ['<!DOCTYPE html>', hardline];
     }
     // case 'Expression':
     //   // missing test ?
