@@ -36,7 +36,7 @@ test('converts valid shorthand variables into shorthand', Prettier, 'converts-to
 
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
-// test('can format an Astro file with components that are the uppercase version of html elements', Prettier, 'preserve-tag-case');
+test('can format an Astro file with components that are the uppercase version of html elements', Prettier, 'preserve-tag-case');
 
 // test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
 
