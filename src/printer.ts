@@ -322,7 +322,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       if (quotes) {
         return [line, node.name, '=', '"', attrNodeValue, '"'];
       } else {
-        return [line, node.name, '=', attrNodeValue];
+        return [line, node.name, '=', '{', attrNodeValue, '}'];
       }
     }
 
@@ -422,7 +422,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
     let content: Doc | string;
 
-    if (node.children.length < 2) {
+    if (node.children.length === 1) {
       content = textContent;
     } else {
       content = textToDoc(textContent, { parser: 'babel', semi: false });
