@@ -32,7 +32,7 @@ test('can format an Astro file with a JSX expression and an HTML Comment', Prett
 
 // test('can format an Astro file containing an Astro file embedded in a codeblock', PrettierMarkdown, 'embedded-in-markdown');
 
-// test('converts valid shorthand variables into shorthand', Prettier, 'converts-to-shorthand');
+test('converts valid shorthand variables into shorthand', Prettier, 'converts-to-shorthand');
 
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
