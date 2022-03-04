@@ -32,7 +32,7 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
     since: '0.0.10',
     category: 'Astro',
     type: 'boolean',
-    default: true,
+    default: false,
     description:
       'Enable/disable attribute shorthand if attribute name and expression are the same',
   },
