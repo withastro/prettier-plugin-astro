@@ -38,7 +38,7 @@ test('converts valid shorthand variables into shorthand', Prettier, 'converts-to
 
 test('can format an Astro file with components that are the uppercase version of html elements', Prettier, 'preserve-tag-case');
 
-// test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
+test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
 
 // test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
 
