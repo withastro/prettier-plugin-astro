@@ -118,6 +118,7 @@ export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeN
 //   return ([] as T[]).concat.apply([], arrays);
 // }
 
+// TODO: TEST IF IT'S GETTING THE CORRECT TEXT
 export function getText(node: anyNode, opts: ParserOptions): string {
   return opts.originalText.slice(node.position?.start.offset! + 1, node.position?.end?.offset);
   // return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));

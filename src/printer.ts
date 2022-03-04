@@ -475,7 +475,17 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     return [group(['---', hardline, textToDoc(node.value, { ...opts, parser: 'typescript' }), '---', hardline]), hardline];
   }
 
-  // format <script type="module"> content
+  // format script element
+  if (node.type === 'element' && node.name === 'script') {
+    const scriptContent = node.children[0].value;
+    let formatttedScript = textToDoc(scriptContent, { ...opts, parser: 'typescript' });
+    formatttedScript = stripTrailingHardline(formatttedScript);
+
+    // print
+    const attributes = node.attributes ? path.map(print, 'attributes') : [];
+    const openingTag = group(['<script', indent(group(attributes)), softline, '>']);
+    return [openingTag, indent([hardline, formatttedScript]), hardline, '</script>'];
+  }
   // if (isTextNode(node)) {
   //   const parent = path.getParentNode();
 
@@ -485,8 +495,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   //   }
   // }
 
-  // type style is top level style tag
-  // type element is nested style tag
+  // format style element
   if (node.type === 'element' && node.name === 'style') {
     let styleTagContent = node.children[0].value.trim();
 

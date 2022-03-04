@@ -40,7 +40,7 @@ test('can format an Astro file with components that are the uppercase version of
 
 test('Autocloses open tags.', Prettier, 'autocloses-open-tags');
 
-// test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
+test('can format an Astro file with a script tag inside it', Prettier, 'with-script');
 
 // // Supports various prettier ignore comments
 // test('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-html');
