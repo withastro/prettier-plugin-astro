@@ -118,9 +118,10 @@ export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeN
 //   return ([] as T[]).concat.apply([], arrays);
 // }
 
-// export function getText(node: anyNode, opts: ParserOptions): string {
-//   return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
-// }
+export function getText(node: anyNode, opts: ParserOptions): string {
+  return opts.originalText.slice(node.position?.start.offset! + 1, node.position?.end?.offset);
+  // return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
+}
 
 export function getUnencodedText(node: NodeWithText): string {
   return node.value;

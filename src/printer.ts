@@ -21,7 +21,7 @@ import {
   forceIntoExpression,
   formattableAttributes,
   // getMarkdownName,
-  // getText,
+  getText,
   getUnencodedText,
   isRootNode,
   // isDocCommand,
@@ -91,12 +91,12 @@ import {
 // }
 
 // TODO: USE ASTPATH GENERIC
-function printJS(path: AstP, print: printFn, name: string, { forceSingleQuote, forceSingleLine }: { forceSingleQuote: boolean; forceSingleLine: boolean }) {
-  path.getValue()[name].isJS = true;
-  path.getValue()[name].forceSingleQuote = forceSingleQuote;
-  path.getValue()[name].forceSingleLine = forceSingleLine;
-  return path.call(print, name);
-}
+// function printJS(path: AstP, print: printFn, name: string, { forceSingleQuote, forceSingleLine }: { forceSingleQuote: boolean; forceSingleLine: boolean }) {
+//   path.getValue()[name].isJS = true;
+//   path.getValue()[name].forceSingleQuote = forceSingleQuote;
+//   path.getValue()[name].forceSingleLine = forceSingleLine;
+//   return path.call(print, name);
+// }
 
 // TODO: MAYBE USE THIS TO HANDLE COMMENTS
 function printComment(commentPath: AstPath, options: ParserOptions): Doc {
@@ -418,13 +418,29 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   if (!node) return null;
 
   if (node.type === 'expression') {
+    const textContent = getText(node, opts);
+
+    let content: Doc | string;
+
+    if (node.children.length < 2) {
+      content = textContent;
+    } else {
+      content = textToDoc(textContent, { parser: 'babel', semi: false });
+      content = stripTrailingHardline(content);
+    }
+
+    // if (node.children[0].value) {
+    //   content = textToDoc(forceIntoExpression(textContent), { parser: expressionParser });
+    // } else {
+    //   content = textToDoc(forceIntoExpression(node.children[0].value), { parser: expressionParser });
+    // }
     return [
       '{',
       // printJS(path, print, 'expression', {
       //   forceSingleLine: isInsideQuotedAttribute(path),
       //   forceSingleQuote: opts.jsxSingleQuote,
       // }),
-      textToDoc(forceIntoExpression(node.children[0].value), { parser: expressionParser }),
+      content,
       '}',
     ];
   }
