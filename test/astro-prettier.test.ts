@@ -26,9 +26,9 @@ test('can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressio
 
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
-// test('does not alter html comments', PrettierUnaltered, 'html-comment');
+test('does not alter html comments', PrettierUnaltered, 'html-comment');
 
-// test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
+test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
 
 // test('can format an Astro file containing an Astro file embedded in a codeblock', PrettierMarkdown, 'embedded-in-markdown');
 

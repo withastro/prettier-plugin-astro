@@ -352,8 +352,8 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     //     }),
     //     '}',
     //   ];
-    // case 'Comment':
-    //   return ['<!--', getUnencodedText(node), '-->'];
+    case 'comment':
+      return ['<!--', getUnencodedText(node), '-->'];
     // case 'CodeSpan':
     //   return getUnencodedText(node);
     // case 'CodeFence': {
