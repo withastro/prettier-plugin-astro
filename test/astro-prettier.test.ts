@@ -5,6 +5,7 @@ test('can format a basic Astro file', Prettier, 'basic');
 
 test('can format an Astro file with a single style element', Prettier, 'single-style-element');
 
+// *** STYLES ***
 // test('can format a basic Astro file with styles', Prettier, 'with-styles');
 
 // test(`Can format an Astro file with attributes in the <style> tag`, Prettier, 'style-tag-attributes');
@@ -30,7 +31,10 @@ test('does not alter html comments', PrettierUnaltered, 'html-comment');
 
 test('can format an Astro file with a JSX expression and an HTML Comment', Prettier, 'expr-and-html-comment');
 
+// *** MARKDOWN ***
 // test('can format an Astro file containing an Astro file embedded in a codeblock', PrettierMarkdown, 'embedded-in-markdown');
+
+// test(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');
 
 test('converts valid shorthand variables into shorthand', Prettier, 'converts-to-shorthand');
 
@@ -45,9 +49,7 @@ test('can format an Astro file with a script tag inside it', Prettier, 'with-scr
 // // Supports various prettier ignore comments
 // test('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-html');
 
-// test('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-js');
-
-// test(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');
+test('Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-js');
 
 // // note(drew): this _may_ be covered under the 'prettier-ignore-html' test. But if any bugs arise, let’s add more tests!
 // test.todo("properly follow prettier' advice on formatting comments");
