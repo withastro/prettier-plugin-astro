@@ -162,4 +162,4 @@ test('Format spread operator', Prettier, 'spread-operator');
 
 // test.todo('Format jsx inside markdown');
 
-// test('Can format nested comment', Prettier, 'nested-comment');
+test('Can format nested comment', Prettier, 'nested-comment');
