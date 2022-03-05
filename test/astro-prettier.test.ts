@@ -150,7 +150,7 @@ test('Can format an Astro file with a JS style prettier ignore comment: https://
 // // astro option: astroAllowShorthand
 // test('Can format an Astro file with prettier "astroAllowShorthand: false" option', Prettier, 'option-astro-allow-shorthand-false');
 
-// test('Format spread operator', Prettier, 'spread-operator');
+test('Format spread operator', Prettier, 'spread-operator');
 
 // test('Can format nested style tag content', Prettier, 'format-nested-style-tag-content');
 

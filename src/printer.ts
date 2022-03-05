@@ -309,21 +309,21 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       if (isOrCanBeConvertedToShorthand(node, opts)) {
         return [line, '{', node.name, '}'];
       } else if (isShorthandAndMustBeConvertedToBinaryExpression(node, opts)) {
-        const attrNodeValue = node.value;
         // const attrNodeValue = printAttributeNodeValue(path, print, true, node);
-        return [line, node.name, '=', '{', attrNodeValue, '}'];
+        return [line, node.name, '=', '{', node.value, '}'];
       }
       // else if (node.value === true) {
       //   return [line, node.name];
       // }
 
+      if (node.kind === 'spread') return [line, '{...', node.name.trim(), '}'];
+
       const quotes = !isLoneMustacheTag(node);
-      const attrNodeValue = node.value;
       // const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
       if (quotes) {
-        return [line, node.name, '=', '"', attrNodeValue, '"'];
+        return [line, node.name, '=', '"', node.value, '"'];
       } else {
-        return [line, node.name, '=', '{', attrNodeValue, '}'];
+        return [line, node.name, '=', '{', node.value, '}'];
       }
     }
 
