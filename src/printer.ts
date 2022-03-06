@@ -306,25 +306,26 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     //   return node.expression.name;
     // }
     case 'attribute': {
-      if (isOrCanBeConvertedToShorthand(node, opts)) {
-        return [line, '{', node.name, '}'];
-      } else if (isShorthandAndMustBeConvertedToBinaryExpression(node, opts)) {
-        // const attrNodeValue = printAttributeNodeValue(path, print, true, node);
-        return [line, node.name, '=', '{', node.value, '}'];
+      const name = node.name.trim();
+      const quote = opts.singleQuote ? "'" : '"';
+      switch (node.kind) {
+        case 'empty':
+          return [line, name];
+        case 'expression':
+          // HANDLED IN EMBED FUNCION
+          return '';
+        case 'quoted':
+          return [line, name, '=', quote, node.value, quote];
+        case 'shorthand':
+          return [line, '{', name, '}'];
+        case 'spread':
+          return [line, '{...', name, '}'];
+        case 'template-literal':
+          return [line, name, '=', '`', node.value, '`'];
+        default:
+          break;
       }
-      // else if (node.value === true) {
-      //   return [line, node.name];
-      // }
-
-      if (node.kind === 'spread') return [line, '{...', node.name.trim(), '}'];
-
-      const quotes = !isLoneMustacheTag(node);
-      // const attrNodeValue = printAttributeNodeValue(path, print, quotes, node);
-      if (quotes) {
-        return [line, node.name, '=', '"', node.value, '"'];
-      } else {
-        return [line, node.name, '=', '{', node.value, '}'];
-      }
+      return '';
     }
 
     case 'doctype': {
@@ -401,11 +402,11 @@ function splitTextToDocs(node: NodeWithText): Doc[] {
 }
 
 // TODO: CHANGE 'parsers' TYPE
-function expressionParser(text: string, parsers: any, opts: ParserOptions) {
-  const ast = parsers.babel(text, parsers, opts);
+// function expressionParser(text: string, parsers: any, opts: ParserOptions) {
+//   const ast = parsers.babel(text, parsers, opts);
 
-  return { ...ast, program: ast.program.body[0].expression };
-}
+//   return { ...ast, program: ast.program.body[0].expression };
+// }
 
 // let markdownComponentName = new Set();
 
@@ -426,7 +427,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     if (node.children.length === 1) {
       content = textContent;
     } else {
-      content = textToDoc(textContent, { parser: 'babel', semi: false });
+      content = textToDoc(textContent, { parser: 'babel-ts', semi: false });
       content = stripTrailingHardline(content);
     }
 
@@ -444,6 +445,21 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
       content,
       '}',
     ];
+  }
+
+  // ATTRIBUTE WITH EXPRESSION AS VALUE
+  if (node.type === 'attribute' && node.kind === 'expression') {
+    const value = node.value.trim();
+    const name = node.name.trim();
+    let attrNodeValue = textToDoc(value, { parser: 'babel-ts', semi: false });
+    attrNodeValue = stripTrailingHardline(attrNodeValue);
+    if (Array.isArray(attrNodeValue) && attrNodeValue[0] === ';') {
+      attrNodeValue = attrNodeValue.slice(1);
+    }
+    if (name === value && opts.astroAllowShorthand) {
+      return [line, '{', attrNodeValue, '}'];
+    }
+    return [line, name, '=', '{', attrNodeValue, '}'];
   }
 
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS

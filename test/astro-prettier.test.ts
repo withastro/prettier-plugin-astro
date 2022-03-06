@@ -57,8 +57,8 @@ test('Can format an Astro file with a JS style prettier ignore comment: https://
 // // note(drew): I think this is a function of Astro’s parser, not Prettier. We’ll have to handle helpful error messages there!
 // test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
 
-// // https://prettier.io/docs/en/options.html#print-width
-// test('Can format an Astro file with prettier "printWidth" option', Prettier, 'option-print-width');
+// https://prettier.io/docs/en/options.html#print-width
+test('Can format an Astro file with prettier "printWidth" option', Prettier, 'option-print-width');
 
 // // https://prettier.io/docs/en/options.html#tab-width
 // test('Can format an Astro file with prettier "tabWidth" option', Prettier, 'option-tab-width');
