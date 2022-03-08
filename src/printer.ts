@@ -1,4 +1,4 @@
-import { AstPath as AstP, Doc, ParserOptions as ParserOpts, Printer } from 'prettier';
+import { AstPath as AstP, BuiltInParsers, Doc, ParserOptions as ParserOpts, Printer } from 'prettier';
 import _doc from 'prettier/doc';
 const {
   builders: { breakParent, dedent, fill, group, hardline, indent, join, line, literalline, softline },
@@ -328,6 +328,10 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
       return '';
     }
 
+    case 'directive': {
+      return [line, node.name];
+    }
+
     case 'doctype': {
       // https://www.w3.org/wiki/Doctypes_and_markup_styles
       return ['<!DOCTYPE html>', hardline];
@@ -401,12 +405,12 @@ function splitTextToDocs(node: NodeWithText): Doc[] {
   return docs;
 }
 
-// TODO: CHANGE 'parsers' TYPE
-// function expressionParser(text: string, parsers: any, opts: ParserOptions) {
-//   const ast = parsers.babel(text, parsers, opts);
+function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
+  const ast = parsers.babel(text, opts);
+  // const ast = parsers.babel(text, parsers, opts);
 
-//   return { ...ast, program: ast.program.body[0].expression };
-// }
+  return { ...ast, program: ast.program.body[0].expression };
+}
 
 // let markdownComponentName = new Set();
 
@@ -427,7 +431,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     if (node.children.length === 1) {
       content = textContent;
     } else {
-      content = textToDoc(textContent, { parser: 'babel-ts', semi: false });
+      content = textToDoc(textContent, { ...opts, parser: 'babel-ts', semi: false });
       content = stripTrailingHardline(content);
     }
 
@@ -451,11 +455,11 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   if (node.type === 'attribute' && node.kind === 'expression') {
     const value = node.value.trim();
     const name = node.name.trim();
-    let attrNodeValue = textToDoc(value, { parser: 'babel-ts', semi: false });
+    let attrNodeValue = textToDoc(forceIntoExpression(value), { ...opts, parser: expressionParser, semi: false });
     attrNodeValue = stripTrailingHardline(attrNodeValue);
-    if (Array.isArray(attrNodeValue) && attrNodeValue[0] === ';') {
-      attrNodeValue = attrNodeValue.slice(1);
-    }
+    // if (Array.isArray(attrNodeValue) && attrNodeValue[0] === ';') {
+    //   attrNodeValue = attrNodeValue.slice(1);
+    // }
     if (name === value && opts.astroAllowShorthand) {
       return [line, '{', attrNodeValue, '}'];
     }
@@ -537,7 +541,9 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
         // print
         const attributes = node.attributes ? path.map(print, 'attributes') : [];
-        const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
+        const directives = node.directives ? path.map(print, 'directives') : [];
+        const attrAndDirectives = directives.concat(attributes);
+        const openingTag = group(['<style', indent(group(attrAndDirectives)), softline, '>']);
         return [openingTag, indent([hardline, formattedStyles]), hardline, '</style>'];
       }
       case 'sass': {

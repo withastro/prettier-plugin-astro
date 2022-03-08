@@ -1,6 +1,7 @@
 import {
   Node,
   AttributeNode,
+  DirectiveNode,
   RootNode,
   ElementNode,
   ComponentNode,
@@ -266,7 +267,18 @@ export const inlineElements: string[] = [...inlineElementsT];
 // @see http://xahlee.info/js/html5_non-closing_tag.html
 export const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
-export type anyNode = RootNode | AttributeNode | ElementNode | ComponentNode | CustomElementNode | ExpressionNode | TextNode | DoctypeNode | CommentNode | FrontmatterNode;
+export type anyNode =
+  | RootNode
+  | AttributeNode
+  | DirectiveNode
+  | ElementNode
+  | ComponentNode
+  | CustomElementNode
+  | ExpressionNode
+  | TextNode
+  | DoctypeNode
+  | CommentNode
+  | FrontmatterNode;
 
 export type {
   AttributeNode,
