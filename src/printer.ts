@@ -16,7 +16,7 @@ type AstPath = AstP<anyNode>;
 import {
   // attachCommentsHTML,
   canOmitSoftlineBeforeClosingTag,
-  // dedent as manualDedent,
+  manualDedent,
   endsWithLinebreak,
   forceIntoExpression,
   formattableAttributes,
@@ -522,10 +522,10 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
     const supportedStyleLangValues = ['css', 'scss', 'sass'];
     let parserLang = 'css';
 
-    if ('attributes' in node) {
+    if (node.attributes) {
       const langAttribute = node.attributes.filter((x) => x.name === 'lang');
       if (langAttribute.length) {
-        const styleLang = langAttribute[0].value[0].toLowerCase();
+        const styleLang = langAttribute[0].value.toLowerCase();
         if (supportedStyleLangValues.includes(styleLang)) parserLang = styleLang;
       }
     }
@@ -562,7 +562,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
         // print
         const formattedSass = join(hardline, formattedSassIndented.split('\n'));
-        const attributes = path.map(print, 'attributes');
+        const attributes = node.attributes ? path.map(print, 'attributes') : [];
         const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
         return [openingTag, indent(group([hardline, formattedSass])), hardline, '</style>'];
       }

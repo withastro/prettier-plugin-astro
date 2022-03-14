@@ -12,6 +12,10 @@ test(`Can format an Astro file with attributes in the <style> tag`, Prettier, 's
 
 // test('can format a basic Astro file with .scss styles', Prettier, 'with-scss');
 
+test('can format a basic Astro file with .scss styles', Prettier, 'single-style-element-with-scss-lang');
+
+test("can clean up whitespace within .sass styles (but can't format them)", Prettier, 'single-style-element-with-sass-lang');
+
 // test('can clean up whitespace within .sass styles (but can’t format them)', Prettier, 'with-sass');
 
 // test('can format a basic Astro file with styles written in .sass', Prettier, 'with-indented-sass');
