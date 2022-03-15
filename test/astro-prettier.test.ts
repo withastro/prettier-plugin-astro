@@ -29,7 +29,7 @@ test("can clean up whitespace within .sass styles (but can't format them)", Pret
 
 // test(`Can format an Astro file with a codespan inside <Markdown/>`, Prettier, 'with-codespans');
 
-// test('Can format the content of a markdown component as markdown', Prettier, 'markdown-component-content');
+test('Can format the content of a markdown component as markdown', Prettier, 'markdown-component-content');
 
 // test.todo("Don't escape '*' inside markdown");
 

@@ -20,7 +20,7 @@ import {
   endsWithLinebreak,
   forceIntoExpression,
   formattableAttributes,
-  // getMarkdownName,
+  getMarkdownName,
   getText,
   getUnencodedText,
   isRootNode,
@@ -244,7 +244,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
               : // () => (opts.jsxBracketNewLine ? '' : softline);
                 () => softline;
         } else if (isPreTagContent(path)) {
-          body = () => printRaw(node, opts.originalText);
+          body = () => printRaw(node);
         } else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {
           body = () => path.map(print, 'children');
         } else {
@@ -413,7 +413,7 @@ function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOpt
   return { ...ast, program: ast.program.body[0].expression };
 }
 
-// let markdownComponentName = new Set();
+let markdownComponentName = new Set();
 
 function embed(path: AstPath, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
@@ -492,7 +492,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   // }
 
   if (node.type === 'frontmatter') {
-    // markdownComponentName = getMarkdownName(node);
+    markdownComponentName = getMarkdownName(node.value);
     return [group(['---', hardline, textToDoc(node.value, { ...opts, parser: 'typescript' }), '---', hardline]), hardline];
   }
 
@@ -571,23 +571,23 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
   }
 
   // MARKDOWN COMPONENT
-  // if (node.type === 'InlineComponent' && markdownComponentName.has(node.name)) {
-  //   let content = printRaw(node, opts.originalText);
+  if (node.type === 'component' && markdownComponentName.has(node.name)) {
+    let content = printRaw(node);
 
-  //   // dedent the content
-  //   content = content.replace(/\r\n/g, '\n');
-  //   const contentArr = content.split('\n').map((s) => s.trimStart());
-  //   content = contentArr.join('\n');
+    // dedent the content
+    content = content.replace(/\r\n/g, '\n');
+    const contentArr = content.split('\n').map((s) => s.trimStart());
+    content = contentArr.join('\n');
 
-  //   // format
-  //   let formatttedMarkdown = textToDoc(content, { ...opts, parser: 'markdown' });
-  //   formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
+    // format
+    let formatttedMarkdown = textToDoc(content, { ...opts, parser: 'markdown' });
+    formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
 
-  //   // return formatttedMarkdown;
-  //   const attributes = path.map(print, 'attributes');
-  //   const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
-  //   return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
-  // }
+    // return formatttedMarkdown;
+    const attributes = path.map(print, 'attributes');
+    const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
+    return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
+  }
 
   return null;
 }
