@@ -11,6 +11,7 @@ import {
   FrontmatterNode,
   DoctypeNode,
   CommentNode,
+  FragmentNode,
 } from '@astrojs/compiler/types';
 
 // MISSING ATTRIBUTE NODE FROM THE NODE TYPE
@@ -278,6 +279,7 @@ export type anyNode =
   | TextNode
   | DoctypeNode
   | CommentNode
+  | FragmentNode
   | FrontmatterNode;
 
 export type {
@@ -292,4 +294,5 @@ export type {
   FrontmatterNode,
   DoctypeNode,
   CommentNode,
+  FragmentNode,
 } from '@astrojs/compiler/types';

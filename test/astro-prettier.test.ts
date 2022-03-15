@@ -44,6 +44,8 @@ test('can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressio
 // // note(drew): this should be fixed in new Parser. And as this is an HTML4 / deprecated / extreme edge case, probably fine to ignore?
 // test.failing('can format an Astro file with `<!DOCTYPE>` with extraneous attributes', Prettier, 'doctype-with-extra-attributes');
 
+test('can format an Astro file with fragments', Prettier, 'fragment');
+
 test('can format an Astro file with a JSX expression in an attribute', Prettier, 'attribute-with-embedded-expr');
 
 test('does not alter html comments', PrettierUnaltered, 'html-comment');

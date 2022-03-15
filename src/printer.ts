@@ -207,6 +207,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     // case 'InlineComponent':
     // case 'Slot':
     case 'component':
+    case 'fragment':
     case 'element': {
       // const isEmpty = node.children?.every((child) => isEmptyTextNode(child));
       let isEmpty: boolean;
