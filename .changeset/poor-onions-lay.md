@@ -1,5 +1,5 @@
 ---
-'prettier-plugin-astro': patch
+'prettier-plugin-astro': minor
 ---
 
 Migrate to new compiler
