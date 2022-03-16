@@ -593,14 +593,15 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 }
 
 function hasPrettierIgnore(path: AstP<CommentNode>) {
-  const node = path.getNode();
+  // const node = path.getNode();
 
-  if (!node || !Array.isArray(node.comments)) return false;
+  // if (!node || !Array.isArray(node.comments)) return false;
 
-  const hasIgnore = node.comments.some(
-    (comment: any) => comment.data.includes('prettier-ignore') && !comment.data.includes('prettier-ignore-start') && !comment.data.includes('prettier-ignore-end')
-  );
-  return hasIgnore;
+  // const hasIgnore = node.comments.some(
+  //   (comment: any) => comment.data.includes('prettier-ignore') && !comment.data.includes('prettier-ignore-start') && !comment.data.includes('prettier-ignore-end')
+  // );
+  // return hasIgnore;
+  return false;
 }
 
 const printer: Printer = {
