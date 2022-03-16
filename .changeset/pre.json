@@ -4,7 +4,5 @@
   "initialVersions": {
     "prettier-plugin-astro": "0.0.12"
   },
-  "changesets": [
-    "poor-onions-lay"
-  ]
+  "changesets": ["poor-onions-lay"]
 }
