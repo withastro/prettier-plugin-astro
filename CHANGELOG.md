@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- dcc909a: Skip handling comments
+
 ## 0.1.0-next.0
 
 ### Minor Changes
