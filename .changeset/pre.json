@@ -4,8 +4,5 @@
   "initialVersions": {
     "prettier-plugin-astro": "0.0.12"
   },
-  "changesets": [
-    "lazy-actors-complain",
-    "poor-onions-lay"
-  ]
+  "changesets": ["lazy-actors-complain", "poor-onions-lay"]
 }
