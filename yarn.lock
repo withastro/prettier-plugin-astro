@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@astrojs/compiler@^0.12.1":
-  version "0.12.1"
-  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.12.1.tgz#163744036c2c2a278cced594a28a9631b69b7127"
-  integrity sha512-XpKZyJlnDhszulwwse/1uV+ZiyTpg6xNH5TrriYDVdzB8dUbQLdE7tX4Cxhdw5QrJpV57AaPrPXvJKi1jnIkxw==
+"@astrojs/compiler@^0.13.1":
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.13.1.tgz#ec261e3be67765319b62f164f3e6022d52102203"
+  integrity sha512-iRAwvJ8/uVRtK/4ofSYKx4MTsuG8YjSgz8Lti7tPGoFaQzSNEU8J5cXvpTSV/F2SspSWB9EHjk2v7204pOxlrQ==
   dependencies:
     tsm "^2.2.1"
     uvu "^0.5.3"

@@ -59,3 +59,5 @@ test(
 test('Format spread operator', 'spread-operator');
 
 test('Can format nested comment', 'nested-comment');
+
+test('format binary expressions', 'binary-expression');
