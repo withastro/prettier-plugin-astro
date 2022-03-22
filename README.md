@@ -19,7 +19,7 @@ To get setup:
 1. `git clone git@github.com:withastro/prettier-plugin-astro.git`
 1. `yarn`
 1. `yarn build`
-1. Run tests with [`yarn test`](https://github.com/avajs/ava/tree/main/docs)
+1. Run tests with [`yarn test`](https://vitest.dev/guide/)
 1. Lint code with `yarn lint`
 1. Format code with `yarn format`
 1. Run `yarn changeset` to add your changes to the changelog on version bump.
