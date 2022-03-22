@@ -1,7 +1,7 @@
 {
   "ignorePatterns": ["test/fixtures/**", "dist/**", "rollup.config.js"],
   "plugins": ["prettier-doc"],
-  "extends": ["eslint:recommended", "plugin:ava/recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
+  "extends": ["eslint:recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
   "rules": {
     "curly": ["error", "multi-line"],
     "node/no-unsupported-features/es-builtins": [
