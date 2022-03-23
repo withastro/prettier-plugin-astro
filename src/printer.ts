@@ -250,7 +250,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
         isEmpty &&
         (node.type !== 'element' || selfClosingTags.indexOf(node.name) !== -1);
 
-      const attributes = node.attributes ? path.map(print, 'attributes') : [];
+      const attributes = path.map(print, 'attributes');
       if (isSelfClosingTag) {
         return group(['<', node.name, indent(group(attributes)), line, `/>`]);
         // return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
@@ -417,10 +417,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
           break;
       }
       return '';
-    }
-
-    case 'directive': {
-      return [line, node.name];
     }
 
     case 'doctype': {
@@ -619,7 +615,7 @@ function embed(
     formatttedScript = stripTrailingHardline(formatttedScript);
 
     // print
-    const attributes = node.attributes ? path.map(print, 'attributes') : [];
+    const attributes = path.map(print, 'attributes');
     const openingTag = group([
       '<script',
       indent(group(attributes)),
@@ -671,12 +667,10 @@ function embed(
         formattedStyles = stripTrailingHardline(formattedStyles);
 
         // print
-        const attributes = node.attributes ? path.map(print, 'attributes') : [];
-        const directives = node.directives ? path.map(print, 'directives') : [];
-        const attrAndDirectives = directives.concat(attributes);
+        const attributes = path.map(print, 'attributes');
         const openingTag = group([
           '<style',
-          indent(group(attrAndDirectives)),
+          indent(group(attributes)),
           softline,
           '>',
         ]);
@@ -707,7 +701,7 @@ function embed(
 
         // print
         const formattedSass = join(hardline, formattedSassIndented.split('\n'));
-        const attributes = node.attributes ? path.map(print, 'attributes') : [];
+        const attributes = path.map(print, 'attributes');
         const openingTag = group([
           '<style',
           indent(group(attributes)),
