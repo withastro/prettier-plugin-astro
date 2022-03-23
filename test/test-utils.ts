@@ -24,7 +24,10 @@ function format(contents: string, options: prettier.Options = {}): string {
   return '';
 }
 
-function markdownFormat(contents: string, options: prettier.Options = {}): string {
+function markdownFormat(
+  contents: string,
+  options: prettier.Options = {}
+): string {
   try {
     return prettier.format(contents, {
       parser: 'markdown',
@@ -43,7 +46,9 @@ function markdownFormat(contents: string, options: prettier.Options = {}): strin
 }
 
 async function readFile(path: string) {
-  const res = await fs.readFile(fileURLToPath(new URL(`./fixtures${path}`, import.meta.url).toString()));
+  const res = await fs.readFile(
+    fileURLToPath(new URL(`./fixtures${path}`, import.meta.url).toString())
+  );
   return res.toString().replace(/\r\n/g, '\n');
 }
 
@@ -51,7 +56,10 @@ async function readFile(path: string) {
  * Utility to get `[src, out]` files
  */
 async function getFiles(name: string) {
-  const [src, out] = await Promise.all([readFile(`/${name}/input.astro`), readFile(`/${name}/output.astro`)]);
+  const [src, out] = await Promise.all([
+    readFile(`/${name}/input.astro`),
+    readFile(`/${name}/output.astro`),
+  ]);
   return [src, out];
 }
 
@@ -66,7 +74,10 @@ async function getOptions(name: string) {
 }
 
 async function getMarkdownFiles(name: string) {
-  const [src, out] = await Promise.all([readFile(`/${name}/input.md`), readFile(`/${name}/output.md`)]);
+  const [src, out] = await Promise.all([
+    readFile(`/${name}/input.md`),
+    readFile(`/${name}/output.md`),
+  ]);
   return [src, out];
 }
 
@@ -83,15 +94,25 @@ type Mode = {
  *
  * markdown: for markdown files
  */
-export function test(name: string, folder: string, { mode }: Mode = { mode: 'default' }) {
+export function test(
+  name: string,
+  folder: string,
+  { mode }: Mode = { mode: 'default' }
+) {
   it(name, async () => {
     const getFiles_ = mode === 'markdown' ? getMarkdownFiles : getFiles;
     const [src, out] = await getFiles_(folder);
 
     if (mode === 'unaltered') {
-      expect(src, 'Unformated file and formated file are not the same').to.be.equal(out);
+      expect(
+        src,
+        'Unformated file and formated file are not the same'
+      ).to.be.equal(out);
     } else {
-      expect(src, 'Unformated file and formated file are the same').to.not.be.equal(out);
+      expect(
+        src,
+        'Unformated file and formated file are the same'
+      ).to.not.be.equal(out);
     }
 
     const options = await getOptions(folder);
