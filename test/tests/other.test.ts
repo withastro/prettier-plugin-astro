@@ -62,4 +62,4 @@ test('Can format nested comment', 'nested-comment');
 
 test('format binary expressions', 'binary-expression');
 
-test('format binary expressions', 'directive');
+test('format directives', 'directive');
