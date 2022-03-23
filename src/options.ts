@@ -28,11 +28,13 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
     category: 'Astro',
     type: 'boolean',
     default: true,
-    description: 'Enable/disable attribute shorthand if attribute name and expression are the same',
+    description:
+      'Enable/disable attribute shorthand if attribute name and expression are the same',
   },
 };
 
-export const parseSortOrder = (sortOrder: SortOrder): SortOrderPart[] => sortOrder.split(' | ') as SortOrderPart[];
+export const parseSortOrder = (sortOrder: SortOrder): SortOrderPart[] =>
+  sortOrder.split(' | ') as SortOrderPart[];
 
 export type SortOrder = 'markup | styles' | 'styles | markup';
 

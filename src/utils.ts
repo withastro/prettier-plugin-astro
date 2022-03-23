@@ -1,4 +1,10 @@
-import { AstPath as AstP, doc, Doc, ParserOptions as ParserOpts, util } from 'prettier';
+import {
+  AstPath as AstP,
+  doc,
+  Doc,
+  ParserOptions as ParserOpts,
+  util,
+} from 'prettier';
 
 import {
   anyNode,
@@ -54,7 +60,8 @@ export const formattableAttributes: string[] = [
 
 // export const is = (node: anyNode) => isSync(node);
 
-export const isRootNode = (node: anyNode): node is RootNode => node.type === 'root';
+export const isRootNode = (node: anyNode): node is RootNode =>
+  node.type === 'root';
 
 export const isEmptyTextNode = (node: Node): boolean => {
   return !!node && node.type === 'text' && getUnencodedText(node).trim() === '';
@@ -63,7 +70,9 @@ export const isEmptyTextNode = (node: Node): boolean => {
 export const isPreTagContent = (path: AstPath): boolean => {
   if (!path || !path.stack || !Array.isArray(path.stack)) return false;
   return path.stack.some(
-    (node: anyNode) => (node.type === 'element' && node.name.toLowerCase() === 'pre') || (node.type === 'attribute' && !formattableAttributes.includes(node.name))
+    (node: anyNode) =>
+      (node.type === 'element' && node.name.toLowerCase() === 'pre') ||
+      (node.type === 'attribute' && !formattableAttributes.includes(node.name))
   );
 };
 
@@ -80,7 +89,10 @@ export function isLoneMustacheTag(node: AttributeNode): boolean {
 /**
  * True if node is of type `{a}` or `a={a}`
  */
-export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserOptions): boolean {
+export function isOrCanBeConvertedToShorthand(
+  node: AttributeNode,
+  opts: ParserOptions
+): boolean {
   if (!opts.astroAllowShorthand) return false;
   if (node.kind === 'shorthand') {
     return true;
@@ -105,7 +117,10 @@ export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserO
 /**
  *  True if node is of type `{a}` and astroAllowShorthand is false
  */
-export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeNode, opts: ParserOptions): boolean {
+export function isShorthandAndMustBeConvertedToBinaryExpression(
+  node: AttributeNode,
+  opts: ParserOptions
+): boolean {
   if (opts.astroAllowShorthand) return false;
   if (node.type === 'attribute' && node.kind === 'shorthand') {
     return true;
@@ -123,7 +138,10 @@ export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeN
 // TODO: TEST IF IT'S GETTING THE CORRECT TEXT
 export function getText(node: anyNode, opts: ParserOptions): string {
   if (!node.position) return '';
-  return opts.originalText.slice(node.position.start.offset + 1, node.position.end?.offset);
+  return opts.originalText.slice(
+    node.position.start.offset + 1,
+    node.position.end?.offset
+  );
   // return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
 }
 
@@ -149,7 +167,10 @@ export function getUnencodedText(node: NodeWithText): string {
 /**
  *  Returns the content of the node
  */
-export function printRaw(node: anyNode, stripLeadingAndTrailingNewline = false): string {
+export function printRaw(
+  node: anyNode,
+  stripLeadingAndTrailingNewline = false
+): string {
   if (!isNodeWithChildren(node)) {
     return '';
   }
@@ -177,19 +198,42 @@ export function printRaw(node: anyNode, stripLeadingAndTrailingNewline = false):
   return raw;
 }
 
-export function isNodeWithChildren(node: anyNode): node is anyNode & NodeWithChildren {
+export function isNodeWithChildren(
+  node: anyNode
+): node is anyNode & NodeWithChildren {
   return node && Array.isArray(node.children);
 }
 
-export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): node is InlineElementNode {
-  return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);
+export function isInlineElement(
+  path: AstPath,
+  opts: ParserOptions,
+  node: anyNode
+): node is InlineElementNode {
+  return (
+    node &&
+    node.type === 'element' &&
+    !isBlockElement(node, opts) &&
+    !isPreTagContent(path)
+  );
 }
 
-export function isBlockElement(node: anyNode, opts: ParserOptions): node is BlockElementNode {
-  return node && node.type === 'element' && opts.htmlWhitespaceSensitivity !== 'strict' && (opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name));
+export function isBlockElement(
+  node: anyNode,
+  opts: ParserOptions
+): node is BlockElementNode {
+  return (
+    node &&
+    node.type === 'element' &&
+    opts.htmlWhitespaceSensitivity !== 'strict' &&
+    (opts.htmlWhitespaceSensitivity === 'ignore' ||
+      blockElements.includes(node.name))
+  );
 }
 
-export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines = 1): node is TextNode {
+export function isTextNodeStartingWithLinebreak(
+  node: TextNode,
+  nrLines = 1
+): node is TextNode {
   return startsWithLinebreak(getUnencodedText(node), nrLines);
   // return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
 }
@@ -270,7 +314,10 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 /**
  * Returns true if the softline between `</tagName` and `>` can be omitted.
  */
-export function canOmitSoftlineBeforeClosingTag(path: AstPath, opts: ParserOptions): boolean {
+export function canOmitSoftlineBeforeClosingTag(
+  path: AstPath,
+  opts: ParserOptions
+): boolean {
   return isLastChildWithinParentBlockElement(path, opts);
   // return !hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options);
   // return !options.svelteBracketNewLine && (!hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options));
@@ -293,7 +340,10 @@ function getChildren(node: anyNode): Node[] {
   return isNodeWithChildren(node) ? node.children : [];
 }
 
-function isLastChildWithinParentBlockElement(path: AstPath, opts: ParserOptions): boolean {
+function isLastChildWithinParentBlockElement(
+  path: AstPath,
+  opts: ParserOptions
+): boolean {
   const parent = path.getParentNode();
   if (!parent || !isBlockElement(parent, opts)) {
     return false;
@@ -642,16 +692,28 @@ export function manualDedent(input: string) {
 export function getMarkdownName(script: string): Set<string> {
   // default import: could be named anything
   let defaultMatch;
-  while ((defaultMatch = /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(script))) {
+  while (
+    (defaultMatch =
+      /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(
+        script
+      ))
+  ) {
     if (defaultMatch[1]) return new Set([defaultMatch[1].trim()]);
   }
 
   // named component: must have "Markdown" in specifier, but can be renamed via "as"
   let namedMatch;
-  while ((namedMatch = /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))) {
+  while (
+    (namedMatch =
+      /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))
+  ) {
     if (namedMatch[1] && !namedMatch[1].includes('Markdown')) continue;
     // if "Markdown" was imported, find out whether or not it was renamed
-    const rawImports = namedMatch[1].trim().replace(/^\{/, '').replace(/\}$/, '').trim();
+    const rawImports = namedMatch[1]
+      .trim()
+      .replace(/^\{/, '')
+      .replace(/\}$/, '')
+      .trim();
     let importName = 'Markdown';
     for (const spec of rawImports.split(',')) {
       const [original, renamed] = spec.split(' as ').map((s) => s.trim());
@@ -682,5 +744,7 @@ export function isTextNode(node: Node): node is TextNode {
 
 export function isInsideQuotedAttribute(path: AstPath): boolean {
   const stack = path.stack as anyNode[];
-  return stack.some((node) => node.type === 'attribute' && !isLoneMustacheTag(node));
+  return stack.some(
+    (node) => node.type === 'attribute' && !isLoneMustacheTag(node)
+  );
 }
