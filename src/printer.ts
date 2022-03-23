@@ -525,20 +525,16 @@ function embed(
   if (!node) return null;
 
   if (node.type === 'expression') {
-    const textContent = getText(node, opts);
+    const textContent = printRaw(node);
 
-    let content: Doc | string;
+    let content: Doc;
 
-    if (node.children.length === 1) {
-      content = textContent;
-    } else {
-      content = textToDoc(textContent, {
-        ...opts,
-        parser: 'babel-ts',
-        semi: false,
-      });
-      content = stripTrailingHardline(content);
-    }
+    content = textToDoc(forceIntoExpression(textContent), {
+      ...opts,
+      parser: expressionParser,
+      semi: false,
+    });
+    content = stripTrailingHardline(content);
 
     // if (node.children[0].value) {
     //   content = textToDoc(forceIntoExpression(textContent), { parser: expressionParser });

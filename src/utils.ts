@@ -179,7 +179,10 @@ export function printRaw(
     return '';
   }
 
-  let raw = node.children.reduce((prev, curr) => prev + serialize(curr), '');
+  let raw = node.children.reduce(
+    (prev: string, curr: Node) => prev + serialize(curr),
+    ''
+  );
 
   if (!stripLeadingAndTrailingNewline) {
     return raw;
