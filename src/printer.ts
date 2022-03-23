@@ -107,6 +107,7 @@ function printComment(commentPath: AstPath, options: ParserOptions): Doc {
 
 export type printFn = (path: AstPath) => Doc;
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   const node = path.getValue();
   // const isMarkdownSubDoc = opts.parentParser === 'markdown'; // is this a code block within .md?
@@ -232,8 +233,8 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
         // No hugging of content means it's either a block element and/or there's whitespace at the start/end
         let noHugSeparatorStart: _doc.builders.Concat | _doc.builders.Line | _doc.builders.Softline | string = softline;
         let noHugSeparatorEnd: _doc.builders.Concat | _doc.builders.Line | _doc.builders.Softline | string = softline;
-        let hugStart = shouldHugStart(node, opts);
-        let hugEnd = shouldHugEnd(node, opts);
+        const hugStart = shouldHugStart(node, opts);
+        const hugEnd = shouldHugEnd(node, opts);
 
         let body;
 
@@ -385,7 +386,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 function splitTextToDocs(node: NodeWithText): Doc[] {
   const text = getUnencodedText(node);
 
-  let textLines = text.split(/[\t\n\f\r ]+/);
+  const textLines = text.split(/[\t\n\f\r ]+/);
 
   let docs = join(line, textLines).parts.filter((s) => s !== '');
 
@@ -415,6 +416,7 @@ function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOpt
 
 let markdownComponentName = new Set();
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
 function embed(path: AstPath, print: printFn, textToDoc: (text: string, options: object) => Doc, opts: ParserOptions) {
   // TODO: ADD TYPES OR FIND ANOTHER WAY TO ACHIVE THIS
   // @ts-ignore
@@ -518,7 +520,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
 
   // format style element
   if (node.type === 'element' && node.name === 'style') {
-    let styleTagContent = node.children[0].value.trim();
+    const styleTagContent = node.children[0].value.trim();
 
     const supportedStyleLangValues = ['css', 'scss', 'sass'];
     let parserLang = 'css';
@@ -559,7 +561,7 @@ function embed(path: AstPath, print: printFn, textToDoc: (text: string, options:
         const { result: raw } = manualDedent(styleTagContent);
 
         // format
-        let formattedSassIndented = SassFormatter.Format(raw, sassOptions).trim();
+        const formattedSassIndented = SassFormatter.Format(raw, sassOptions).trim();
 
         // print
         const formattedSass = join(hardline, formattedSassIndented.split('\n'));

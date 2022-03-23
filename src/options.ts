@@ -1,9 +1,5 @@
 import { SupportOption } from 'prettier';
 
-declare module 'prettier' {
-  interface RequiredOptions extends PluginOptions {}
-}
-
 export interface PluginOptions {
   astroSortOrder: SortOrder;
   astroAllowShorthand: boolean;

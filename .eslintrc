@@ -1,26 +1,20 @@
 {
-  "ignorePatterns": ["test/fixtures/**", "dist/**", "rollup.config.js"],
-  "plugins": ["prettier-doc"],
-  "extends": ["eslint:recommended", "plugin:prettier-doc/recommended", "plugin:node/recommended"],
+  "ignorePatterns": ["test/fixtures/**", "dist/**"],
+  "plugins": ["prettier-doc", "@typescript-eslint", "prettier"],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended"],
   "rules": {
-    "curly": ["error", "multi-line"],
-    "node/no-unsupported-features/es-builtins": [
-      "error",
-      {
-        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
-        "ignores": []
-      }
-    ],
-    "node/no-unsupported-features/node-builtins": [
-      "error",
-      {
-        "version": "^12.20.0 || ^14.13.1 || >=16.0.0",
-        "ignores": []
-      }
-    ]
-  },
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    "no-console": "warn",
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": ["error"]
   }
 }
