@@ -122,7 +122,8 @@ export function isShorthandAndMustBeConvertedToBinaryExpression(node: AttributeN
 
 // TODO: TEST IF IT'S GETTING THE CORRECT TEXT
 export function getText(node: anyNode, opts: ParserOptions): string {
-  return opts.originalText.slice(node.position?.start.offset! + 1, node.position?.end?.offset);
+  if (!node.position) return '';
+  return opts.originalText.slice(node.position.start.offset + 1, node.position.end?.offset);
   // return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
 }
 
@@ -148,7 +149,7 @@ export function getUnencodedText(node: NodeWithText): string {
 /**
  *  Returns the content of the node
  */
-export function printRaw(node: anyNode, stripLeadingAndTrailingNewline: boolean = false): string {
+export function printRaw(node: anyNode, stripLeadingAndTrailingNewline = false): string {
   if (!isNodeWithChildren(node)) {
     return '';
   }
@@ -188,12 +189,12 @@ export function isBlockElement(node: anyNode, opts: ParserOptions): node is Bloc
   return node && node.type === 'element' && opts.htmlWhitespaceSensitivity !== 'strict' && (opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name));
 }
 
-export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines: number = 1): node is TextNode {
+export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines = 1): node is TextNode {
   return startsWithLinebreak(getUnencodedText(node), nrLines);
   // return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
-export function startsWithLinebreak(text: string, nrLines: number = 1): boolean {
+export function startsWithLinebreak(text: string, nrLines = 1): boolean {
   return new RegExp(`^([\\t\\f\\r ]*\\n){${nrLines}}`).test(text);
 }
 
@@ -201,7 +202,7 @@ export function startsWithLinebreak(text: string, nrLines: number = 1): boolean 
 //   return node.type === 'text' && endsWithLinebreak(getUnencodedText(node), nrLines);
 // }
 
-export function endsWithLinebreak(text: string, nrLines: number = 1): boolean {
+export function endsWithLinebreak(text: string, nrLines = 1): boolean {
   return new RegExp(`(\\n[\\t\\f\\r ]*){${nrLines}}$`).test(text);
 }
 
@@ -583,7 +584,7 @@ export function trimTextNodeRight(node: TextNode): void {
 export function manualDedent(input: string) {
   // first, perform interpolation
   let result = '';
-  for (var i = 0; i < input.length; i++) {
+  for (let i = 0; i < input.length; i++) {
     result += input[i]
       // join lines when there is a suppressed newline
       .replace(/\\\n[ \t]*/g, '')
@@ -591,6 +592,7 @@ export function manualDedent(input: string) {
       .replace(/\\`/g, '`');
 
     if (i < (arguments.length <= 1 ? 0 : arguments.length - 1)) {
+      // eslint-disable-next-line prefer-rest-params
       result += arguments.length <= i + 1 ? undefined : arguments[i + 1];
     }
   }
@@ -599,9 +601,9 @@ export function manualDedent(input: string) {
   const lines = result.split('\n');
   let mindent: number | null = null;
   lines.forEach(function (l) {
-    var m = l.match(/^(\s+)\S+/);
+    const m = l.match(/^(\s+)\S+/);
     if (m) {
-      var indent = m[1].length;
+      const indent = m[1].length;
       if (!mindent) {
         // this is the first indented line
         mindent = indent;
@@ -613,7 +615,7 @@ export function manualDedent(input: string) {
 
   if (mindent !== null) {
     (function () {
-      var m = mindent; // appease Flow
+      const m = mindent; // appease Flow
       result = lines
         .map(function (l) {
           return l[0] === ' ' ? l.slice(m) : l;
