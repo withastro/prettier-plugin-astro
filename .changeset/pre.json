@@ -4,5 +4,13 @@
   "initialVersions": {
     "prettier-plugin-astro": "0.0.12"
   },
-  "changesets": ["lazy-actors-complain", "poor-onions-lay"]
+  "changesets": [
+    "brave-walls-sneeze",
+    "bright-pens-shout",
+    "great-months-perform",
+    "lazy-actors-complain",
+    "poor-onions-lay",
+    "sweet-cameras-build",
+    "thirty-taxis-scream"
+  ]
 }
