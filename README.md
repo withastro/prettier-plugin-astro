@@ -1,33 +1,77 @@
-# Beta Prettier Plugin for [Astro](https://github.com/withastro/astro)
+# Beta [Prettier Plugin](https://www.npmjs.com/package/prettier-plugin-astro) for [Astro](https://github.com/withastro/astro)
 
-## Install [prettier-plugin-astro](https://www.npmjs.com/package/prettier-plugin-astro)
+Format your Astro files using Prettier.
 
-1. `yarn add --dev prettier-plugin-astro` or `npm i -D prettier-plugin-astro`
-1. `yarn prettier .` to check your formatting / `yarn prettier -w .` to fix your formatting.
-1. Add
+## Format with vscode
+
+1. Install the [Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+1. Install the plugin as a dev dependency:
+
+With yarn:
+
+```shell
+yarn add --dev prettier-plugin-astro
+```
+
+With npm:
+
+```shell
+npm i -D prettier-plugin-astro
+```
+
+## Format with CLI
+
+1. Install Prettier and the plugin as a dev dependency:
+
+With yarn:
+
+```shell
+yarn add --dev prettier prettier-plugin-astro
+```
+
+With npm:
+
+```shell
+npm i -D prettier prettier-plugin-astro
+```
+
+2. `yarn prettier .` to check your formatting / `yarn prettier -w .` to fix your formatting.
+3. Add
 
 ```json
 "format": "yarn prettier -w .",
 ```
 
-to your `package.json` and create a `.prettierignore` to ignore any files.
+to your `package.json`. [Read more about it.](https://prettier.io/docs/en/cli.html)
 
-## Contributing
+## Options
 
-To get setup:
+Most [options from Prettier](https://prettier.io/docs/en/options.html) will work with the plugin and can be set in a [configuration file](https://prettier.io/docs/en/configuration.html) or through [CLI flags](https://prettier.io/docs/en/cli.html).
 
-1. `git clone git@github.com:withastro/prettier-plugin-astro.git`
-1. `yarn`
-1. `yarn build`
-1. Run tests with [`yarn test`](https://vitest.dev/guide/)
-1. Lint code with `yarn lint`
-1. Format code with `yarn format`
-1. Run `yarn changeset` to add your changes to the changelog on version bump.
-   Most changes to the plugin should be `patch` changes while we're before `1.0.0`.
+### Astro Sort Order
 
-## Resources for contributing
+Sort order for markup and styles.
 
-- [prettier rationale](https://prettier.io/docs/en/rationale.html)
-- [prettier plugin docs](https://prettier.io/docs/en/plugins.html)
-- [svelte prettier plugin](https://github.com/sveltejs/prettier-plugin-svelte)
-- [prettier html formatter](https://github.com/prettier/prettier/tree/main/src/language-html)
+Format: join the keywords `markup` and `styles` with a `|` in the order you want.
+
+| Default                           | CLI Override                  | API Override               |
+| --------------------------------- | ----------------------------- | -------------------------- |
+| <code>markup &#124; styles</code> | `--astro-sort-order <string>` | `astroSortOrder: <string>` |
+
+### Astro Allow Shorthand
+
+Option to enable/disable component attribute shorthand if attribute name and expression are same.
+
+| Default | CLI Override                     | API Override                  |
+| ------- | -------------------------------- | ----------------------------- |
+| `false` | `--astro-allow-shorthand <bool>` | `astroAllowShorthand: <bool>` |
+
+## How to make it work with pnpm
+
+See [comment](https://github.com/withastro/prettier-plugin-astro/issues/97)
+
+## Ignore files
+
+Create a `.prettierignore` to ignore any files. [Read more about it.](https://prettier.io/docs/en/ignore.html)
+
+## [Contributing](CONTRIBUTING.md)
