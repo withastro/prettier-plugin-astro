@@ -1,5 +1,15 @@
 # prettier-plugin-astro
 
+## 0.1.0-next.2
+
+### Patch Changes
+
+- f244f83: Move from ava to vitest
+- 67341e7: Format directives
+- 0ed661a: Fix: Format expression
+- 87b0508: Change prettier width from 180 to 80
+- ace9861: Remove node 12 from ci
+
 ## 0.1.0-next.1
 
 ### Patch Changes
