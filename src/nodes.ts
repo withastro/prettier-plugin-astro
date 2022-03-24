@@ -1,7 +1,6 @@
 import {
   Node,
   AttributeNode,
-  DirectiveNode,
   RootNode,
   ElementNode,
   ComponentNode,
@@ -286,7 +285,6 @@ export const selfClosingTags = [
 export type anyNode =
   | RootNode
   | AttributeNode
-  | DirectiveNode
   | ElementNode
   | ComponentNode
   | CustomElementNode

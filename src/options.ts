@@ -1,5 +1,10 @@
 import { SupportOption } from 'prettier';
 
+declare module 'prettier' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface RequiredOptions extends PluginOptions {}
+}
+
 export interface PluginOptions {
   astroSortOrder: SortOrder;
   astroAllowShorthand: boolean;
