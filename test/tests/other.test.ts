@@ -26,11 +26,6 @@ test(
   'expr-and-html-comment'
 );
 
-// test(
-//   'converts valid shorthand variables into shorthand',
-//   'converts-to-shorthand'
-// );
-
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
 test(
