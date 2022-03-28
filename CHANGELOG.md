@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.0-next.3
+
+### Patch Changes
+
+- 73e81bd: Set astroAllowShorthand default option to false
+
 ## 0.1.0-next.2
 
 ### Patch Changes
