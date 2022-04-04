@@ -30,7 +30,14 @@ import {
   // TextNode,
 } from './nodes';
 
-import { serialize } from './syncUtils';
+import { createSyncFn } from 'synckit';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// the worker path must be absolute
+const serialize = createSyncFn(
+  require.resolve('../workers/serialize-worker.js')
+);
 
 // import makeSynchronous from 'make-synchronous';
 
