@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.0-next.4
+
+### Patch Changes
+
+- 3afbf2f: Update the internal sync engine to synckit
+
 ## 0.1.0-next.3
 
 ### Patch Changes
