@@ -1,7 +1,14 @@
-import parse from './parse';
 import printer from './printer';
 import { options } from './options';
 import { Parser, Printer, SupportLanguage } from 'prettier';
+import { createSyncFn } from 'synckit';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// the worker path must be absolute
+const parse = createSyncFn(require.resolve('../workers/parse-worker.js'));
+
+// do whatever you want, you will get the result synchronously!
 
 export const languages: Partial<SupportLanguage>[] = [
   {
@@ -14,7 +21,7 @@ export const languages: Partial<SupportLanguage>[] = [
 
 export const parsers: Record<string, Parser> = {
   astro: {
-    parse,
+    parse: (source) => parse(source),
     astFormat: 'astro',
     locStart: (node) => node.start,
     locEnd: (node) => node.end,
