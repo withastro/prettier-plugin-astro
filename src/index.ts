@@ -8,8 +8,6 @@ const require = createRequire(import.meta.url);
 // the worker path must be absolute
 const parse = createSyncFn(require.resolve('../workers/parse-worker.js'));
 
-// do whatever you want, you will get the result synchronously!
-
 export const languages: Partial<SupportLanguage>[] = [
   {
     name: 'astro',

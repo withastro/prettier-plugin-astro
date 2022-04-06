@@ -1,48 +1,67 @@
 import { test } from '../test-utils';
 
-test('can format an Astro file with frontmatter', 'frontmatter');
+const files = import.meta.glob('/test/fixtures/other/*/*', {
+  assert: { type: 'raw' },
+});
 
-test('can format an Astro file with embedded JSX expressions', 'embedded-expr');
+test('can format an Astro file with frontmatter', files, 'other/frontmatter');
+
+test(
+  'can format an Astro file with embedded JSX expressions',
+  files,
+  'other/embedded-expr'
+);
 
 test(
   'can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
-  'doctype-with-embedded-expr'
+  files,
+  'other/doctype-with-embedded-expr'
 );
 
 // // note(drew): this should be fixed in new Parser. And as this is an HTML4 / deprecated / extreme edge case, probably fine to ignore?
 // test.failing('can format an Astro file with `<!DOCTYPE>` with extraneous attributes', Prettier, 'doctype-with-extra-attributes');
 
-test('can format an Astro file with fragments', 'fragment');
+test('can format an Astro file with fragments', files, 'other/fragment');
 
 test(
   'can format an Astro file with a JSX expression in an attribute',
-  'attribute-with-embedded-expr'
+  files,
+  'other/attribute-with-embedded-expr'
 );
 
-test('does not alter html comments', 'html-comment', { mode: 'unaltered' });
+test('does not alter html comments', files, 'other/html-comment', {
+  mode: 'unaltered',
+});
 
 test(
   'can format an Astro file with a JSX expression and an HTML Comment',
-  'expr-and-html-comment'
+  files,
+  'other/expr-and-html-comment'
 );
 
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
 test(
   'can format an Astro file with components that are the uppercase version of html elements',
-  'preserve-tag-case'
+  files,
+  'other/preserve-tag-case'
 );
 
-test('Autocloses open tags.', 'autocloses-open-tags');
+test('Autocloses open tags.', files, 'other/autocloses-open-tags');
 
-test('can format an Astro file with a script tag inside it', 'with-script');
+test(
+  'can format an Astro file with a script tag inside it',
+  files,
+  'other/with-script'
+);
 
 // // Supports various prettier ignore comments
 // test('Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html', Prettier, 'prettier-ignore-html');
 
 test(
   'Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html',
-  'prettier-ignore-js'
+  files,
+  'other/prettier-ignore-js'
 );
 
 // // note(drew): this _may_ be covered under the 'prettier-ignore-html' test. But if any bugs arise, let’s add more tests!
@@ -51,10 +70,10 @@ test(
 // // note(drew): I think this is a function of Astro’s parser, not Prettier. We’ll have to handle helpful error messages there!
 // test.todo('test whether invalid files provide helpful support messages / still try to be parsed by prettier?');
 
-test('Format spread operator', 'spread-operator');
+test('Format spread operator', files, 'other/spread-operator');
 
-test('Can format nested comment', 'nested-comment');
+test('Can format nested comment', files, 'other/nested-comment');
 
-test('format binary expressions', 'binary-expression');
+test('format binary expressions', files, 'other/binary-expression');
 
-test('format directives', 'directive');
+test('format directives', files, 'other/directive');

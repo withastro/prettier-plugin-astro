@@ -1,7 +1,11 @@
 import prettier from 'prettier';
 import { fileURLToPath } from 'url';
-import { promises as fs } from 'fs';
 import { expect, it } from 'vitest';
+
+// workaround for vitest to watch for the files
+const srcFiles = import.meta.glob('/src/*.ts', {
+  assert: { type: 'raw' },
+});
 
 /**
  * format the contents of an astro file
@@ -45,50 +49,35 @@ function markdownFormat(
   return '';
 }
 
-async function readFile(path: string) {
-  const res = await fs.readFile(
-    fileURLToPath(new URL(`./fixtures${path}`, import.meta.url).toString())
-  );
-  return res.toString().replace(/\r\n/g, '\n');
-}
-
 /**
  * Utility to get `[src, out]` files
  */
-async function getFiles(name: string) {
-  const [src, out] = await Promise.all([
-    readFile(`/${name}/input.astro`),
-    readFile(`/${name}/output.astro`),
-  ]);
-  return [src, out];
+function getFiles(file: any, str: string, md?: string) {
+  const ext = md === 'markdown' ? 'md' : 'astro';
+  const src = file[`/test/fixtures/${str}/input.${ext}`];
+  const output = file[`/test/fixtures/${str}/output.${ext}`];
+  return [src, output];
 }
 
-async function getOptions(name: string) {
-  let options: object;
+function getOptions(files: any, folderName: string) {
+  let opts: object;
   try {
-    options = JSON.parse(await readFile(`/${name}/options.json`));
+    opts = JSON.parse(files[`/test/fixtures/${folderName}/options.json`]);
   } catch (e) {
-    options = {};
+    opts = {};
   }
-  return options;
+  return opts;
 }
 
-async function getMarkdownFiles(name: string) {
-  const [src, out] = await Promise.all([
-    readFile(`/${name}/input.md`),
-    readFile(`/${name}/output.md`),
-  ]);
-  return [src, out];
-}
-
-type Mode = {
-  mode: 'default' | 'unaltered' | 'markdown';
+type Options = {
+  mode?: 'default' | 'unaltered' | 'markdown';
 };
 
 /**
  * @param {string} name Test name.
- * @param {string} folder Folder of the input/output.
- * @param {Mode} [{ mode }={ mode: 'default' }]
+ * @param {any} files Files from import.meta.glob.
+ * @param {string} folderName Folder name.
+ * @param {Options} [{ mode }={ mode: 'default' }]
  *
  * unaltered: input and output should be the same
  *
@@ -96,12 +85,15 @@ type Mode = {
  */
 export function test(
   name: string,
-  folder: string,
-  { mode }: Mode = { mode: 'default' }
+  files: any,
+  folderName: string,
+  { mode }: Options = { mode: 'default' }
 ) {
   it(name, async () => {
-    const getFiles_ = mode === 'markdown' ? getMarkdownFiles : getFiles;
-    const [src, out] = await getFiles_(folder);
+    const [src, out] = [...getFiles(files, folderName, mode)];
+
+    expect(src, 'Missing input file').to.not.be.undefined;
+    expect(out, 'Missing output file').to.not.be.undefined;
 
     if (mode === 'unaltered') {
       expect(
@@ -115,15 +107,15 @@ export function test(
       ).to.not.be.equal(out);
     }
 
-    const options = await getOptions(folder);
-
     const formatFile = mode === 'markdown' ? markdownFormat : format;
 
-    const formatted = formatFile(src, options);
-    expect(formatted, 'Incorrect formating').toBe(out);
+    const opts = getOptions(files, folderName);
+
+    const formatted = formatFile(src, opts);
+    expect(formatted, 'Incorrect formating').toEqual(out);
 
     // test that our formatting is idempotent
-    const formattedTwice = formatFile(formatted, options);
-    expect(formatted, 'Formatting is not idempotent').toBe(formattedTwice);
+    const formattedTwice = formatFile(formatted, opts);
+    expect(formatted, 'Formatting is not idempotent').toEqual(formattedTwice);
   });
 }
