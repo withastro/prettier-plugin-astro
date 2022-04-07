@@ -19,6 +19,7 @@
     "@typescript-eslint/no-this-alias": "off",
     "no-console": "warn",
     "no-shadow": "off",
-    "@typescript-eslint/no-shadow": ["error"]
+    "@typescript-eslint/no-shadow": ["error"],
+    "prettier/prettier": "warn"
   }
 }

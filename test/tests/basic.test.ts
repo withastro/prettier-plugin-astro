@@ -1,8 +1,13 @@
 import { test } from '../test-utils';
 
-test('can format a basic astro file', 'basic');
+const files = import.meta.glob('/test/fixtures/basic/*/*', {
+  assert: { type: 'raw' },
+});
+
+test('can format a basic astro file', files, 'basic/basic-html');
 
 test(
   'can format an Astro file with a single style element',
-  'single-style-element'
+  files,
+  'basic/single-style-element'
 );

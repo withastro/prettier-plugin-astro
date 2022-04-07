@@ -39,8 +39,6 @@ const serialize = createSyncFn(
   require.resolve('../workers/serialize-worker.js')
 );
 
-// import makeSynchronous from 'make-synchronous';
-
 type ParserOptions = ParserOpts<anyNode>;
 type AstPath = AstP<anyNode>;
 
