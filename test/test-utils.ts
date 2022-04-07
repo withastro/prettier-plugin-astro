@@ -50,13 +50,16 @@ function markdownFormat(
 }
 
 /**
- * Utility to get `[src, out]` files
+ * Utility to get `[input, output]` files
  */
 function getFiles(file: any, str: string, md?: string) {
   const ext = md === 'markdown' ? 'md' : 'astro';
-  const src = file[`/test/fixtures/${str}/input.${ext}`];
-  const output = file[`/test/fixtures/${str}/output.${ext}`];
-  return [src, output];
+  let input: string = file[`/test/fixtures/${str}/input.${ext}`];
+  let output: string = file[`/test/fixtures/${str}/output.${ext}`];
+  // workaround: normalize end of lines to pass windows ci
+  input = input.replace(/(\r\n|\r)/gm, '\n');
+  output = output.replace(/(\r\n|\r)/gm, '\n');
+  return { input, output };
 }
 
 function getOptions(files: any, folderName: string) {
@@ -90,32 +93,32 @@ export function test(
   { mode }: Options = { mode: 'default' }
 ) {
   it(name, async () => {
-    const [src, out] = [...getFiles(files, folderName, mode)];
+    const { input, output } = getFiles(files, folderName, mode);
 
-    expect(src, 'Missing input file').to.not.be.undefined;
-    expect(out, 'Missing output file').to.not.be.undefined;
+    expect(input, 'Missing input file').to.not.be.undefined;
+    expect(output, 'Missing output file').to.not.be.undefined;
 
     if (mode === 'unaltered') {
       expect(
-        src,
+        input,
         'Unformated file and formated file are not the same'
-      ).to.be.equal(out);
+      ).to.be.equal(output);
     } else {
       expect(
-        src,
+        input,
         'Unformated file and formated file are the same'
-      ).to.not.be.equal(out);
+      ).to.not.be.equal(output);
     }
 
     const formatFile = mode === 'markdown' ? markdownFormat : format;
 
     const opts = getOptions(files, folderName);
 
-    const formatted = formatFile(src, opts);
-    expect(formatted, 'Incorrect formating').toEqual(out);
+    const formatted = formatFile(input, opts);
+    expect(formatted, 'Incorrect formating').toBe(output);
 
     // test that our formatting is idempotent
     const formattedTwice = formatFile(formatted, opts);
-    expect(formatted, 'Formatting is not idempotent').toEqual(formattedTwice);
+    expect(formatted, 'Formatting is not idempotent').toBe(formattedTwice);
   });
 }
