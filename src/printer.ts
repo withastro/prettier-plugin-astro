@@ -607,7 +607,7 @@ function embed(
 
   // format script element
   if (node.type === 'element' && node.name === 'script') {
-    const scriptContent = node.children[0].value;
+    const scriptContent = printRaw(node);
     let formatttedScript = textToDoc(scriptContent, {
       ...opts,
       parser: 'typescript',
@@ -640,7 +640,7 @@ function embed(
 
   // format style element
   if (node.type === 'element' && node.name === 'style') {
-    const styleTagContent = node.children[0].value.trim();
+    const styleTagContent = printRaw(node);
 
     const supportedStyleLangValues = ['css', 'scss', 'sass'];
     let parserLang = 'css';

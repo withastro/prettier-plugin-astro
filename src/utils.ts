@@ -209,7 +209,7 @@ export function printRaw(
 export function isNodeWithChildren(
   node: anyNode
 ): node is anyNode & NodeWithChildren {
-  return node && Array.isArray(node.children);
+  return node && 'children' in node && Array.isArray(node.children);
 }
 
 export function isInlineElement(
@@ -638,56 +638,45 @@ export function trimTextNodeRight(node: TextNode): void {
 //   });
 // }
 
-// https://github.com/dmnd/dedent/blob/master/dist/dedent.js
-export function manualDedent(input: string) {
-  // first, perform interpolation
-  let result = '';
-  for (let i = 0; i < input.length; i++) {
-    result += input[i]
-      // join lines when there is a suppressed newline
-      .replace(/\\\n[ \t]*/g, '')
-      // handle escaped backticks
-      .replace(/\\`/g, '`');
+/** dedent string & return tabSize (the last part is what we need) */
+export function manualDedent(input: string): {
+  tabSize: number;
+  char: string;
+  result: string;
+} {
+  let minTabSize = Infinity;
+  let result = input;
+  // 1. normalize
+  result = result.replace(/\r\n/g, '\n');
 
-    if (i < (arguments.length <= 1 ? 0 : arguments.length - 1)) {
-      // eslint-disable-next-line prefer-rest-params
-      result += arguments.length <= i + 1 ? undefined : arguments[i + 1];
+  // 2. count tabSize
+  let char = '';
+  for (const line of result.split('\n')) {
+    if (!line) continue;
+    // if any line begins with a non-whitespace char, minTabSize is 0
+    if (line[0] && /^[^\s]/.test(line[0])) {
+      minTabSize = 0;
+      break;
+    }
+    const match = line.match(/^(\s+)\S+/); // \S ensures we don’t count lines of pure whitespace
+    if (match) {
+      if (match[1] && !char) char = match[1][0];
+      if (match[1].length < minTabSize) minTabSize = match[1].length;
     }
   }
 
-  // now strip indentation
-  const lines = result.split('\n');
-  let mindent: number | null = null;
-  lines.forEach(function (l) {
-    const m = l.match(/^(\s+)\S+/);
-    if (m) {
-      const indent = m[1].length;
-      if (!mindent) {
-        // this is the first indented line
-        mindent = indent;
-      } else {
-        mindent = Math.min(mindent, indent);
-      }
-    }
-  });
-
-  if (mindent !== null) {
-    (function () {
-      const m = mindent; // appease Flow
-      result = lines
-        .map(function (l) {
-          return l[0] === ' ' ? l.slice(m) : l;
-        })
-        .join('\n');
-    })();
+  // 3. reformat string
+  if (minTabSize > 0 && Number.isFinite(minTabSize)) {
+    result = result.replace(
+      new RegExp(`^${new Array(minTabSize + 1).join(char)}`, 'gm'),
+      ''
+    );
   }
 
   return {
-    result: result
-      // dedent eats leading and trailing whitespace too
-      .trim()
-      // handle escaped newlines at the end to ensure they don't get stripped too
-      .replace(/\\n/g, '\n'),
+    tabSize: minTabSize === Infinity ? 0 : minTabSize,
+    char,
+    result,
   };
 }
 
