@@ -57,8 +57,8 @@ function getFiles(file: any, str: string, md?: string) {
   let input: string = file[`/test/fixtures/${str}/input.${ext}`];
   let output: string = file[`/test/fixtures/${str}/output.${ext}`];
   // workaround: normalize end of lines to pass windows ci
-  input = input.replace(/(\r\n|\r)/gm, '\n');
-  output = output.replace(/(\r\n|\r)/gm, '\n');
+  if (input) input = input.replace(/(\r\n|\r)/gm, '\n');
+  if (output) output = output.replace(/(\r\n|\r)/gm, '\n');
   return { input, output };
 }
 
