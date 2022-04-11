@@ -74,6 +74,7 @@ import {
   // trimChildren,
   trimTextNodeLeft,
   trimTextNodeRight,
+  removeDuplicates,
 } from './utils';
 
 // function printTopLevelParts(node: RootNode, path: AstPath, opts: ParserOptions, print: printFn): Doc {
@@ -163,6 +164,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
   // 3. handle printing
   switch (node.type) {
     case 'root': {
+      removeDuplicates(node);
       return [stripTrailingHardline(path.map(print, 'children')), hardline];
     }
 
