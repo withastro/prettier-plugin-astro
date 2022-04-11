@@ -747,8 +747,8 @@ export function isInsideQuotedAttribute(path: AstPath): boolean {
 }
 
 /**
- * Currently the compiler has a bug wich duplicates text nodes when no
- *  TagLikeNode elements are present
+ * Currently, the compiler has a bug that duplicates text nodes when no
+ *  TagLikeNode elements are present.
  */
 export function removeDuplicates(root: RootNode) {
   root.children = root.children.filter((node, i, rootChildren) => {
