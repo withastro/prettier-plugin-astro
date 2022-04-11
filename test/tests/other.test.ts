@@ -4,27 +4,27 @@ const files = import.meta.glob('/test/fixtures/other/*/*', {
   assert: { type: 'raw' },
 });
 
-test('can format an Astro file with frontmatter', files, 'other/frontmatter');
+test('Can format an Astro file with frontmatter', files, 'other/frontmatter');
 
 test(
-  'can format an Astro file with embedded JSX expressions',
+  'Can format an Astro file with embedded JSX expressions',
   files,
   'other/embedded-expr'
 );
 
 test(
-  'can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
+  'Can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
   files,
   'other/doctype-with-embedded-expr'
 );
 
 // // note(drew): this should be fixed in new Parser. And as this is an HTML4 / deprecated / extreme edge case, probably fine to ignore?
-// test.failing('can format an Astro file with `<!DOCTYPE>` with extraneous attributes', Prettier, 'doctype-with-extra-attributes');
+// test.failing('Can format an Astro file with `<!DOCTYPE>` with extraneous attributes', Prettier, 'doctype-with-extra-attributes');
 
-test('can format an Astro file with fragments', files, 'other/fragment');
+test('Can format an Astro file with fragments', files, 'other/fragment');
 
 test(
-  'can format an Astro file with a JSX expression in an attribute',
+  'Can format an Astro file with a JSX expression in an attribute',
   files,
   'other/attribute-with-embedded-expr'
 );
@@ -34,7 +34,7 @@ test('does not alter html comments', files, 'other/html-comment', {
 });
 
 test(
-  'can format an Astro file with a JSX expression and an HTML Comment',
+  'Can format an Astro file with a JSX expression and an HTML Comment',
   files,
   'other/expr-and-html-comment'
 );
@@ -42,7 +42,7 @@ test(
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
 
 test(
-  'can format an Astro file with components that are the uppercase version of html elements',
+  'Can format an Astro file with components that are the uppercase version of html elements',
   files,
   'other/preserve-tag-case'
 );
@@ -50,7 +50,7 @@ test(
 test('Autocloses open tags.', files, 'other/autocloses-open-tags');
 
 test(
-  'can format an Astro file with a script tag inside it',
+  'Can format an Astro file with a script tag inside it',
   files,
   'other/with-script'
 );
@@ -74,6 +74,6 @@ test('Format spread operator', files, 'other/spread-operator');
 
 test('Can format nested comment', files, 'other/nested-comment');
 
-test('format binary expressions', files, 'other/binary-expression');
+test('Format binary expressions', files, 'other/binary-expression');
 
-test('format directives', files, 'other/directive');
+test('Format directives', files, 'other/directive');
