@@ -13,3 +13,5 @@ test(
 );
 
 test('Can format a basic astro only text', files, 'basic/simple-text');
+
+test('Can format html comments', files, 'basic/html-comment');

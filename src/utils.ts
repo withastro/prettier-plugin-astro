@@ -26,6 +26,7 @@ import {
   InlineElementNode,
   // MustacheTagNode,
   NodeWithChildren,
+  TagLikeNode,
   // NodeWithText,
   // TextNode,
 } from './nodes';
@@ -725,7 +726,7 @@ export function getMarkdownName(script: string): Set<string> {
 
 // TODO: USE THE COMPILER
 /** True if the node is of type text */
-export function isTextNode(node: Node): node is TextNode {
+export function isTextNode(node: anyNode): node is TextNode {
   return node.type === 'text';
 }
 
@@ -768,4 +769,45 @@ export function removeDuplicates(root: RootNode) {
       })
     );
   });
+}
+
+/** True if the node is TagLikeNode:
+ *
+ * ElementNode | ComponentNode | CustomElementNode | FragmentNode */
+export function isTagLikeNode(node: anyNode): node is TagLikeNode {
+  return (
+    node.type === 'element' ||
+    node.type === 'component' ||
+    node.type === 'custom-element' ||
+    node.type === 'fragment'
+  );
+}
+
+/**
+ * Returns siblings, that is, the children of the parent.
+ */
+export function getSiblings(path: AstPath): anyNode[] {
+  const parent = path.getParentNode();
+  if (!parent) return [];
+
+  return getChildren(parent);
+}
+
+export function getNextNode(path: AstPath): anyNode | null {
+  const node = path.getNode();
+  if (node) {
+    const siblings = getSiblings(path);
+    if (node.position?.start === siblings[siblings.length - 1].position?.start)
+      return null;
+    for (let i = 0; i < siblings.length; i++) {
+      const sibling = siblings[i];
+      if (
+        sibling.position?.start === node.position?.start &&
+        i !== siblings.length - 1
+      ) {
+        return siblings[i + 1];
+      }
+    }
+  }
+  return null;
 }
