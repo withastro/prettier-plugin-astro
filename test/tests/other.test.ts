@@ -29,10 +29,6 @@ test(
   'other/attribute-with-embedded-expr'
 );
 
-test('does not alter html comments', files, 'other/html-comment', {
-  mode: 'unaltered',
-});
-
 test(
   'Can format an Astro file with a JSX expression and an HTML Comment',
   files,

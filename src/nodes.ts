@@ -308,4 +308,5 @@ export type {
   DoctypeNode,
   CommentNode,
   FragmentNode,
+  TagLikeNode,
 } from '@astrojs/compiler/types';

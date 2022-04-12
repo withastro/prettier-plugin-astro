@@ -75,6 +75,8 @@ import {
   trimTextNodeLeft,
   trimTextNodeRight,
   removeDuplicates,
+  getNextNode,
+  isTagLikeNode,
 } from './utils';
 
 // function printTopLevelParts(node: RootNode, path: AstPath, opts: ParserOptions, print: printFn): Doc {
@@ -448,7 +450,12 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     //     '}',
     //   ];
     case 'comment':
-      return ['<!--', getUnencodedText(node), '-->'];
+      const nextNode = getNextNode(path);
+      let trailingLine: _doc.builders.Concat | string = '';
+      if (nextNode && isTagLikeNode(nextNode)) {
+        trailingLine = hardline;
+      }
+      return ['<!--', getUnencodedText(node), '-->', trailingLine];
     // case 'CodeSpan':
     //   return getUnencodedText(node);
     // case 'CodeFence': {
