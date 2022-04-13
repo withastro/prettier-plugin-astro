@@ -141,7 +141,7 @@ test(
   'Can format an Astro file with prettier "proseWrap: preserve" option',
   files,
   'options/option-prose-wrap-preserve',
-  { mode: 'markdown' }
+  true
 );
 
 // https://prettier.io/docs/en/options.html#prose-wrap
@@ -149,7 +149,7 @@ test(
   'Can format an Astro file with prettier "proseWrap: always" option',
   files,
   'options/option-prose-wrap-always',
-  { mode: 'markdown' }
+  true
 );
 
 // https://prettier.io/docs/en/options.html#prose-wrap
@@ -157,7 +157,7 @@ test(
   'Can format an Astro file with prettier "proseWrap: never" option',
   files,
   'options/option-prose-wrap-never',
-  { mode: 'markdown' }
+  true
 );
 
 // // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
