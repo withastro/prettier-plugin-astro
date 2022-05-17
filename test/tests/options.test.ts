@@ -47,11 +47,19 @@ test(
   'options/option-semicolon-false'
 );
 
-// // https://prettier.io/docs/en/options.html#quotes
-// test('Can format an Astro file with prettier "singleQuote: false" option',  'option-single-quote-false');
+// https://prettier.io/docs/en/options.html#quotes
+test(
+  'Can format an Astro file with prettier "singleQuote: false" option',
+  files,
+  'options/option-single-quote-false'
+);
 
-// // https://prettier.io/docs/en/options.html#quotes
-// test('Can format an Astro file with prettier "singleQuote: true" option',  'option-single-quote-true');
+// https://prettier.io/docs/en/options.html#quotes
+test(
+  'Can format an Astro file with prettier "singleQuote: true" option',
+  files,
+  'options/option-single-quote-true'
+);
 
 // https://prettier.io/docs/en/options.html#quote-props
 test(
@@ -74,11 +82,19 @@ test(
   'options/option-quote-props-preserve'
 );
 
-// // https://prettier.io/docs/en/options.html#jsx-quotes
-// test('Can format an Astro file with prettier "jsxSingleQuote: false" option',  'option-jsx-single-quote-false');
+// https://prettier.io/docs/en/options.html#jsx-quotes
+test(
+  'Can format an Astro file with prettier "jsxSingleQuote: false" option',
+  files,
+  'options/option-jsx-single-quote-false'
+);
 
-// // https://prettier.io/docs/en/options.html#jsx-quotes
-// test('Can format an Astro file with prettier "jsxSingleQuote: true" option',  'option-jsx-single-quote-true');
+// https://prettier.io/docs/en/options.html#jsx-quotes
+test(
+  'Can format an Astro file with prettier "jsxSingleQuote: true" option',
+  files,
+  'options/option-jsx-single-quote-true'
+);
 
 // https://prettier.io/docs/en/options.html#trailing-commas
 test(

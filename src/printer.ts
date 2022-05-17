@@ -402,7 +402,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
     // }
     case 'attribute': {
       const name = node.name.trim();
-      const quote = opts.singleQuote ? "'" : '"';
+      const quote = opts.jsxSingleQuote ? "'" : '"';
       switch (node.kind) {
         case 'empty':
           return [line, name];
