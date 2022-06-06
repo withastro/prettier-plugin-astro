@@ -1,5 +1,17 @@
 # prettier-plugin-astro
 
+## 0.1.0-next.5
+
+### Patch Changes
+
+- a7a6b14: Fix: format indented sass
+- ce5b38a: Refactor tests for better watch mode
+- 08ec9f1: Fix: prevent duplicate text
+- c5a7a7f: Update dependencies
+- 8a8b3e9: Update @astrojs/compiler and fix for spread in expression
+- f5fcc1b: Disable vitest multi-threading
+- da0fe36: Add new line after comments
+
 ## 0.1.0-next.4
 
 ### Patch Changes
