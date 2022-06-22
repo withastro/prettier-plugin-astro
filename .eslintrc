@@ -1,11 +1,6 @@
 {
-  "ignorePatterns": ["test/fixtures/**", "dist/**"],
   "plugins": ["prettier-doc", "@typescript-eslint", "prettier"],
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["plugin:@typescript-eslint/recommended", "prettier", "plugin:prettier/recommended"],
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/camelcase": "off",

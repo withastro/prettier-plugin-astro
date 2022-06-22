@@ -1,50 +1,46 @@
 import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/options/*/*', {
-  assert: { type: 'raw' },
+	assert: { type: 'raw' },
 });
 
 // https://prettier.io/docs/en/options.html#print-width
 // TODO: MAYBE NOT WORKING?
 test(
-  'Can format an Astro file with prettier "printWidth" option',
-  files,
-  'options/option-print-width'
+	'Can format an Astro file with prettier "printWidth" option',
+	files,
+	'options/option-print-width'
 );
 
 // https://prettier.io/docs/en/options.html#tab-width
+test('Can format an Astro file with prettier "tabWidth" option', files, 'options/option-tab-width');
+
+// https://prettier.io/docs/en/options.html#tabs
 test(
-  'Can format an Astro file with prettier "tabWidth" option',
-  files,
-  'options/option-tab-width'
+	'Can format an Astro file with prettier "useTabs: true" option',
+	files,
+	'options/option-use-tabs-true'
 );
 
 // https://prettier.io/docs/en/options.html#tabs
 test(
-  'Can format an Astro file with prettier "useTabs: true" option',
-  files,
-  'options/option-use-tabs-true'
-);
-
-// https://prettier.io/docs/en/options.html#tabs
-test(
-  'Can format an Astro file with prettier "useTabs: false" option',
-  files,
-  'options/option-use-tabs-false'
+	'Can format an Astro file with prettier "useTabs: false" option',
+	files,
+	'options/option-use-tabs-false'
 );
 
 // https://prettier.io/docs/en/options.html#semicolons
 test(
-  'Can format an Astro file with prettier "semi: true" option',
-  files,
-  'options/option-semicolon-true'
+	'Can format an Astro file with prettier "semi: true" option',
+	files,
+	'options/option-semicolon-true'
 );
 
 // https://prettier.io/docs/en/options.html#semicolons
 test(
-  'Can format an Astro file with prettier "semi: false" option',
-  files,
-  'options/option-semicolon-false'
+	'Can format an Astro file with prettier "semi: false" option',
+	files,
+	'options/option-semicolon-false'
 );
 
 // // https://prettier.io/docs/en/options.html#quotes
@@ -55,23 +51,23 @@ test(
 
 // https://prettier.io/docs/en/options.html#quote-props
 test(
-  'Can format an Astro file with prettier "quoteProps: as-needed" option',
-  files,
-  'options/option-quote-props-as-needed'
+	'Can format an Astro file with prettier "quoteProps: as-needed" option',
+	files,
+	'options/option-quote-props-as-needed'
 );
 
 // https://prettier.io/docs/en/options.html#quote-props
 test(
-  'Can format an Astro file with prettier "quoteProps: consistent" option',
-  files,
-  'options/option-quote-props-consistent'
+	'Can format an Astro file with prettier "quoteProps: consistent" option',
+	files,
+	'options/option-quote-props-consistent'
 );
 
 // https://prettier.io/docs/en/options.html#quote-props
 test(
-  'Can format an Astro file with prettier "quoteProps: preserve" option',
-  files,
-  'options/option-quote-props-preserve'
+	'Can format an Astro file with prettier "quoteProps: preserve" option',
+	files,
+	'options/option-quote-props-preserve'
 );
 
 // // https://prettier.io/docs/en/options.html#jsx-quotes
@@ -82,82 +78,82 @@ test(
 
 // https://prettier.io/docs/en/options.html#trailing-commas
 test(
-  'Can format an Astro file with prettier "trailingComma: es5" option',
-  files,
-  'options/option-trailing-comma-es5'
+	'Can format an Astro file with prettier "trailingComma: es5" option',
+	files,
+	'options/option-trailing-comma-es5'
 );
 
 // https://prettier.io/docs/en/options.html#trailing-commas
 test(
-  'Can format an Astro file with prettier "trailingComma: none" option',
-  files,
-  'options/option-trailing-comma-none'
+	'Can format an Astro file with prettier "trailingComma: none" option',
+	files,
+	'options/option-trailing-comma-none'
 );
 
 // https://prettier.io/docs/en/options.html#bracket-spacing
 test(
-  'Can format an Astro file with prettier "bracketSpacing: true" option',
-  files,
-  'options/option-bracket-spacing-true'
+	'Can format an Astro file with prettier "bracketSpacing: true" option',
+	files,
+	'options/option-bracket-spacing-true'
 );
 
 // https://prettier.io/docs/en/options.html#bracket-spacing
 test(
-  'Can format an Astro file with prettier "bracketSpacing: false" option',
-  files,
-  'options/option-bracket-spacing-false'
+	'Can format an Astro file with prettier "bracketSpacing: false" option',
+	files,
+	'options/option-bracket-spacing-false'
 );
 
 // https://prettier.io/docs/en/options.html#bracket-line
 test(
-  'Can format an Astro file with prettier "bracketSameLine: false" option',
-  files,
-  'options/option-bracket-same-line-false'
+	'Can format an Astro file with prettier "bracketSameLine: false" option',
+	files,
+	'options/option-bracket-same-line-false'
 );
 
 // https://prettier.io/docs/en/options.html#bracket-line
 test(
-  'Can format an Astro file with prettier "bracketSameLine: true" option',
-  files,
-  'options/option-bracket-same-line-true'
+	'Can format an Astro file with prettier "bracketSameLine: true" option',
+	files,
+	'options/option-bracket-same-line-true'
 );
 
 // https://prettier.io/docs/en/options.html#arrow-function-parentheses
 test(
-  'Can format an Astro file with prettier "arrowParens: always" option',
-  files,
-  'options/option-arrow-parens-always'
+	'Can format an Astro file with prettier "arrowParens: always" option',
+	files,
+	'options/option-arrow-parens-always'
 );
 
 // https://prettier.io/docs/en/options.html#arrow-function-parentheses
 test(
-  'Can format an Astro file with prettier "arrowParens: avoid" option',
-  files,
-  'options/option-arrow-parens-avoid'
+	'Can format an Astro file with prettier "arrowParens: avoid" option',
+	files,
+	'options/option-arrow-parens-avoid'
 );
 
 // https://prettier.io/docs/en/options.html#prose-wrap
 test(
-  'Can format an Astro file with prettier "proseWrap: preserve" option',
-  files,
-  'options/option-prose-wrap-preserve',
-  true
+	'Can format an Astro file with prettier "proseWrap: preserve" option',
+	files,
+	'options/option-prose-wrap-preserve',
+	true
 );
 
 // https://prettier.io/docs/en/options.html#prose-wrap
 test(
-  'Can format an Astro file with prettier "proseWrap: always" option',
-  files,
-  'options/option-prose-wrap-always',
-  true
+	'Can format an Astro file with prettier "proseWrap: always" option',
+	files,
+	'options/option-prose-wrap-always',
+	true
 );
 
 // https://prettier.io/docs/en/options.html#prose-wrap
 test(
-  'Can format an Astro file with prettier "proseWrap: never" option',
-  files,
-  'options/option-prose-wrap-never',
-  true
+	'Can format an Astro file with prettier "proseWrap: never" option',
+	files,
+	'options/option-prose-wrap-never',
+	true
 );
 
 // // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
@@ -168,9 +164,9 @@ test(
 
 // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
 test(
-  'Can format an Astro file with prettier "htmlWhitespaceSensitivity: ignore" option',
-  files,
-  'options/option-html-whitespace-sensitivity-ignore'
+	'Can format an Astro file with prettier "htmlWhitespaceSensitivity: ignore" option',
+	files,
+	'options/option-html-whitespace-sensitivity-ignore'
 );
 
 // // astro option: astroSortOrder
