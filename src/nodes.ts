@@ -1,22 +1,22 @@
 import {
-  Node,
-  AttributeNode,
-  RootNode,
-  ElementNode,
-  ComponentNode,
-  CustomElementNode,
-  ExpressionNode,
-  TextNode,
-  FrontmatterNode,
-  DoctypeNode,
-  CommentNode,
-  FragmentNode,
+	Node,
+	AttributeNode,
+	RootNode,
+	ElementNode,
+	ComponentNode,
+	CustomElementNode,
+	ExpressionNode,
+	TextNode,
+	FrontmatterNode,
+	DoctypeNode,
+	CommentNode,
+	FragmentNode,
 } from '@astrojs/compiler/types';
 
 // MISSING ATTRIBUTE NODE FROM THE NODE TYPE
 
 export interface NodeWithText {
-  value: string;
+	value: string;
 }
 
 // export interface Ast {
@@ -40,8 +40,8 @@ export interface NodeWithText {
 // export type attributeValue = TextNode[] | AttributeShorthandNode[] | MustacheTagNode[] | true;
 
 export interface NodeWithChildren {
-  // children: anyNode[];
-  children: Node[];
+	// children: anyNode[];
+	children: Node[];
 }
 
 // export interface NodeWithText {
@@ -154,159 +154,159 @@ export interface NodeWithChildren {
 // }
 
 export interface BlockElementNode extends ElementNode {
-  name: typeof blockElementsT[number];
+	name: typeof blockElementsT[number];
 }
 
 export interface InlineElementNode extends ElementNode {
-  name: typeof inlineElementsT[number];
+	name: typeof inlineElementsT[number];
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
 const blockElementsT = [
-  'address',
-  'article',
-  'aside',
-  'blockquote',
-  'details',
-  'dialog',
-  'dd',
-  'div',
-  'dl',
-  'dt',
-  'fieldset',
-  'figcaption',
-  'figure',
-  'footer',
-  'form',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'header',
-  'hgroup',
-  'hr',
-  'li',
-  'main',
-  'nav',
-  'ol',
-  'p',
-  'pre',
-  'section',
-  'table',
-  'ul',
-  // TODO: WIP
-  'title',
-  'html',
+	'address',
+	'article',
+	'aside',
+	'blockquote',
+	'details',
+	'dialog',
+	'dd',
+	'div',
+	'dl',
+	'dt',
+	'fieldset',
+	'figcaption',
+	'figure',
+	'footer',
+	'form',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'header',
+	'hgroup',
+	'hr',
+	'li',
+	'main',
+	'nav',
+	'ol',
+	'p',
+	'pre',
+	'section',
+	'table',
+	'ul',
+	// TODO: WIP
+	'title',
+	'html',
 ] as const;
 // https://github.com/microsoft/TypeScript/issues/31018
 export const blockElements: string[] = [...blockElementsT];
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Inline_elements
 const inlineElementsT = [
-  'a',
-  'abbr',
-  'acronym',
-  'audio',
-  'b',
-  'bdi',
-  'bdo',
-  'big',
-  'br',
-  'button',
-  'canvas',
-  'cite',
-  'code',
-  'data',
-  'datalist',
-  'del',
-  'dfn',
-  'em',
-  'embed',
-  'i',
-  'iframe',
-  'img',
-  'input',
-  'ins',
-  'kbd',
-  'label',
-  'map',
-  'mark',
-  'meter',
-  'noscript',
-  'object',
-  'output',
-  'picture',
-  'progress',
-  'q',
-  'ruby',
-  's',
-  'samp',
-  'script',
-  'select',
-  'slot',
-  'small',
-  'span',
-  'strong',
-  'sub',
-  'sup',
-  'svg',
-  'template',
-  'textarea',
-  'time',
-  'u',
-  'tt',
-  'var',
-  'video',
-  'wbr',
+	'a',
+	'abbr',
+	'acronym',
+	'audio',
+	'b',
+	'bdi',
+	'bdo',
+	'big',
+	'br',
+	'button',
+	'canvas',
+	'cite',
+	'code',
+	'data',
+	'datalist',
+	'del',
+	'dfn',
+	'em',
+	'embed',
+	'i',
+	'iframe',
+	'img',
+	'input',
+	'ins',
+	'kbd',
+	'label',
+	'map',
+	'mark',
+	'meter',
+	'noscript',
+	'object',
+	'output',
+	'picture',
+	'progress',
+	'q',
+	'ruby',
+	's',
+	'samp',
+	'script',
+	'select',
+	'slot',
+	'small',
+	'span',
+	'strong',
+	'sub',
+	'sup',
+	'svg',
+	'template',
+	'textarea',
+	'time',
+	'u',
+	'tt',
+	'var',
+	'video',
+	'wbr',
 ] as const;
 // https://github.com/microsoft/TypeScript/issues/31018
 export const inlineElements: string[] = [...inlineElementsT];
 
 // @see http://xahlee.info/js/html5_non-closing_tag.html
 export const selfClosingTags = [
-  'area',
-  'base',
-  'br',
-  'col',
-  'embed',
-  'hr',
-  'img',
-  'input',
-  'link',
-  'meta',
-  'param',
-  'source',
-  'track',
-  'wbr',
+	'area',
+	'base',
+	'br',
+	'col',
+	'embed',
+	'hr',
+	'img',
+	'input',
+	'link',
+	'meta',
+	'param',
+	'source',
+	'track',
+	'wbr',
 ];
 
 export type anyNode =
-  | RootNode
-  | AttributeNode
-  | ElementNode
-  | ComponentNode
-  | CustomElementNode
-  | ExpressionNode
-  | TextNode
-  | DoctypeNode
-  | CommentNode
-  | FragmentNode
-  | FrontmatterNode;
+	| RootNode
+	| AttributeNode
+	| ElementNode
+	| ComponentNode
+	| CustomElementNode
+	| ExpressionNode
+	| TextNode
+	| DoctypeNode
+	| CommentNode
+	| FragmentNode
+	| FrontmatterNode;
 
 export type {
-  AttributeNode,
-  Node,
-  RootNode,
-  ElementNode,
-  ComponentNode,
-  CustomElementNode,
-  ExpressionNode,
-  TextNode,
-  FrontmatterNode,
-  DoctypeNode,
-  CommentNode,
-  FragmentNode,
-  TagLikeNode,
+	AttributeNode,
+	Node,
+	RootNode,
+	ElementNode,
+	ComponentNode,
+	CustomElementNode,
+	ExpressionNode,
+	TextNode,
+	FrontmatterNode,
+	DoctypeNode,
+	CommentNode,
+	FragmentNode,
+	TagLikeNode,
 } from '@astrojs/compiler/types';

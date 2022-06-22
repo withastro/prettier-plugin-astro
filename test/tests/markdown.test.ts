@@ -1,7 +1,7 @@
 import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/markdown/*/*', {
-  assert: { type: 'raw' },
+	assert: { type: 'raw' },
 });
 
 // *** MARKDOWN ***
@@ -13,15 +13,15 @@ const files = import.meta.glob('/test/fixtures/markdown/*/*', {
 // );
 
 test(
-  'Can format an Astro file with a codespan inside <Markdown/>',
-  files,
-  'markdown/with-codespans'
+	'Can format an Astro file with a codespan inside <Markdown/>',
+	files,
+	'markdown/with-codespans'
 );
 
 test(
-  'Can format the content of a markdown component as markdown',
-  files,
-  'markdown/markdown-component-content'
+	'Can format the content of a markdown component as markdown',
+	files,
+	'markdown/markdown-component-content'
 );
 
 // test.todo("Don't escape '*' inside markdown");

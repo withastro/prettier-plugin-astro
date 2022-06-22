@@ -42,7 +42,7 @@ Additionally, you should set Prettier as the default formatter for Astro files o
 {
   "[astro]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  }
 }
 ```
 
@@ -59,13 +59,13 @@ module.exports = {
   plugins: [require.resolve('prettier-plugin-astro')],
   overrides: [
     {
-      files: "*.astro",
+      files: '*.astro',
       options: {
-        parser: "astro",
+        parser: 'astro',
       },
     },
   ],
-}
+};
 ```
 
 The `require.resolve` call can alternatively be changed to a direct path, like such: `plugins: ["./node_modules/prettier-plugin-astro"]` for usage inside a non-JS config file

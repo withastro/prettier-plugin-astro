@@ -1,34 +1,28 @@
-import {
-  AstPath as AstP,
-  doc,
-  Doc,
-  ParserOptions as ParserOpts,
-  util,
-} from 'prettier';
+import { AstPath as AstP, doc, Doc, ParserOptions as ParserOpts, util } from 'prettier';
 
 import {
-  anyNode,
-  Node,
-  RootNode,
-  AttributeNode,
-  ElementNode,
-  ComponentNode,
-  CustomElementNode,
-  ExpressionNode,
-  TextNode,
-  FrontmatterNode,
-  DoctypeNode,
-  CommentNode,
-  NodeWithText,
-  blockElements,
-  // attributeValue,
-  BlockElementNode,
-  InlineElementNode,
-  // MustacheTagNode,
-  NodeWithChildren,
-  TagLikeNode,
-  // NodeWithText,
-  // TextNode,
+	anyNode,
+	Node,
+	RootNode,
+	AttributeNode,
+	ElementNode,
+	ComponentNode,
+	CustomElementNode,
+	ExpressionNode,
+	TextNode,
+	FrontmatterNode,
+	DoctypeNode,
+	CommentNode,
+	NodeWithText,
+	blockElements,
+	// attributeValue,
+	BlockElementNode,
+	InlineElementNode,
+	// MustacheTagNode,
+	NodeWithChildren,
+	TagLikeNode,
+	// NodeWithText,
+	// TextNode,
 } from './nodes';
 
 import { createSyncFn } from 'synckit';
@@ -36,9 +30,7 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
 // the worker path must be absolute
-const serialize = createSyncFn(
-  require.resolve('../workers/serialize-worker.js')
-);
+const serialize = createSyncFn(require.resolve('../workers/serialize-worker.js'));
 
 type ParserOptions = ParserOpts<anyNode>;
 type AstPath = AstP<anyNode>;
@@ -47,9 +39,9 @@ type AstPath = AstP<anyNode>;
  * HTML attributes that we may safely reformat (trim whitespace, add or remove newlines)
  */
 export const formattableAttributes: string[] = [
-  // None at the moment
-  // Prettier HTML does not format attributes at all
-  // and to be consistent we leave this array empty for now
+	// None at the moment
+	// Prettier HTML does not format attributes at all
+	// and to be consistent we leave this array empty for now
 ];
 
 // const rootNodeKeys = new Set(['html', 'css', 'module']);
@@ -66,26 +58,25 @@ export const formattableAttributes: string[] = [
 
 // export const is = (node: anyNode) => isSync(node);
 
-export const isRootNode = (node: anyNode): node is RootNode =>
-  node.type === 'root';
+export const isRootNode = (node: anyNode): node is RootNode => node.type === 'root';
 
 export const isEmptyTextNode = (node: Node): boolean => {
-  return !!node && node.type === 'text' && getUnencodedText(node).trim() === '';
+	return !!node && node.type === 'text' && getUnencodedText(node).trim() === '';
 };
 
 export const isPreTagContent = (path: AstPath): boolean => {
-  if (!path || !path.stack || !Array.isArray(path.stack)) return false;
-  return path.stack.some(
-    (node: anyNode) =>
-      (node.type === 'element' && node.name.toLowerCase() === 'pre') ||
-      (node.type === 'attribute' && !formattableAttributes.includes(node.name))
-  );
+	if (!path || !path.stack || !Array.isArray(path.stack)) return false;
+	return path.stack.some(
+		(node: anyNode) =>
+			(node.type === 'element' && node.name.toLowerCase() === 'pre') ||
+			(node.type === 'attribute' && !formattableAttributes.includes(node.name))
+	);
 };
 
 export function isLoneMustacheTag(node: AttributeNode): boolean {
-  // export function isLoneMustacheTag(node: AttributeNode): node is [MustacheTagNode] {
-  return node.kind === 'expression';
-  // return node !== true && node.length === 1 && node[0].type === 'MustacheTag';
+	// export function isLoneMustacheTag(node: AttributeNode): node is [MustacheTagNode] {
+	return node.kind === 'expression';
+	// return node !== true && node.length === 1 && node[0].type === 'MustacheTag';
 }
 
 // function isAttributeShorthand(node: attributeValue): node is [AttributeShorthandNode] {
@@ -95,46 +86,43 @@ export function isLoneMustacheTag(node: AttributeNode): boolean {
 /**
  * True if node is of type `{a}` or `a={a}`
  */
-export function isOrCanBeConvertedToShorthand(
-  node: AttributeNode,
-  opts: ParserOptions
-): boolean {
-  if (!opts.astroAllowShorthand) return false;
-  if (node.kind === 'shorthand') {
-    return true;
-  }
-  // if (isAttributeShorthand(node.value)) {
-  //   return true;
-  // }
+export function isOrCanBeConvertedToShorthand(node: AttributeNode, opts: ParserOptions): boolean {
+	if (!opts.astroAllowShorthand) return false;
+	if (node.kind === 'shorthand') {
+		return true;
+	}
+	// if (isAttributeShorthand(node.value)) {
+	//   return true;
+	// }
 
-  if (node.value.trim() === node.name.trim()) {
-    return true;
-  }
+	if (node.value.trim() === node.name.trim()) {
+		return true;
+	}
 
-  // if (isLoneMustacheTag(node.value)) {
-  //   const expression = node.value[0].expression;
-  //   return expression.codeChunks[0].trim() === node.name;
-  //   // return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
-  // }
+	// if (isLoneMustacheTag(node.value)) {
+	//   const expression = node.value[0].expression;
+	//   return expression.codeChunks[0].trim() === node.name;
+	//   // return (expression.type === 'Identifier' && expression.name === node.name) || (expression.type === 'Expression' && expression.codeChunks[0] === node.name);
+	// }
 
-  return false;
+	return false;
 }
 
 /**
  *  True if node is of type `{a}` and astroAllowShorthand is false
  */
 export function isShorthandAndMustBeConvertedToBinaryExpression(
-  node: AttributeNode,
-  opts: ParserOptions
+	node: AttributeNode,
+	opts: ParserOptions
 ): boolean {
-  if (opts.astroAllowShorthand) return false;
-  if (node.type === 'attribute' && node.kind === 'shorthand') {
-    return true;
-  }
-  // if (isAttributeShorthand(node.value)) {
-  //   return true;
-  // }
-  return false;
+	if (opts.astroAllowShorthand) return false;
+	if (node.type === 'attribute' && node.kind === 'shorthand') {
+		return true;
+	}
+	// if (isAttributeShorthand(node.value)) {
+	//   return true;
+	// }
+	return false;
 }
 
 // export function flatten<T>(arrays: T[][]): T[] {
@@ -143,16 +131,13 @@ export function isShorthandAndMustBeConvertedToBinaryExpression(
 
 // TODO: TEST IF IT'S GETTING THE CORRECT TEXT
 export function getText(node: anyNode, opts: ParserOptions): string {
-  if (!node.position) return '';
-  return opts.originalText.slice(
-    node.position.start.offset + 1,
-    node.position.end?.offset
-  );
-  // return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
+	if (!node.position) return '';
+	return opts.originalText.slice(node.position.start.offset + 1, node.position.end?.offset);
+	// return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
 }
 
 export function getUnencodedText(node: NodeWithText): string {
-  return node.value;
+	return node.value;
 }
 
 // export function replaceEndOfLineWith(text: string, replacement: doc.builders.DocCommand): Doc[] {
@@ -173,82 +158,62 @@ export function getUnencodedText(node: NodeWithText): string {
 /**
  *  Returns the content of the node
  */
-export function printRaw(
-  node: anyNode,
-  stripLeadingAndTrailingNewline = false
-): string {
-  if (!isNodeWithChildren(node)) {
-    return '';
-  }
+export function printRaw(node: anyNode, stripLeadingAndTrailingNewline = false): string {
+	if (!isNodeWithChildren(node)) {
+		return '';
+	}
 
-  if (node.children.length === 0) {
-    return '';
-  }
+	if (node.children.length === 0) {
+		return '';
+	}
 
-  let raw = node.children.reduce(
-    (prev: string, curr: Node) => prev + serialize(curr),
-    ''
-  );
+	let raw = node.children.reduce((prev: string, curr: Node) => prev + serialize(curr), '');
 
-  if (!stripLeadingAndTrailingNewline) {
-    return raw;
-  }
+	if (!stripLeadingAndTrailingNewline) {
+		return raw;
+	}
 
-  if (startsWithLinebreak(raw)) {
-    raw = raw.substring(raw.indexOf('\n') + 1);
-  }
-  if (endsWithLinebreak(raw)) {
-    raw = raw.substring(0, raw.lastIndexOf('\n'));
-    if (raw.charAt(raw.length - 1) === '\r') {
-      raw = raw.substring(0, raw.length - 1);
-    }
-  }
+	if (startsWithLinebreak(raw)) {
+		raw = raw.substring(raw.indexOf('\n') + 1);
+	}
+	if (endsWithLinebreak(raw)) {
+		raw = raw.substring(0, raw.lastIndexOf('\n'));
+		if (raw.charAt(raw.length - 1) === '\r') {
+			raw = raw.substring(0, raw.length - 1);
+		}
+	}
 
-  return raw;
+	return raw;
 }
 
-export function isNodeWithChildren(
-  node: anyNode
-): node is anyNode & NodeWithChildren {
-  return node && 'children' in node && Array.isArray(node.children);
+export function isNodeWithChildren(node: anyNode): node is anyNode & NodeWithChildren {
+	return node && 'children' in node && Array.isArray(node.children);
 }
 
 export function isInlineElement(
-  path: AstPath,
-  opts: ParserOptions,
-  node: anyNode
+	path: AstPath,
+	opts: ParserOptions,
+	node: anyNode
 ): node is InlineElementNode {
-  return (
-    node &&
-    node.type === 'element' &&
-    !isBlockElement(node, opts) &&
-    !isPreTagContent(path)
-  );
+	return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);
 }
 
-export function isBlockElement(
-  node: anyNode,
-  opts: ParserOptions
-): node is BlockElementNode {
-  return (
-    node &&
-    node.type === 'element' &&
-    opts.htmlWhitespaceSensitivity !== 'strict' &&
-    (opts.htmlWhitespaceSensitivity === 'ignore' ||
-      blockElements.includes(node.name))
-  );
+export function isBlockElement(node: anyNode, opts: ParserOptions): node is BlockElementNode {
+	return (
+		node &&
+		node.type === 'element' &&
+		opts.htmlWhitespaceSensitivity !== 'strict' &&
+		(opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name))
+	);
 }
 
-export function isTextNodeStartingWithLinebreak(
-  node: TextNode,
-  nrLines = 1
-): node is TextNode {
-  return startsWithLinebreak(getUnencodedText(node), nrLines);
-  // return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
+export function isTextNodeStartingWithLinebreak(node: TextNode, nrLines = 1): node is TextNode {
+	return startsWithLinebreak(getUnencodedText(node), nrLines);
+	// return node.type === 'Text' && startsWithLinebreak(getUnencodedText(node), nrLines);
 }
 
 export function startsWithLinebreak(text: string, nrLines = 1): boolean {
-  return new RegExp(`^([\\t\\f\\r ]*\\n){${nrLines}}`).test(text);
+	return new RegExp(`^([\\t\\f\\r ]*\\n){${nrLines}}`).test(text);
 }
 
 // export function isTextNodeEndingWithLinebreak(node: TextNode, nrLines: number = 1) {
@@ -256,21 +221,21 @@ export function startsWithLinebreak(text: string, nrLines = 1): boolean {
 // }
 
 export function endsWithLinebreak(text: string, nrLines = 1): boolean {
-  return new RegExp(`(\\n[\\t\\f\\r ]*){${nrLines}}$`).test(text);
+	return new RegExp(`(\\n[\\t\\f\\r ]*){${nrLines}}$`).test(text);
 }
 
 export function isTextNodeStartingWithWhitespace(node: Node): node is TextNode {
-  return node.type === 'text' && /^\s/.test(getUnencodedText(node));
+	return node.type === 'text' && /^\s/.test(getUnencodedText(node));
 }
 
 export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
-  return node.type === 'text' && /\s$/.test(getUnencodedText(node));
+	return node.type === 'text' && /\s$/.test(getUnencodedText(node));
 }
 
 export function forceIntoExpression(statement: string): string {
-  // note the trailing newline: if the statement ends in a // comment,
-  // we can't add the closing bracket right afterwards
-  return `(${statement}\n)`;
+	// note the trailing newline: if the statement ends in a // comment,
+	// we can't add the closing bracket right afterwards
+	return `(${statement}\n)`;
 }
 
 /**
@@ -278,21 +243,21 @@ export function forceIntoExpression(statement: string): string {
  * no whitespace between the `>` and the first child.
  */
 export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
-  if (isBlockElement(node, opts)) {
-    return false;
-  }
+	if (isBlockElement(node, opts)) {
+		return false;
+	}
 
-  if (!isNodeWithChildren(node)) {
-    return false;
-  }
+	if (!isNodeWithChildren(node)) {
+		return false;
+	}
 
-  const children = node.children;
-  if (children.length === 0) {
-    return true;
-  }
+	const children = node.children;
+	if (children.length === 0) {
+		return true;
+	}
 
-  const firstChild = children[0];
-  return !isTextNodeStartingWithWhitespace(firstChild);
+	const firstChild = children[0];
+	return !isTextNodeStartingWithWhitespace(firstChild);
 }
 
 /**
@@ -300,36 +265,33 @@ export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
  * no whitespace between the last child and the `</`.
  */
 export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
-  if (isBlockElement(node, opts)) {
-    return false;
-  }
+	if (isBlockElement(node, opts)) {
+		return false;
+	}
 
-  if (!isNodeWithChildren(node)) {
-    return false;
-  }
+	if (!isNodeWithChildren(node)) {
+		return false;
+	}
 
-  const children = node.children;
-  if (children.length === 0) {
-    return true;
-  }
+	const children = node.children;
+	if (children.length === 0) {
+		return true;
+	}
 
-  return false;
+	return false;
 
-  // TODO: WIP
-  // const lastChild = children[children.length - 1];
-  // return !isTextNodeEndingWithWhitespace(lastChild);
+	// TODO: WIP
+	// const lastChild = children[children.length - 1];
+	// return !isTextNodeEndingWithWhitespace(lastChild);
 }
 
 /**
  * Returns true if the softline between `</tagName` and `>` can be omitted.
  */
-export function canOmitSoftlineBeforeClosingTag(
-  path: AstPath,
-  opts: ParserOptions
-): boolean {
-  return isLastChildWithinParentBlockElement(path, opts);
-  // return !hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options);
-  // return !options.svelteBracketNewLine && (!hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options));
+export function canOmitSoftlineBeforeClosingTag(path: AstPath, opts: ParserOptions): boolean {
+	return isLastChildWithinParentBlockElement(path, opts);
+	// return !hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options);
+	// return !options.svelteBracketNewLine && (!hugsStartOfNextNode(node, options) || isLastChildWithinParentBlockElement(path, options));
 }
 
 /**
@@ -346,29 +308,26 @@ export function canOmitSoftlineBeforeClosingTag(
 // }
 
 function getChildren(node: anyNode): Node[] {
-  return isNodeWithChildren(node) ? node.children : [];
+	return isNodeWithChildren(node) ? node.children : [];
 }
 
-function isLastChildWithinParentBlockElement(
-  path: AstPath,
-  opts: ParserOptions
-): boolean {
-  const parent = path.getParentNode();
-  if (!parent || !isBlockElement(parent, opts)) {
-    return false;
-  }
+function isLastChildWithinParentBlockElement(path: AstPath, opts: ParserOptions): boolean {
+	const parent = path.getParentNode();
+	if (!parent || !isBlockElement(parent, opts)) {
+		return false;
+	}
 
-  const children = getChildren(parent);
-  const lastChild = children[children.length - 1];
-  return lastChild === path.getNode();
+	const children = getChildren(parent);
+	const lastChild = children[children.length - 1];
+	return lastChild === path.getNode();
 }
 
 export function trimTextNodeLeft(node: TextNode): void {
-  node.value = node.value && node.value.trimStart();
+	node.value = node.value && node.value.trimStart();
 }
 
 export function trimTextNodeRight(node: TextNode): void {
-  node.value = node.value && node.value.trimEnd();
+	node.value = node.value && node.value.trimEnd();
 }
 
 // export function findLastIndex<T>(isMatch: (item: T, idx: number) => boolean, items: T[]) {
@@ -641,44 +600,41 @@ export function trimTextNodeRight(node: TextNode): void {
 
 /** dedent string & return tabSize (the last part is what we need) */
 export function manualDedent(input: string): {
-  tabSize: number;
-  char: string;
-  result: string;
+	tabSize: number;
+	char: string;
+	result: string;
 } {
-  let minTabSize = Infinity;
-  let result = input;
-  // 1. normalize
-  result = result.replace(/\r\n/g, '\n');
+	let minTabSize = Infinity;
+	let result = input;
+	// 1. normalize
+	result = result.replace(/\r\n/g, '\n');
 
-  // 2. count tabSize
-  let char = '';
-  for (const line of result.split('\n')) {
-    if (!line) continue;
-    // if any line begins with a non-whitespace char, minTabSize is 0
-    if (line[0] && /^[^\s]/.test(line[0])) {
-      minTabSize = 0;
-      break;
-    }
-    const match = line.match(/^(\s+)\S+/); // \S ensures we don’t count lines of pure whitespace
-    if (match) {
-      if (match[1] && !char) char = match[1][0];
-      if (match[1].length < minTabSize) minTabSize = match[1].length;
-    }
-  }
+	// 2. count tabSize
+	let char = '';
+	for (const line of result.split('\n')) {
+		if (!line) continue;
+		// if any line begins with a non-whitespace char, minTabSize is 0
+		if (line[0] && /^[^\s]/.test(line[0])) {
+			minTabSize = 0;
+			break;
+		}
+		const match = line.match(/^(\s+)\S+/); // \S ensures we don’t count lines of pure whitespace
+		if (match) {
+			if (match[1] && !char) char = match[1][0];
+			if (match[1].length < minTabSize) minTabSize = match[1].length;
+		}
+	}
 
-  // 3. reformat string
-  if (minTabSize > 0 && Number.isFinite(minTabSize)) {
-    result = result.replace(
-      new RegExp(`^${new Array(minTabSize + 1).join(char)}`, 'gm'),
-      ''
-    );
-  }
+	// 3. reformat string
+	if (minTabSize > 0 && Number.isFinite(minTabSize)) {
+		result = result.replace(new RegExp(`^${new Array(minTabSize + 1).join(char)}`, 'gm'), '');
+	}
 
-  return {
-    tabSize: minTabSize === Infinity ? 0 : minTabSize,
-    char,
-    result,
-  };
+	return {
+		tabSize: minTabSize === Infinity ? 0 : minTabSize,
+		char,
+		result,
+	};
 }
 
 /** re-indent string by chars */
@@ -688,46 +644,38 @@ export function manualDedent(input: string): {
 
 /** scan code for Markdown name(s) */
 export function getMarkdownName(script: string): Set<string> {
-  // default import: could be named anything
-  let defaultMatch;
-  while (
-    (defaultMatch =
-      /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(
-        script
-      ))
-  ) {
-    if (defaultMatch[1]) return new Set([defaultMatch[1].trim()]);
-  }
+	// default import: could be named anything
+	let defaultMatch;
+	while (
+		(defaultMatch = /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(
+			script
+		))
+	) {
+		if (defaultMatch[1]) return new Set([defaultMatch[1].trim()]);
+	}
 
-  // named component: must have "Markdown" in specifier, but can be renamed via "as"
-  let namedMatch;
-  while (
-    (namedMatch =
-      /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))
-  ) {
-    if (namedMatch[1] && !namedMatch[1].includes('Markdown')) continue;
-    // if "Markdown" was imported, find out whether or not it was renamed
-    const rawImports = namedMatch[1]
-      .trim()
-      .replace(/^\{/, '')
-      .replace(/\}$/, '')
-      .trim();
-    let importName = 'Markdown';
-    for (const spec of rawImports.split(',')) {
-      const [original, renamed] = spec.split(' as ').map((s) => s.trim());
-      if (original !== 'Markdown') continue;
-      importName = renamed || original;
-      break;
-    }
-    return new Set([importName]);
-  }
-  return new Set(['Markdown']);
+	// named component: must have "Markdown" in specifier, but can be renamed via "as"
+	let namedMatch;
+	while ((namedMatch = /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))) {
+		if (namedMatch[1] && !namedMatch[1].includes('Markdown')) continue;
+		// if "Markdown" was imported, find out whether or not it was renamed
+		const rawImports = namedMatch[1].trim().replace(/^\{/, '').replace(/\}$/, '').trim();
+		let importName = 'Markdown';
+		for (const spec of rawImports.split(',')) {
+			const [original, renamed] = spec.split(' as ').map((s) => s.trim());
+			if (original !== 'Markdown') continue;
+			importName = renamed || original;
+			break;
+		}
+		return new Set([importName]);
+	}
+	return new Set(['Markdown']);
 }
 
 // TODO: USE THE COMPILER
 /** True if the node is of type text */
 export function isTextNode(node: anyNode): node is TextNode {
-  return node.type === 'text';
+	return node.type === 'text';
 }
 
 // export function isMustacheNode(node: anyNode): node is MustacheTagNode {
@@ -741,10 +689,8 @@ export function isTextNode(node: anyNode): node is TextNode {
 // }
 
 export function isInsideQuotedAttribute(path: AstPath): boolean {
-  const stack = path.stack as anyNode[];
-  return stack.some(
-    (node) => node.type === 'attribute' && !isLoneMustacheTag(node)
-  );
+	const stack = path.stack as anyNode[];
+	return stack.some((node) => node.type === 'attribute' && !isLoneMustacheTag(node));
 }
 
 /**
@@ -752,62 +698,58 @@ export function isInsideQuotedAttribute(path: AstPath): boolean {
  *  TagLikeNode elements are present.
  */
 export function removeDuplicates(root: RootNode) {
-  root.children = root.children.filter((node, i, rootChildren) => {
-    if (node.type !== 'text') return true;
-    // https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects
-    return (
-      i ===
-      rootChildren.findIndex((t) => {
-        if (t.position && node.position) {
-          return (
-            node.type === 'text' &&
-            t.position.start.offset === node.position.start.offset &&
-            t.position.start.line === node.position.start.line &&
-            t.position.start.column === node.position.start.column
-          );
-        }
-      })
-    );
-  });
+	root.children = root.children.filter((node, i, rootChildren) => {
+		if (node.type !== 'text') return true;
+		// https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects
+		return (
+			i ===
+			rootChildren.findIndex((t) => {
+				if (t.position && node.position) {
+					return (
+						node.type === 'text' &&
+						t.position.start.offset === node.position.start.offset &&
+						t.position.start.line === node.position.start.line &&
+						t.position.start.column === node.position.start.column
+					);
+				}
+			})
+		);
+	});
 }
 
 /** True if the node is TagLikeNode:
  *
  * ElementNode | ComponentNode | CustomElementNode | FragmentNode */
 export function isTagLikeNode(node: anyNode): node is TagLikeNode {
-  return (
-    node.type === 'element' ||
-    node.type === 'component' ||
-    node.type === 'custom-element' ||
-    node.type === 'fragment'
-  );
+	return (
+		node.type === 'element' ||
+		node.type === 'component' ||
+		node.type === 'custom-element' ||
+		node.type === 'fragment'
+	);
 }
 
 /**
  * Returns siblings, that is, the children of the parent.
  */
 export function getSiblings(path: AstPath): anyNode[] {
-  const parent = path.getParentNode();
-  if (!parent) return [];
+	const parent = path.getParentNode();
+	if (!parent) return [];
 
-  return getChildren(parent);
+	return getChildren(parent);
 }
 
 export function getNextNode(path: AstPath): anyNode | null {
-  const node = path.getNode();
-  if (node) {
-    const siblings = getSiblings(path);
-    if (node.position?.start === siblings[siblings.length - 1].position?.start)
-      return null;
-    for (let i = 0; i < siblings.length; i++) {
-      const sibling = siblings[i];
-      if (
-        sibling.position?.start === node.position?.start &&
-        i !== siblings.length - 1
-      ) {
-        return siblings[i + 1];
-      }
-    }
-  }
-  return null;
+	const node = path.getNode();
+	if (node) {
+		const siblings = getSiblings(path);
+		if (node.position?.start === siblings[siblings.length - 1].position?.start) return null;
+		for (let i = 0; i < siblings.length; i++) {
+			const sibling = siblings[i];
+			if (sibling.position?.start === node.position?.start && i !== siblings.length - 1) {
+				return siblings[i + 1];
+			}
+		}
+	}
+	return null;
 }
