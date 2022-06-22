@@ -1,5 +1,4 @@
 {
-  "ignorePatterns": ["test/fixtures/**", "dist/**"],
   "plugins": ["prettier-doc", "@typescript-eslint", "prettier"],
   "extends": [
     "plugin:@typescript-eslint/recommended",
