@@ -97,10 +97,10 @@ Set if attributes with the same name as their expression should be formatted to 
 ### Example `.prettierrc.js`
 
 ```js
-  {
-    astroSortOrder: "markup | styles",
-    astroAllowShorthand: false
-  }
+{
+  astroSortOrder: "markup | styles",
+  astroAllowShorthand: false
+}
 ```
 
 ## Contributing
