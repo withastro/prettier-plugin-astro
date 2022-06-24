@@ -23,7 +23,7 @@ prettier -w .
 Due to [an upstream issue in Prettier](https://github.com/prettier/prettier/issues/8056), the `plugin-search-dir` parameter should be set to the current directory when using pnpm or Prettier won't be able to find the plugin automatically
 
 ```shell
-prettier -w --plugin-search-dir=.
+prettier -w --plugin-search-dir=. .
 ```
 
 ## Using in VS Code
