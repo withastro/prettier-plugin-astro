@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.1
+
+### Patch Changes
+
+- d8b666b: fix for jsx empty expression
+
 ## 0.1.0
 
 ### Minor Changes
