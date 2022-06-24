@@ -235,7 +235,7 @@ export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
 export function forceIntoExpression(statement: string): string {
 	// note the trailing newline: if the statement ends in a // comment,
 	// we can't add the closing bracket right afterwards
-	return `(${statement}\n)`;
+	return `<>{${statement}\n}</>`;
 }
 
 /**

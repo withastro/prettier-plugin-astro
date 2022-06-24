@@ -494,7 +494,10 @@ function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOpt
 	const ast = parsers.babel(text, opts);
 	// const ast = parsers.babel(text, parsers, opts);
 
-	return { ...ast, program: ast.program.body[0].expression };
+	return {
+		...ast,
+		program: ast.program.body[0].expression.children[0].expression,
+	};
 }
 
 let markdownComponentName = new Set();
