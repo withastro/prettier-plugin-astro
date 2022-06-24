@@ -1,50 +1,10 @@
 # prettier-plugin-astro
 
-## 0.1.0-next.5
-
-### Patch Changes
-
-- a7a6b14: Fix: format indented sass
-- ce5b38a: Refactor tests for better watch mode
-- 08ec9f1: Fix: prevent duplicate text
-- c5a7a7f: Update dependencies
-- 8a8b3e9: Update @astrojs/compiler and fix for spread in expression
-- f5fcc1b: Disable vitest multi-threading
-- da0fe36: Add new line after comments
-
-## 0.1.0-next.4
-
-### Patch Changes
-
-- 3afbf2f: Update the internal sync engine to synckit
-
-## 0.1.0-next.3
-
-### Patch Changes
-
-- 73e81bd: Set astroAllowShorthand default option to false
-
-## 0.1.0-next.2
-
-### Patch Changes
-
-- f244f83: Move from ava to vitest
-- 67341e7: Format directives
-- 0ed661a: Fix: Format expression
-- 87b0508: Change prettier width from 180 to 80
-- ace9861: Remove node 12 from ci
-
-## 0.1.0-next.1
-
-### Patch Changes
-
-- dcc909a: Skip handling comments
-
-## 0.1.0-next.0
+## 0.1.0
 
 ### Minor Changes
 
-- 054d055: Migrate to new compiler
+- 054d055: Migrate to new compiler. This took months of work, and some things might be broken for the time being. However, it should be a major improvement in most cases over the previous version. We hope you'll like it!
 
 ## 0.0.12
 
