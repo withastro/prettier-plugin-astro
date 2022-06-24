@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.0
+
+### Minor Changes
+
+- 054d055: Migrate to new compiler. This took months of work, and some things might be broken for the time being. However, it should be a major improvement in most cases over the previous version. We hope you'll like it!
+
 ## 0.0.12
 
 ### Patch Changes
