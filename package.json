@@ -1,18 +1,20 @@
 {
   "name": "prettier-plugin-astro",
-  "version": "0.0.12",
+  "version": "0.1.0",
+  "type": "commonjs",
   "description": "A Prettier Plugin for formatting Astro files",
   "main": "dist/index.js",
   "files": [
-    "dist/**"
+    "dist/**",
+    "workers/*"
   ],
   "engines": {
-    "node": "^12.20.0 || ^14.13.1 || >=16.0.0",
+    "node": "^14.13.1 || >=16.0.0",
     "npm": ">=6.14.0"
   },
-  "homepage": "https://github.com/snowpackjs/prettier-plugin-astro/",
+  "homepage": "https://github.com/withastro/prettier-plugin-astro/",
   "issues": {
-    "url": "https://github.com/snowpackjs/prettier-plugin-astro/issues"
+    "url": "https://github.com/withastro/prettier-plugin-astro/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -23,37 +25,42 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/snowpackjs/prettier-plugin-astro.git"
+    "url": "https://github.com/withastro/prettier-plugin-astro.git"
   },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "test": "ava test/*.test.ts",
-    "test:w": "ava -w test/*.test.ts",
+    "test": "vitest run",
+    "test:w": "vitest -w",
+    "test:ui": "vitest --ui",
     "release": "yarn build && changeset publish",
     "lint": "eslint .",
     "fix": "yarn lint --fix",
     "format": "prettier -w ."
   },
   "dependencies": {
-    "@astrojs/parser": "^0.22.0",
-    "prettier": "^2.4.1",
-    "sass-formatter": "^0.7.2"
+    "@astrojs/compiler": "^0.15.2",
+    "prettier": "^2.6.2",
+    "sass-formatter": "^0.7.2",
+    "synckit": "^0.7.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.16.0",
-    "@rollup/plugin-commonjs": "^21.0.0",
+    "@rollup/plugin-commonjs": "^22.0.1",
     "@rollup/plugin-node-resolve": "^13.0.5",
     "@types/prettier": "^2.4.1",
-    "ava": "4.0.1",
-    "eslint": "^8.0.0",
-    "eslint-plugin-ava": "^13.0.0",
-    "eslint-plugin-node": "^11.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "@vitest/ui": "^0.9.2",
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-prettier-doc": "^1.0.1",
-    "rollup": "^2.58.0",
+    "rollup": "^2.70.1",
     "rollup-plugin-typescript": "^1.0.1",
-    "ts-node": "^10.2.1",
+    "ts-node": "^10.7.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
+    "typescript": "^4.6.3",
+    "vitest": "^0.9.2"
   }
 }
