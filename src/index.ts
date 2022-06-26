@@ -2,7 +2,7 @@ import printer from './printer';
 import { options } from './options';
 import { Parser, Printer, SupportLanguage } from 'prettier';
 import { createSyncFn } from 'synckit';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
 // the worker path must be absolute
