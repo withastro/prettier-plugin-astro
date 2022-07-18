@@ -240,10 +240,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 		case 'component':
 		case 'fragment':
 		case 'element': {
-			if (node.name === 'slot') {
-				// <slot />
-				return `<${node.name} />`;
-			}
 			// const isEmpty = node.children?.every((child) => isEmptyTextNode(child));
 			let isEmpty: boolean;
 			if (!node.children) {

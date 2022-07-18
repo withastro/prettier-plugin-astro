@@ -277,6 +277,7 @@ export const selfClosingTags = [
 	'link',
 	'meta',
 	'param',
+	'slot',
 	'source',
 	'track',
 	'wbr',
