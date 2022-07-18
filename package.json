@@ -38,7 +38,7 @@
     "format": "prettier -w . --cache"
   },
   "dependencies": {
-    "@astrojs/compiler": "^0.15.2",
+    "@astrojs/compiler": "^0.19.0",
     "prettier": "^2.7.1",
     "sass-formatter": "^0.7.2",
     "synckit": "^0.7.0"

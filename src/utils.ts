@@ -693,30 +693,6 @@ export function isInsideQuotedAttribute(path: AstPath): boolean {
 	return stack.some((node) => node.type === 'attribute' && !isLoneMustacheTag(node));
 }
 
-/**
- * Currently, the compiler has a bug that duplicates text nodes when no
- *  TagLikeNode elements are present.
- */
-export function removeDuplicates(root: RootNode) {
-	root.children = root.children.filter((node, i, rootChildren) => {
-		if (node.type !== 'text') return true;
-		// https://stackoverflow.com/questions/2218999/how-to-remove-all-duplicates-from-an-array-of-objects
-		return (
-			i ===
-			rootChildren.findIndex((t) => {
-				if (t.position && node.position) {
-					return (
-						node.type === 'text' &&
-						t.position.start.offset === node.position.start.offset &&
-						t.position.start.line === node.position.start.line &&
-						t.position.start.column === node.position.start.column
-					);
-				}
-			})
-		);
-	});
-}
-
 /** True if the node is TagLikeNode:
  *
  * ElementNode | ComponentNode | CustomElementNode | FragmentNode */
