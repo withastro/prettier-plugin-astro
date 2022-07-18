@@ -74,7 +74,6 @@ import {
 	// trimChildren,
 	trimTextNodeLeft,
 	trimTextNodeRight,
-	removeDuplicates,
 	getNextNode,
 	isTagLikeNode,
 } from './utils';
@@ -166,7 +165,6 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 	// 3. handle printing
 	switch (node.type) {
 		case 'root': {
-			removeDuplicates(node);
 			return [stripTrailingHardline(path.map(print, 'children')), hardline];
 		}
 
