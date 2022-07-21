@@ -523,7 +523,6 @@ function embed(
 		content = textToDoc(forceIntoExpression(textContent), {
 			...opts,
 			parser: expressionParser,
-			semi: opts.semi,
 		});
 		content = stripTrailingHardline(content);
 
@@ -550,7 +549,6 @@ function embed(
 		let attrNodeValue = textToDoc(forceIntoExpression(value), {
 			...opts,
 			parser: expressionParser,
-			semi: false,
 		});
 		attrNodeValue = stripTrailingHardline(attrNodeValue);
 		// if (Array.isArray(attrNodeValue) && attrNodeValue[0] === ';') {
