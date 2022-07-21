@@ -1,10 +1,14 @@
 ---
-    const myVar =  "lorem \"quoted\""
+    const myVar =  `lorem "quoted"`
+    const myVar2 = 'lorem'
 function hello() {
      return "hello" + 'lorem'
 }
 ---
-<h1>
+<h1 class='hello'>
     {hello  + 'hello'}
     {hello  + "hello"}
 </h1>
+<ul class='list'>
+   {[1, 2, 3].map(value => <li class='list-item'>{"hello" + value}</li>)}
+ </ul>
