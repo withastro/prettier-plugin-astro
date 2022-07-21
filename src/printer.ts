@@ -523,7 +523,7 @@ function embed(
 		content = textToDoc(forceIntoExpression(textContent), {
 			...opts,
 			parser: expressionParser,
-			semi: false,
+			semi: opts.semi,
 		});
 		content = stripTrailingHardline(content);
 
