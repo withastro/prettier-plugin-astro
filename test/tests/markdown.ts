@@ -1,3 +1,5 @@
+// This file can't have the `.test.ts` extension otherwise Vitest will try to run it despite being empty which cause an error
+
 import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/markdown/*/*', {
