@@ -1,5 +1,14 @@
 # prettier-plugin-astro
 
+## 0.1.2
+
+### Patch Changes
+
+- 9eddad9: Use prettier option 'semi' for jsx semi colons
+- 0cf8f08: HTML attribute quotes now depend on `jsxSingleQuote` option
+- 9ae7efa: Self-close slots
+- edc21c2: Remove dedup utility
+
 ## 0.1.1
 
 ### Patch Changes
