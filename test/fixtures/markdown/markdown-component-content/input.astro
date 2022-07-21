@@ -1,0 +1,47 @@
+---
+const text = "lorem";
+import MarkdownComponent from "astro/components/Markdown.astro"
+---
+<div>
+  <MarkdownComponent>
+#  Header
+
+##  lorem lorem
+  lorem
+<Fragment>test</Fragment>
+  <div>lorem</div>
+    lorem
+
+{text  +  "lorem"}_Look,_ code blocks are formatted *too!*
+
+``` js
+function identity(x) { return x }
+```
+
+```css
+  .bd-examples {margin-right: -.75rem;margin-left: -.75rem
+  }
+  
+ .bd-examples>[class^="col-"]  {
+    padding-right: .75rem;
+  }
+```
+
+Pilot|Airport|Hours
+--|:--:|--:
+John Doe|SKG|1338
+Jane Roe|JFK|314
+
+- - - - - - - - - - - - - - -
+
++ List
+ + with a [link] (/to/somewhere)
++ and [another one]
+
+
+ [another one]:  http://example.com 'Example title'
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Curabitur consectetur maximus risus, sed maximus tellus tincidunt et.
+  </MarkdownComponent>
+</div>
