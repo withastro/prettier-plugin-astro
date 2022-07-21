@@ -46,7 +46,6 @@ import {
 	endsWithLinebreak,
 	forceIntoExpression,
 	formattableAttributes,
-	getMarkdownName,
 	getText,
 	getUnencodedText,
 	isRootNode,
@@ -498,8 +497,6 @@ function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOpt
 	};
 }
 
-let markdownComponentName = new Set();
-
 function embed(
 	path: AstPath,
 	// eslint-disable-next-line @typescript-eslint/no-shadow
@@ -587,7 +584,6 @@ function embed(
 	// }
 
 	if (node.type === 'frontmatter') {
-		markdownComponentName = getMarkdownName(node.value);
 		return [
 			group([
 				'---',
@@ -676,28 +672,6 @@ function embed(
 				return [openingTag, indent(group([hardline, formattedSass])), hardline, '</style>'];
 			}
 		}
-	}
-
-	// MARKDOWN COMPONENT
-	if (node.type === 'component' && markdownComponentName.has(node.name)) {
-		let content = printRaw(node);
-
-		// dedent the content
-		content = content.replace(/\r\n/g, '\n');
-		const contentArr = content.split('\n').map((s) => s.trimStart());
-		content = contentArr.join('\n');
-
-		// format
-		let formatttedMarkdown = textToDoc(content, {
-			...opts,
-			parser: 'markdown',
-		});
-		formatttedMarkdown = stripTrailingHardline(formatttedMarkdown);
-
-		// return formatttedMarkdown;
-		const attributes = path.map(print, 'attributes');
-		const openingTag = group([`<${node.name}`, indent(group(attributes)), softline, '>']);
-		return [openingTag, indent(group([hardline, formatttedMarkdown])), hardline, `</${node.name}>`];
 	}
 
 	return null;
