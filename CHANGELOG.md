@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.2.0
+
+### Minor Changes
+
+- f9aa07e: Remove support for the Markdown component
+
 ## 0.1.3
 
 ### Patch Changes
