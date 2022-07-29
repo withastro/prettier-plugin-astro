@@ -642,36 +642,6 @@ export function manualDedent(input: string): {
 //   return input.replace(/^(.)/gm, `${char}$1`);
 // }
 
-/** scan code for Markdown name(s) */
-export function getMarkdownName(script: string): Set<string> {
-	// default import: could be named anything
-	let defaultMatch;
-	while (
-		(defaultMatch = /import\s+([^\s]+)\s+from\s+['|"|`]astro\/components\/Markdown\.astro/g.exec(
-			script
-		))
-	) {
-		if (defaultMatch[1]) return new Set([defaultMatch[1].trim()]);
-	}
-
-	// named component: must have "Markdown" in specifier, but can be renamed via "as"
-	let namedMatch;
-	while ((namedMatch = /import\s+\{\s*([^}]+)\}\s+from\s+['|"|`]astro\/components/g.exec(script))) {
-		if (namedMatch[1] && !namedMatch[1].includes('Markdown')) continue;
-		// if "Markdown" was imported, find out whether or not it was renamed
-		const rawImports = namedMatch[1].trim().replace(/^\{/, '').replace(/\}$/, '').trim();
-		let importName = 'Markdown';
-		for (const spec of rawImports.split(',')) {
-			const [original, renamed] = spec.split(' as ').map((s) => s.trim());
-			if (original !== 'Markdown') continue;
-			importName = renamed || original;
-			break;
-		}
-		return new Set([importName]);
-	}
-	return new Set(['Markdown']);
-}
-
 // TODO: USE THE COMPILER
 /** True if the node is of type text */
 export function isTextNode(node: anyNode): node is TextNode {
