@@ -247,7 +247,10 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			const isSelfClosingTag =
 				isEmpty && (node.type !== 'element' || selfClosingTags.indexOf(node.name) !== -1);
 
-			const attributes = path.map(print, 'attributes');
+			const attributeLine =
+				opts.singleAttributePerLine && node.attributes.length > 1 ? breakParent : '';
+			const attributes = join(attributeLine, path.map(print, 'attributes'));
+
 			if (isSelfClosingTag) {
 				return group(['<', node.name, indent(group(attributes)), line, `/>`]);
 				// return group(['<', node.name, indent(group([...attributes, opts.jsxBracketNewLine ? dedent(line) : ''])), ...[opts.jsxBracketNewLine ? '' : ' ', `/>`]]);
@@ -296,7 +299,7 @@ function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 					node.name,
 					indent(
 						group([
-							...attributes,
+							attributes,
 							hugStart
 								? ''
 								: !isPreTagContent(path) && !opts.bracketSameLine
@@ -520,7 +523,6 @@ function embed(
 		content = textToDoc(forceIntoExpression(textContent), {
 			...opts,
 			parser: expressionParser,
-			semi: false,
 		});
 		content = stripTrailingHardline(content);
 
@@ -547,7 +549,6 @@ function embed(
 		let attrNodeValue = textToDoc(forceIntoExpression(value), {
 			...opts,
 			parser: expressionParser,
-			semi: false,
 		});
 		attrNodeValue = stripTrailingHardline(attrNodeValue);
 		// if (Array.isArray(attrNodeValue) && attrNodeValue[0] === ';') {

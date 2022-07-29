@@ -1,5 +1,20 @@
 # prettier-plugin-astro
 
+## 0.1.3
+
+### Patch Changes
+
+- 4c8d8dc: Use Prettier option: 'singleAttributePerLine'
+
+## 0.1.2
+
+### Patch Changes
+
+- 410dfb4: Use prettier option 'semi' for jsx semi colons
+- 410dfb4: HTML attribute quotes now depend on `jsxSingleQuote` option
+- 410dfb4: Self-close slots
+- 410dfb4: Remove dedup utility
+
 ## 0.1.1
 
 ### Patch Changes
