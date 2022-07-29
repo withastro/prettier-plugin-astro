@@ -185,6 +185,20 @@ test(
 	'options/option-html-whitespace-sensitivity-ignore'
 );
 
+// https://prettier.io/docs/en/options.html#single-attribute-per-line
+test(
+	'Can format an Astro file with prettier "singleAttributePerLine: true" option',
+	files,
+	'options/single-attribute-per-line-true'
+);
+
+// https://prettier.io/docs/en/options.html#single-attribute-per-line
+test(
+	'Can format an Astro file with prettier "singleAttributePerLine: false" option',
+	files,
+	'options/single-attribute-per-line-false'
+);
+
 // // astro option: astroSortOrder
 // test('Can format an Astro file with prettier "astroSortOrder: markup | styles" option',  'option-astro-sort-order-markup-styles');
 
