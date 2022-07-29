@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.1.3
+
+### Patch Changes
+
+- 4c8d8dc: Use Prettier option: 'singleAttributePerLine'
+
 ## 0.1.2
 
 ### Patch Changes
