@@ -88,7 +88,7 @@ Set if attributes with the same name as their expression should be formatted to 
 
 ```js
 {
-  astroAllowShorthand: false
+  astroAllowShorthand: false;
 }
 ```
 
