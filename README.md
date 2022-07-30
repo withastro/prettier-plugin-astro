@@ -32,7 +32,7 @@ First install the [VS Code Prettier extension](https://marketplace.visualstudio.
 
 ```json
 {
-  "prettier.documentSelectors": "**/*.astro"
+  "prettier.documentSelectors": ["**/*.astro"]
 }
 ```
 
@@ -74,16 +74,6 @@ The `require.resolve` call can alternatively be changed to a direct path, like s
 
 Most [options from Prettier](https://prettier.io/docs/en/options.html) will work with the plugin and can be set in a [configuration file](https://prettier.io/docs/en/configuration.html) or through [CLI flags](https://prettier.io/docs/en/cli.html).
 
-### Astro Sort Order
-
-Sort order for the markup and styles. Depending on the order, top-level `style` tags will be sorted below or on top of the rest of the template
-
-The format is a string with the words `markup` and `styles` separated by a pipe (`|`)
-
-| Default            | CLI Override                  | API Override               |
-| ------------------ | ----------------------------- | -------------------------- |
-| `markup \| styles` | `--astro-sort-order <string>` | `astroSortOrder: <string>` |
-
 ### Astro Allow Shorthand
 
 Set if attributes with the same name as their expression should be formatted to the short form automatically (for example, if enabled `<element name={name} />` will become simply `<element {name} />`)
@@ -98,7 +88,6 @@ Set if attributes with the same name as their expression should be formatted to 
 
 ```js
 {
-  astroSortOrder: "markup | styles",
   astroAllowShorthand: false
 }
 ```
