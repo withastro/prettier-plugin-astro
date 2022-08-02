@@ -22,7 +22,7 @@ import {
 	startsWithLinebreak,
 	trimTextNodeLeft,
 	trimTextNodeRight,
-} from './node-helpers';
+} from './utils';
 import { TextNode } from './nodes';
 
 import _doc from 'prettier/doc';

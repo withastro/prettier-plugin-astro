@@ -1,7 +1,7 @@
 import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { AstPath, manualDedent, printFn, printRaw } from './node-helpers';
+import { AstPath, manualDedent, printFn, printRaw } from './utils';
 const {
 	builders: { group, indent, join, line, softline, hardline },
 	utils: { stripTrailingHardline },
