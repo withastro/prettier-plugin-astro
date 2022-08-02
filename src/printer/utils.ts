@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 import { AstPath as AstP, Doc, ParserOptions as ParserOpts } from 'prettier';
 import { createSyncFn } from 'synckit';
-import { blockElements, formattableAttributes, TagName } from '../lib/elements';
+import { blockElements, formattableAttributes, TagName } from './elements';
 import { anyNode, CommentNode, Node, ParentLikeNode, TagLikeNode, TextNode } from './nodes';
 
 export type printFn = (path: AstPath) => Doc;

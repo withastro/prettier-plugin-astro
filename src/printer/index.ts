@@ -1,5 +1,5 @@
 import { Doc } from 'prettier';
-import { selfClosingTags } from '../lib/elements';
+import { selfClosingTags } from './elements';
 import {
 	AstPath,
 	canOmitSoftlineBeforeClosingTag,
