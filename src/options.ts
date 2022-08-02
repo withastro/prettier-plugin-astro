@@ -1,14 +1,15 @@
 import { SupportOption } from 'prettier';
 
+interface PluginOptions {
+	astroAllowShorthand: boolean;
+}
+
 declare module 'prettier' {
 	// eslint-disable-next-line @typescript-eslint/no-empty-interface
 	interface RequiredOptions extends PluginOptions {}
 }
 
-export interface PluginOptions {
-	astroAllowShorthand: boolean;
-}
-
+// https://prettier.io/docs/en/plugins.html#options
 export const options: Record<keyof PluginOptions, SupportOption> = {
 	astroAllowShorthand: {
 		since: '0.0.10',

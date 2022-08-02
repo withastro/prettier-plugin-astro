@@ -203,12 +203,6 @@ export function manualDedent(input: string): {
 	};
 }
 
-/** re-indent string by chars */
-// export function indent(input: string, char: string = ' '): string {
-//   return input.replace(/^(.)/gm, `${char}$1`);
-// }
-
-// TODO: USE THE COMPILER
 /** True if the node is of type text */
 export function isTextNode(node: anyNode): node is TextNode {
 	return node.type === 'text';

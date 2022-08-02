@@ -31,6 +31,7 @@ const {
 	utils: { stripTrailingHardline },
 } = _doc;
 
+// https://prettier.io/docs/en/plugins.html#print
 // eslint-disable-next-line @typescript-eslint/no-shadow
 export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 	const node = path.getValue();

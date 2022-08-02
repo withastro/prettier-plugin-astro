@@ -9,6 +9,7 @@ const require = createRequire(import.meta.url);
 // the worker path must be absolute
 const parse = createSyncFn(require.resolve('../workers/parse-worker.js'));
 
+// https://prettier.io/docs/en/plugins.html#languages
 export const languages: Partial<SupportLanguage>[] = [
 	{
 		name: 'astro',
@@ -18,6 +19,7 @@ export const languages: Partial<SupportLanguage>[] = [
 	},
 ];
 
+// https://prettier.io/docs/en/plugins.html#parsers
 export const parsers: Record<string, Parser> = {
 	astro: {
 		parse: (source) => parse(source),
@@ -27,6 +29,7 @@ export const parsers: Record<string, Parser> = {
 	},
 };
 
+// https://prettier.io/docs/en/plugins.html#printers
 export const printers: Record<string, Printer> = {
 	astro: {
 		print,
