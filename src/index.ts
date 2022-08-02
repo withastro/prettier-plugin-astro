@@ -1,10 +1,11 @@
-import printer from './printer';
-import { options } from './options';
+import { createRequire } from 'node:module';
 import { Parser, Printer, SupportLanguage } from 'prettier';
 import { createSyncFn } from 'synckit';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
+import { options } from './options';
+import { print } from './printer';
+import { embed } from './printer/embed';
 
+const require = createRequire(import.meta.url);
 // the worker path must be absolute
 const parse = createSyncFn(require.resolve('../workers/parse-worker.js'));
 
@@ -27,7 +28,10 @@ export const parsers: Record<string, Parser> = {
 };
 
 export const printers: Record<string, Printer> = {
-	astro: printer,
+	astro: {
+		print,
+		embed,
+	},
 };
 
 const defaultOptions = {
