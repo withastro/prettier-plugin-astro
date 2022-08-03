@@ -170,6 +170,10 @@ function makeExpressionJSXCompatible(node: anyNode): anyNode {
 						attr.name = '__PRETTIER_SNIP__' + attr.name;
 					}
 				});
+
+				if (isNodeWithChildren(child)) {
+					(child as anyNode) = makeExpressionJSXCompatible(child);
+				}
 			}
 		});
 	}
