@@ -1,10 +1,19 @@
 import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { AstPath, manualDedent, printFn, printRaw } from './utils';
+import { anyNode } from './nodes';
+import {
+	AstPath,
+	isNodeWithChildren,
+	isTagLikeNode,
+	manualDedent,
+	printFn,
+	printRaw,
+} from './utils';
+
 const {
 	builders: { group, indent, join, line, softline, hardline },
-	utils: { stripTrailingHardline },
+	utils: { stripTrailingHardline, mapDoc },
 } = _doc;
 
 type supportedStyleLang = 'css' | 'scss' | 'sass';
@@ -21,27 +30,43 @@ export function embed(
 	if (!node) return null;
 
 	if (node.type === 'expression') {
-		const textContent = printRaw(node);
+		// This is a bit of a hack, but I'm not sure how else to pass the original, pre-JSX transformations to the parser?
+		const originalContent = printRaw(node);
+		(opts as any).originalContent = originalContent;
+
+		const jsxNode = makeExpressionJSXCompatible(node);
+		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
-
-		content = textToDoc(forceIntoExpression(textContent), {
+		content = textToDoc(textContent, {
 			...opts,
 			parser: expressionParser,
 		});
+
 		content = stripTrailingHardline(content);
 
-		return ['{', content, '}'];
+		// Create a Doc without the things we had to add to make the expression compatible with Babel
+		const astroDoc = mapDoc(content, (doc) => {
+			if (typeof doc === 'string' && doc.startsWith('__PRETTIER_SNIP__')) {
+				return '';
+			}
+
+			return doc;
+		});
+
+		return ['{', astroDoc, '}'];
 	}
 
 	// Attribute using an expression as value
 	if (node.type === 'attribute' && node.kind === 'expression') {
 		const value = node.value.trim();
 		const name = node.name.trim();
-		let attrNodeValue = textToDoc(forceIntoExpression(value), {
+
+		let attrNodeValue = textToDoc(value, {
 			...opts,
 			parser: expressionParser,
 		});
+
 		attrNodeValue = stripTrailingHardline(attrNodeValue);
 
 		if (name === value && opts.astroAllowShorthand) {
@@ -102,12 +127,54 @@ export function embed(
 }
 
 function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
-	const ast = parsers.babel(text, opts);
+	let parsingResult;
+	const expressionContent = forceIntoExpression(text);
+
+	try {
+		parsingResult = parsers.babel(expressionContent, opts);
+	} catch (e: any) {
+		if (process.env.PRETTIER_DEBUG) {
+			throw e;
+		}
+
+		// If we couldn't parse the expression (ex: syntax error) and we return the result, Prettier will fail with a not
+		// very interesting error message (ex: unhandled node type 'expression'), as such we'll instead just return the unformatted result
+		console.error(e);
+
+		return (opts as any).originalContent;
+	}
 
 	return {
-		...ast,
-		program: ast.program.body[0].expression.children[0].expression,
+		...parsingResult,
+		program: parsingResult.program.body[0].expression.children[0].expression,
 	};
+}
+
+/**
+ * Due to the differences between Astro and JSX, Prettier's TypeScript parsers (be it `typescript`, `babel` or `babel-ts`)
+ * are not able to parse all expressions. A list of the difference that matters here:
+ * - Astro allows a shorthand syntax for props. ex: `<Component {props} />`
+ * - Astro allows multiple root elements. ex: `<div></div><div></div>`
+ */
+function makeExpressionJSXCompatible(node: anyNode): anyNode {
+	const newNode = { ...node };
+
+	if (isNodeWithChildren(newNode)) {
+		newNode.children.forEach((child) => {
+			if (isTagLikeNode(child)) {
+				child.attributes.forEach((attr) => {
+					// Transform shorthand attributes into their full format with a prefix so we can find them back
+					if (attr.kind === 'shorthand') {
+						attr.kind = 'expression';
+						attr.value = attr.name;
+						attr.name = '__PRETTIER_SNIP__' + attr.name;
+					}
+				});
+			}
+		});
+	}
+
+	return newNode;
 }
 
 function forceIntoExpression(statement: string): string {
