@@ -1,7 +1,7 @@
 import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { anyNode } from './nodes';
+import { anyNode, ExpressionNode } from './nodes';
 import {
 	AstPath,
 	isNodeWithChildren,
@@ -34,7 +34,7 @@ export function embed(
 		const originalContent = printRaw(node);
 		(opts as any).originalContent = originalContent;
 
-		const jsxNode = makeExpressionJSXCompatible(node);
+		const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
 		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
@@ -156,7 +156,7 @@ function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOpt
  * - Astro allows a shorthand syntax for props. ex: `<Component {props} />`
  * - Astro allows multiple root elements. ex: `<div></div><div></div>`
  */
-function makeExpressionJSXCompatible(node: anyNode): anyNode {
+function makeNodeJSXCompatible<T>(node: any): T {
 	const newNode = { ...node };
 
 	if (isNodeWithChildren(newNode)) {
@@ -172,7 +172,7 @@ function makeExpressionJSXCompatible(node: anyNode): anyNode {
 				});
 
 				if (isNodeWithChildren(child)) {
-					(child as anyNode) = makeExpressionJSXCompatible(child);
+					child = makeNodeJSXCompatible(child);
 				}
 			}
 		});
