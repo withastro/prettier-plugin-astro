@@ -67,3 +67,9 @@ test('Format binary expressions', files, 'other/binary-expression');
 test('Format directives', files, 'other/directive');
 
 test('Format slots', files, 'other/slots');
+
+test(
+	'Can format expressions with shorthands props in them',
+	files,
+	'other/shorthand-in-expression'
+);
