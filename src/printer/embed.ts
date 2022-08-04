@@ -1,7 +1,7 @@
-import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
+import { BuiltInParser, BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { anyNode, ExpressionNode } from './nodes';
+import { ExpressionNode } from './nodes';
 import {
 	AstPath,
 	isNodeWithChildren,
@@ -82,7 +82,7 @@ export function embed(
 			group([
 				'---',
 				hardline,
-				textToDoc(node.value, { ...opts, parser: 'typescript' }),
+				textToDoc(node.value, { ...opts, parser: typescriptParser }),
 				'---',
 				hardline,
 			]),
@@ -95,7 +95,7 @@ export function embed(
 		const scriptContent = printRaw(node);
 		let formatttedScript = textToDoc(scriptContent, {
 			...opts,
-			parser: 'typescript',
+			parser: typescriptParser,
 		});
 		formatttedScript = stripTrailingHardline(formatttedScript);
 
@@ -127,27 +127,29 @@ export function embed(
 }
 
 function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
-	let parsingResult;
 	const expressionContent = forceIntoExpression(text);
-
-	try {
-		parsingResult = parsers.babel(expressionContent, opts);
-	} catch (e: any) {
-		if (process.env.PRETTIER_DEBUG) {
-			throw e;
-		}
-
-		// If we couldn't parse the expression (ex: syntax error) and we return the result, Prettier will fail with a not
-		// very interesting error message (ex: unhandled node type 'expression'), as such we'll instead just return the unformatted result
-		console.error(e);
-
-		return (opts as any).originalContent;
-	}
+	const parsingResult = wrapParserTryCatch(parsers.babel, expressionContent, opts);
 
 	return {
 		...parsingResult,
 		program: parsingResult.program.body[0].expression.children[0].expression,
 	};
+}
+
+function typescriptParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
+	return wrapParserTryCatch(parsers.typescript, text, opts);
+}
+
+function wrapParserTryCatch(parser: BuiltInParser, text: string, opts: ParserOptions) {
+	try {
+		return parser(text, opts);
+	} catch (e) {
+		// If we couldn't parse the expression (ex: syntax error) and we throw here, Prettier fallback to `print` and we'll
+		// get a totally useless error message (ex: unhandled node type). An undocumented way to work around this is to set
+		// `PRETTIER_DEBUG=1`, but nobody know that exists / want to do that just to get useful error messages. So we force it on
+		process.env.PRETTIER_DEBUG = 'true';
+		throw e;
+	}
 }
 
 /**
