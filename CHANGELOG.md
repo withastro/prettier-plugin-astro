@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.3.0
+
+### Minor Changes
+
+- 6ebc4d4: Update error handling to give better error messages when we fail to parse an expression, fixed shorthands props not working inside expressions
+- bfe22e3: Improve error handling for frontmatter and script tags
+
 ## 0.2.0
 
 ### Minor Changes
