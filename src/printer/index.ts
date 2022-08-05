@@ -91,6 +91,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 		case 'component':
 		case 'fragment':
+		case 'custom-element':
 		case 'element': {
 			let isEmpty: boolean;
 			if (!node.children) {
