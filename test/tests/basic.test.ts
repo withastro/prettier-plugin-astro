@@ -11,3 +11,5 @@ test('Can format an Astro file with a single style element', files, 'basic/singl
 test('Can format a basic astro only text', files, 'basic/simple-text');
 
 test('Can format html comments', files, 'basic/html-comment');
+
+test('Can format HTML custom elements', files, 'basic/html-custom-elements');
