@@ -8,9 +8,9 @@ import { embed } from './printer/embed';
 const req = createRequire(import.meta.url);
 let workerPath;
 try {
-	workerPath = req.resolve('prettier-plugin-astro/workers/parse-worker.js');
-} catch (e) {
 	workerPath = req.resolve('../workers/parse-worker.js');
+} catch (e) {
+	workerPath = req.resolve('prettier-plugin-astro/workers/parse-worker.js');
 }
 const parse = createSyncFn(req.resolve(workerPath));
 
