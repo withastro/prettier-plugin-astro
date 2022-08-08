@@ -170,6 +170,10 @@ export function trimTextNodeRight(node: TextNode): void {
 	node.value = node.value && node.value.trimEnd();
 }
 
+export function printClassNames(value: string) {
+	return value.trim().split(/\s+/).join(' ');
+}
+
 /** dedent string & return tabSize (the last part is what we need) */
 export function manualDedent(input: string): {
 	tabSize: number;
