@@ -30,10 +30,6 @@ export function embed(
 	if (!node) return null;
 
 	if (node.type === 'expression') {
-		// This is a bit of a hack, but I'm not sure how else to pass the original, pre-JSX transformations to the parser?
-		const originalContent = printRaw(node);
-		(opts as any).originalContent = originalContent;
-
 		const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
 		const textContent = printRaw(jsxNode);
 
@@ -203,10 +199,18 @@ function embedStyle(
 	switch (lang) {
 		case 'css':
 		case 'scss': {
-			let formattedStyles = textToDoc(content, {
-				...options,
-				parser: lang,
-			});
+			let formattedStyles;
+
+			// NOTE: Due to a bug in Prettier, we can't use our wrapParserTryCatch function here or parsing will silently fail
+			try {
+				formattedStyles = textToDoc(content, {
+					...options,
+					parser: lang,
+				});
+			} catch (e) {
+				process.env.PRETTIER_DEBUG = 'true';
+				throw e;
+			}
 
 			// The css parser appends an extra indented hardline, which we want outside of the `indent()`,
 			// so we remove the last element of the array
