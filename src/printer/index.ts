@@ -15,6 +15,7 @@ import {
 	isTextNodeStartingWithLinebreak,
 	isTextNodeStartingWithWhitespace,
 	ParserOptions,
+	printClassNames,
 	printFn,
 	printRaw,
 	shouldHugEnd,
@@ -248,10 +249,16 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 					return [line, name];
 				case 'expression':
 					// Handled in the `embed` function
-					// See embed.ts at the root of the src folder
+					// See embed.ts
 					return '';
 				case 'quoted':
-					return [line, name, '=', quote, node.value, quote];
+					let value = node.value;
+
+					if (node.name === 'class') {
+						value = printClassNames(value);
+					}
+
+					return [line, name, '=', quote, value, quote];
 				case 'shorthand':
 					return [line, '{', name, '}'];
 				case 'spread':
