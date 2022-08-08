@@ -1,0 +1,18 @@
+{
+  // For best cross-browser support of sticky or fixed elements, they must not be nested
+  // inside elements that hide any overflow axis. The article content hides `overflow-x`,
+  // so we must place the mobile TOC here.
+  headers && (
+    <nav class="mobile-toc">
+      <TableOfContents
+        client:media="(max-width: 72em)"
+        headers={headers}
+        labels={{
+          onThisPage: t("rightSidebar.onThisPage"),
+          overview: t("rightSidebar.overview"),
+        }}
+        isMobile={true}
+      />
+    </nav>
+  )
+}

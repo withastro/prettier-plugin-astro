@@ -73,3 +73,9 @@ test(
 	files,
 	'other/shorthand-in-expression'
 );
+
+test(
+	'Can format expression with inline comments in it',
+	files,
+	'other/expression-with-inline-comments'
+);
