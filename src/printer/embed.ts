@@ -12,7 +12,7 @@ import {
 } from './utils';
 
 const {
-	builders: { group, indent, join, line, softline, hardline },
+	builders: { group, indent, join, line, softline, hardline, lineSuffixBoundary },
 	utils: { stripTrailingHardline, mapDoc },
 } = _doc;
 
@@ -34,10 +34,18 @@ export function embed(
 		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
-		content = textToDoc(textContent, {
-			...opts,
-			parser: expressionParser,
-		});
+
+		try {
+			content = textToDoc(textContent, {
+				...opts,
+				parser: '__js_expression',
+			});
+		} catch (e) {
+			content = textToDoc(textContent, {
+				...opts,
+				parser: expressionParser,
+			});
+		}
 
 		content = stripTrailingHardline(content);
 
@@ -50,7 +58,7 @@ export function embed(
 			return doc;
 		});
 
-		return ['{', astroDoc, '}'];
+		return group(['{', indent([softline, astroDoc]), softline, lineSuffixBoundary, '}']);
 	}
 
 	// Attribute using an expression as value

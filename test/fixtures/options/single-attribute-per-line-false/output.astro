@@ -8,10 +8,12 @@
 <div data-a={1 - 2} data-b="2" data-c=`3`>
   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 </div>
-{[1, 2, 3].map((num) => {
-  return (
-    <div key={num} id={num}>
-      {num}
-    </div>
-  );
-})}
+{
+  [1, 2, 3].map((num) => {
+    return (
+      <div key={num} id={num}>
+        {num}
+      </div>
+    );
+  })
+}
