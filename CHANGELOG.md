@@ -1,5 +1,16 @@
 # prettier-plugin-astro
 
+## 0.4.0
+
+### Minor Changes
+
+- 2d78f06: Fix loading workers not working when parser is used from an external module
+
+### Patch Changes
+
+- 285360e: Fixed error when trying to format custom elements
+- 1b6622e: Properly handle errors inside style tags
+
 ## 0.3.0
 
 ### Minor Changes
