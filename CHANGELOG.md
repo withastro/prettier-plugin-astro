@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.4.1
+
+### Patch Changes
+
+- babd8c3: Properly trim the class attribute on HTML elements
+
 ## 0.4.0
 
 ### Minor Changes
