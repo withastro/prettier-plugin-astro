@@ -8,8 +8,14 @@ export type printFn = (path: AstPath) => Doc;
 export type ParserOptions = ParserOpts<anyNode>;
 export type AstPath = AstP<anyNode>;
 
-const require = createRequire(import.meta.url);
-const serialize = createSyncFn(require.resolve('../workers/serialize-worker.js'));
+const req = createRequire(import.meta.url);
+let workerPath;
+try {
+	workerPath = req.resolve('../workers/serialize-worker.js');
+} catch (e) {
+	workerPath = req.resolve('prettier-plugin-astro/workers/serialize-worker.js');
+}
+const serialize = createSyncFn(req.resolve(workerPath));
 
 export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): boolean {
 	return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);

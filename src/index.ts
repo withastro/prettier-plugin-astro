@@ -5,9 +5,14 @@ import { options } from './options';
 import { print } from './printer';
 import { embed } from './printer/embed';
 
-const require = createRequire(import.meta.url);
-// the worker path must be absolute
-const parse = createSyncFn(require.resolve('../workers/parse-worker.js'));
+const req = createRequire(import.meta.url);
+let workerPath;
+try {
+	workerPath = req.resolve('prettier-plugin-astro/workers/parse-worker.js');
+} catch (e) {
+	workerPath = req.resolve('../workers/parse-worker.js');
+}
+const parse = createSyncFn(req.resolve(workerPath));
 
 // https://prettier.io/docs/en/plugins.html#languages
 export const languages: Partial<SupportLanguage>[] = [
