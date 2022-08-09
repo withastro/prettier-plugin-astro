@@ -79,3 +79,5 @@ test(
 	files,
 	'other/expression-with-inline-comments'
 );
+
+test('Can format JSX comments properly', files, 'other/jsx-comments');
