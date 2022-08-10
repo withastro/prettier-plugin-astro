@@ -2,11 +2,13 @@
 
 {enabled && <Header hello={hello} {content} />}
 
-{[].map((item) => {
-  return (
-    <>
-      <Header hello={hello} {content} />
-      <Header {content} />
-    </>
-  );
-})}
+{
+  [].map((item) => {
+    return (
+      <>
+        <Header hello={hello} {content} />
+        <Header {content} />
+      </>
+    );
+  })
+}

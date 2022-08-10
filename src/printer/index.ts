@@ -258,6 +258,9 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						value = printClassNames(value);
 					}
 
+					if (node.name === 'style') {
+					}
+
 					return [line, name, '=', quote, value, quote];
 				case 'shorthand':
 					return [line, '{', name, '}'];

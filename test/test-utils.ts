@@ -5,7 +5,7 @@ import { expect, it } from 'vitest';
 /**
  * format the contents of an astro file
  */
-function format(contents: string, options: prettier.Options = {}): string {
+export function format(contents: string, options: prettier.Options = {}): string {
 	try {
 		return prettier.format(contents, {
 			parser: 'astro',

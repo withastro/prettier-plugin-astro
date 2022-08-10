@@ -7,7 +7,9 @@ function hello() {
 
 <h1>
   {hello}
-  {numbers.map((number) => {
-    return <p>{number}</p>;
-  })}
+  {
+    numbers.map((number) => {
+      return <p>{number}</p>;
+    })
+  }
 </h1>

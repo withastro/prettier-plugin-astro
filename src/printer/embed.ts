@@ -1,4 +1,4 @@
-import { BuiltInParser, BuiltInParsers, Doc, ParserOptions } from 'prettier';
+import { Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 import { ExpressionNode } from './nodes';
@@ -12,7 +12,7 @@ import {
 } from './utils';
 
 const {
-	builders: { group, indent, join, line, softline, hardline },
+	builders: { group, indent, join, line, softline, hardline, lineSuffixBoundary },
 	utils: { stripTrailingHardline, mapDoc },
 } = _doc;
 
@@ -34,23 +34,41 @@ export function embed(
 		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
-		content = textToDoc(textContent, {
-			...opts,
-			parser: expressionParser,
-		});
 
-		content = stripTrailingHardline(content);
+		try {
+			content = textToDoc(textContent, {
+				...opts,
+				parser: '__js_expression',
+			});
+		} catch (e) {
+			// The `__js_expression` parser should be able to handle 99% of supported expressions, however there's some very rare cases
+			// where we unfortunately need the full `babel-ts` parser. This happens notably with comments. In the future, what
+			// we should probably attempt is to make the expression compatible with `__js_expression` through our `makeNodeJSXCompatible` function
+			content = wrapParserTryCatch(textToDoc, textContent, {
+				...opts,
+				parser: 'babel-ts',
+			});
+
+			content = stripTrailingHardline(content);
+
+			// HACK: We can't strip the trailing hardline if an expression starts with an inline comment or the ending curly
+			// bracket will end on the same line as the comment, which breaks the expression
+			if (textContent.trimStart().startsWith('//') && /\n/.test(textContent)) {
+				return group(['{', indent([hardline, content]), hardline, lineSuffixBoundary, '}']);
+			}
+		}
 
 		// Create a Doc without the things we had to add to make the expression compatible with Babel
 		const astroDoc = mapDoc(content, (doc) => {
-			if (typeof doc === 'string' && doc.startsWith('__PRETTIER_SNIP__')) {
-				return '';
+			if (typeof doc === 'string') {
+				doc = doc.replace('_Pé', '{');
+				doc = doc.replace('èP_', '}');
 			}
 
 			return doc;
 		});
 
-		return ['{', astroDoc, '}'];
+		return group(['{', indent([softline, astroDoc]), softline, lineSuffixBoundary, '}']);
 	}
 
 	// Attribute using an expression as value
@@ -58,12 +76,10 @@ export function embed(
 		const value = node.value.trim();
 		const name = node.name.trim();
 
-		let attrNodeValue = textToDoc(value, {
+		const attrNodeValue = wrapParserTryCatch(textToDoc, value, {
 			...opts,
-			parser: expressionParser,
+			parser: '__js_expression',
 		});
-
-		attrNodeValue = stripTrailingHardline(attrNodeValue);
 
 		if (name === value && opts.astroAllowShorthand) {
 			return [line, '{', attrNodeValue, '}'];
@@ -74,31 +90,34 @@ export function embed(
 
 	// Frontmatter
 	if (node.type === 'frontmatter') {
-		return [
-			group([
-				'---',
-				hardline,
-				textToDoc(node.value, { ...opts, parser: typescriptParser }),
-				'---',
-				hardline,
-			]),
-			hardline,
-		];
+		const frontmatterContent = wrapParserTryCatch(textToDoc, node.value, {
+			...opts,
+			parser: 'typescript',
+		});
+
+		return [group(['---', hardline, frontmatterContent, '---', hardline]), hardline];
 	}
 
 	// Script tags
 	if (node.type === 'element' && node.name === 'script') {
 		const scriptContent = printRaw(node);
-		let formatttedScript = textToDoc(scriptContent, {
+		let formattedScript = wrapParserTryCatch(textToDoc, scriptContent, {
 			...opts,
-			parser: typescriptParser,
+			parser: 'typescript',
 		});
-		formatttedScript = stripTrailingHardline(formatttedScript);
+
+		formattedScript = stripTrailingHardline(formattedScript);
+		const isEmpty = /^\s*$/.test(scriptContent);
 
 		// print
 		const attributes = path.map(print, 'attributes');
 		const openingTag = group(['<script', indent(group(attributes)), softline, '>']);
-		return [openingTag, indent([hardline, formatttedScript]), hardline, '</script>'];
+		return [
+			openingTag,
+			indent([isEmpty ? '' : hardline, formattedScript]),
+			isEmpty ? '' : hardline,
+			'</script>',
+		];
 	}
 
 	// Style tags
@@ -122,23 +141,13 @@ export function embed(
 	return null;
 }
 
-function expressionParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
-	const expressionContent = forceIntoExpression(text);
-	const parsingResult = wrapParserTryCatch(parsers.babel, expressionContent, opts);
-
-	return {
-		...parsingResult,
-		program: parsingResult.program.body[0].expression.children[0].expression,
-	};
-}
-
-function typescriptParser(text: string, parsers: BuiltInParsers, opts: ParserOptions) {
-	return wrapParserTryCatch(parsers.typescript, text, opts);
-}
-
-function wrapParserTryCatch(parser: BuiltInParser, text: string, opts: ParserOptions) {
+function wrapParserTryCatch(
+	cb: (text: string, options: object) => Doc,
+	text: string,
+	options: ParserOptions
+) {
 	try {
-		return parser(text, opts);
+		return cb(text, options);
 	} catch (e) {
 		// If we couldn't parse the expression (ex: syntax error) and we throw here, Prettier fallback to `print` and we'll
 		// get a totally useless error message (ex: unhandled node type). An undocumented way to work around this is to set
@@ -161,11 +170,10 @@ function makeNodeJSXCompatible<T>(node: any): T {
 		newNode.children.forEach((child) => {
 			if (isTagLikeNode(child)) {
 				child.attributes.forEach((attr) => {
-					// Transform shorthand attributes into their full format with a prefix so we can find them back
+					// Transform shorthand attributes into a form that is both compatible with JSX and that we can find back
 					if (attr.kind === 'shorthand') {
-						attr.kind = 'expression';
-						attr.value = attr.name;
-						attr.name = '__PRETTIER_SNIP__' + attr.name;
+						attr.kind = 'empty';
+						attr.name = '_Pé' + attr.name + 'èP_';
 					}
 				});
 
@@ -177,12 +185,6 @@ function makeNodeJSXCompatible<T>(node: any): T {
 	}
 
 	return newNode;
-}
-
-function forceIntoExpression(statement: string): string {
-	// note the trailing newline: if the statement ends in a // comment,
-	// we can't add the closing bracket right afterwards
-	return `<>{${statement}\n}</>`;
 }
 
 /**
@@ -199,18 +201,7 @@ function embedStyle(
 	switch (lang) {
 		case 'css':
 		case 'scss': {
-			let formattedStyles;
-
-			// NOTE: Due to a bug in Prettier, we can't use our wrapParserTryCatch function here or parsing will silently fail
-			try {
-				formattedStyles = textToDoc(content, {
-					...options,
-					parser: lang,
-				});
-			} catch (e) {
-				process.env.PRETTIER_DEBUG = 'true';
-				throw e;
-			}
+			let formattedStyles = wrapParserTryCatch(textToDoc, content, { ...options, parser: lang });
 
 			// The css parser appends an extra indented hardline, which we want outside of the `indent()`,
 			// so we remove the last element of the array
