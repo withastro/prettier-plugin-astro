@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.5.0
+
+### Minor Changes
+
+- 2bc2f38: Properly format multi-lines expressions, fixes expression with leading comments not being formatted properly
+
 ## 0.4.1
 
 ### Patch Changes
