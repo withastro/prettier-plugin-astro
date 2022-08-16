@@ -81,3 +81,9 @@ test(
 );
 
 test('Can format JSX comments properly', files, 'other/jsx-comments');
+
+test(
+	'Can format expression with TypeScript in them properly',
+	files,
+	'other/typescript-expression'
+);

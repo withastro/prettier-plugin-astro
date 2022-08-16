@@ -1,4 +1,4 @@
-import { Doc, ParserOptions } from 'prettier';
+import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 import { ExpressionNode } from './nodes';
@@ -35,27 +35,24 @@ export function embed(
 
 		let content: Doc;
 
-		try {
-			content = textToDoc(textContent, {
-				...opts,
-				parser: '__js_expression',
-			});
-		} catch (e) {
-			// The `__js_expression` parser should be able to handle 99% of supported expressions, however there's some very rare cases
-			// where we unfortunately need the full `babel-ts` parser. This happens notably with comments. In the future, what
-			// we should probably attempt is to make the expression compatible with `__js_expression` through our `makeNodeJSXCompatible` function
-			content = wrapParserTryCatch(textToDoc, textContent, {
-				...opts,
-				parser: 'babel-ts',
-			});
+		content = wrapParserTryCatch(textToDoc, forceIntoExpression(textContent), {
+			...opts,
+			parser: expressionParser,
+		});
 
-			content = stripTrailingHardline(content);
+		content = stripTrailingHardline(content);
 
-			// HACK: We can't strip the trailing hardline if an expression starts with an inline comment or the ending curly
-			// bracket will end on the same line as the comment, which breaks the expression
-			if (textContent.trimStart().startsWith('//') && /\n/.test(textContent)) {
-				return group(['{', indent([hardline, content]), hardline, lineSuffixBoundary, '}']);
+		// HACK: Bit of a weird hack to get if a document is exclusively comments
+		// Using `mapDoc` directly to build the array for some reason caused it to always be undefined? Not sure why
+		const strings: string[] = [];
+		mapDoc(content, (doc) => {
+			if (typeof doc === 'string') {
+				strings.push(doc);
 			}
+		});
+
+		if (strings.every((value) => value.startsWith('//'))) {
+			return group(['{', content, softline, lineSuffixBoundary, '}']);
 		}
 
 		// Create a Doc without the things we had to add to make the expression compatible with Babel
@@ -76,9 +73,9 @@ export function embed(
 		const value = node.value.trim();
 		const name = node.name.trim();
 
-		const attrNodeValue = wrapParserTryCatch(textToDoc, value, {
+		const attrNodeValue = wrapParserTryCatch(textToDoc, forceIntoExpression(value), {
 			...opts,
-			parser: '__js_expression',
+			parser: expressionParser,
 		});
 
 		if (name === value && opts.astroAllowShorthand) {
@@ -155,6 +152,21 @@ function wrapParserTryCatch(
 		process.env.PRETTIER_DEBUG = 'true';
 		throw e;
 	}
+}
+
+function forceIntoExpression(statement: string) {
+	// note the trailing newline: if the statement ends in a // comment,
+	// we can't add the closing bracket right afterwards
+	return `<>{${statement}\n}</>`;
+}
+
+function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
+	const ast = parsers['babel-ts'](text, options);
+
+	return {
+		...ast,
+		program: ast.program.body[0].expression.children[0].expression,
+	};
 }
 
 /**
