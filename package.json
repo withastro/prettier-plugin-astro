@@ -1,12 +1,11 @@
 {
   "name": "prettier-plugin-astro",
   "version": "0.5.0",
-  "type": "commonjs",
+  "type": "module",
   "description": "A Prettier Plugin for formatting Astro files",
   "main": "dist/index.js",
   "files": [
-    "dist/**",
-    "workers/*"
+    "dist/**"
   ],
   "engines": {
     "node": "^14.15.0 || >=16.0.0",
@@ -40,9 +39,8 @@
   },
   "dependencies": {
     "@astrojs/compiler": "^0.19.0",
-    "prettier": "^2.7.1",
-    "sass-formatter": "^0.7.2",
-    "synckit": "^0.7.0"
+    "prettier": "^3.0.0-alpha.0",
+    "sass-formatter": "^0.7.2"
   },
   "devDependencies": {
     "@changesets/cli": "^2.16.0",

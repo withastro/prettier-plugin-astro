@@ -1,5 +1,8 @@
 import { Doc } from 'prettier';
+import _doc from 'prettier/doc.js';
+
 import { selfClosingTags } from './elements';
+import { TextNode } from './nodes';
 import {
 	AstPath,
 	canOmitSoftlineBeforeClosingTag,
@@ -24,9 +27,7 @@ import {
 	trimTextNodeLeft,
 	trimTextNodeRight,
 } from './utils';
-import { TextNode } from './nodes';
 
-import _doc from 'prettier/doc';
 const {
 	builders: { breakParent, dedent, fill, group, indent, join, line, softline, hardline },
 	utils: { stripTrailingHardline },
@@ -304,7 +305,7 @@ function splitTextToDocs(node: TextNode): Doc[] {
 
 	const textLines = text.split(/[\t\n\f\r ]+/);
 
-	let docs = join(line, textLines).parts.filter((s) => s !== '');
+	let docs = join(line, textLines).filter((s) => s !== '');
 
 	if (startsWithLinebreak(text)) {
 		docs[0] = hardline;

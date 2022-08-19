@@ -11,20 +11,20 @@ function getFile(allFiles: any, path: string): string {
 
 it('Correctly errors when parsing faulty frontmatter', async () => {
 	const content = getFile(files, '/test/fixtures/errors/frontmatter.astro');
-	expect(() => format(content, {})).toThrowError('Expression expected');
+	expect(async () => await format(content, {})).toThrowError('Expression expected');
 });
 
 it('Correctly errors when parsing faulty expressions', async () => {
 	const content = getFile(files, '/test/fixtures/errors/expression.astro');
-	expect(() => format(content, {})).toThrowError('Unexpected token');
+	expect(async () => await format(content, {})).toThrowError('Unexpected token');
 });
 
 it('Correctly errors when parsing faulty attributes with expression', async () => {
 	const content = getFile(files, '/test/fixtures/errors/attribute.astro');
-	expect(() => format(content, {})).toThrowError('Unexpected token');
+	expect(async () => await format(content, {})).toThrowError('Unexpected token');
 });
 
 it('Correctly errors when parsing faulty style tag', async () => {
 	const content = getFile(files, '/test/fixtures/errors/style.astro');
-	expect(() => format(content, {})).toThrowError('CssSyntaxError');
+	expect(async () => await format(content, {})).toThrowError('CssSyntaxError');
 });

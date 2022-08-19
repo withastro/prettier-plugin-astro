@@ -1,21 +1,15 @@
-import { createRequire } from 'node:module';
+import { serialize } from '@astrojs/compiler/utils';
 import { AstPath as AstP, Doc, ParserOptions as ParserOpts } from 'prettier';
-import { createSyncFn } from 'synckit';
+
 import { blockElements, formattableAttributes, TagName } from './elements';
 import { anyNode, CommentNode, Node, ParentLikeNode, TagLikeNode, TextNode } from './nodes';
 
-export type printFn = (path: AstPath) => Doc;
+// export type printFn = (path: AstPath) => Doc;
+// https://prettier.io/docs/en/plugins.html#optional-embed
+export type printFn = (selector?: string | number | Array<string | number> | AstPath) => Doc;
+
 export type ParserOptions = ParserOpts<anyNode>;
 export type AstPath = AstP<anyNode>;
-
-const req = createRequire(import.meta.url);
-let workerPath;
-try {
-	workerPath = req.resolve('../workers/serialize-worker.js');
-} catch (e) {
-	workerPath = req.resolve('prettier-plugin-astro/workers/serialize-worker.js');
-}
-const serialize = createSyncFn(req.resolve(workerPath));
 
 export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): boolean {
 	return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);

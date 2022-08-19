@@ -1,18 +1,9 @@
-import { createRequire } from 'node:module';
+import { parse } from '@astrojs/compiler';
 import { Parser, Printer, SupportLanguage } from 'prettier';
-import { createSyncFn } from 'synckit';
+
 import { options } from './options';
 import { print } from './printer';
 import { embed } from './printer/embed';
-
-const req = createRequire(import.meta.url);
-let workerPath;
-try {
-	workerPath = req.resolve('../workers/parse-worker.js');
-} catch (e) {
-	workerPath = req.resolve('prettier-plugin-astro/workers/parse-worker.js');
-}
-const parse = createSyncFn(req.resolve(workerPath));
 
 // https://prettier.io/docs/en/plugins.html#languages
 export const languages: Partial<SupportLanguage>[] = [
@@ -27,7 +18,10 @@ export const languages: Partial<SupportLanguage>[] = [
 // https://prettier.io/docs/en/plugins.html#parsers
 export const parsers: Record<string, Parser> = {
 	astro: {
-		parse: (source) => parse(source),
+		async parse(source) {
+			const { ast } = await parse(source);
+			return ast;
+		},
 		astFormat: 'astro',
 		locStart: (node) => node.start,
 		locEnd: (node) => node.end,
@@ -35,7 +29,7 @@ export const parsers: Record<string, Parser> = {
 };
 
 // https://prettier.io/docs/en/plugins.html#printers
-export const printers: Record<string, Printer> = {
+export const printers = {
 	astro: {
 		print,
 		embed,
