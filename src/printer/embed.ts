@@ -63,8 +63,6 @@ export function embed(path: AstPath, opts: ParserOptions): Embed {
 					parser: 'babel-ts',
 				});
 
-				// content = stripTrailingHardline(content);
-
 				// HACK: We can't strip the trailing hardline if an expression starts with an inline comment or the ending curly
 				// bracket will end on the same line as the comment, which breaks the expression
 				if (textContent.trimStart().startsWith('//') && /\n/.test(textContent)) {
@@ -120,7 +118,6 @@ export function embed(path: AstPath, opts: ParserOptions): Embed {
 				parser: 'typescript',
 			});
 
-			// formattedScript = stripTrailingHardline(formattedScript);
 			const isEmpty = /^\s*$/.test(scriptContent);
 
 			// print
