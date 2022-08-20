@@ -305,7 +305,12 @@ function splitTextToDocs(node: TextNode): Doc[] {
 
 	const textLines = text.split(/[\t\n\f\r ]+/);
 
-	let docs = join(line, textLines).filter((s) => s !== '');
+	// https://github.com/prettier/prettier/blob/33e621133c48e857244edea7f26cf20793c55aa6/src/document/builders.js#L216
+	// in the jsdoc it returns a Doc, but in the code it looks like it returns a Doc[]
+	// TODO: Fix type when prettier is updated
+	let docs = join(line, textLines) as unknown as Doc[];
+
+	docs = docs.filter((s) => s !== '');
 
 	if (startsWithLinebreak(text)) {
 		docs[0] = hardline;
