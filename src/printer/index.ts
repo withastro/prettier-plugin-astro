@@ -310,8 +310,6 @@ function splitTextToDocs(node: TextNode): Doc[] {
 	// TODO: Fix type when prettier is updated
 	let docs = join(line, textLines) as unknown as Doc[];
 
-	docs = docs.filter((s) => s !== '');
-
 	if (startsWithLinebreak(text)) {
 		docs[0] = hardline;
 	}
