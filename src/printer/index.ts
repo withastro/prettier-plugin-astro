@@ -108,7 +108,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			const attributes = join(attributeLine, path.map(print, 'attributes'));
 
 			if (isSelfClosingTag) {
-				return group(['<', node.name, indent(group(attributes)), line, `/>`]);
+				return group(['<', node.name, indent(attributes), line, `/>`]);
 			}
 
 			if (node.children) {
