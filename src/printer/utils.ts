@@ -86,11 +86,15 @@ export function endsWithLinebreak(text: string, nrLines = 1): boolean {
 }
 
 export function isTextNodeStartingWithWhitespace(node: Node): node is TextNode {
-	return node.type === 'text' && /^\s/.test(getUnencodedText(node));
+	return isTextNode(node) && /^\s/.test(getUnencodedText(node));
+}
+
+function endsWithWhitespace(text: string) {
+	return /\s$/.test(text);
 }
 
 export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
-	return node.type === 'text' && /\s$/.test(getUnencodedText(node));
+	return isTextNode(node) && endsWithWhitespace(getUnencodedText(node));
 }
 
 /**
@@ -133,11 +137,9 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 		return true;
 	}
 
-	return false;
-
-	// TODO: WIP
-	// const lastChild = children[children.length - 1];
-	// return !isTextNodeEndingWithWhitespace(lastChild);
+	const lastChild = children[children.length - 1];
+	if (!isTextNode(lastChild)) return false;
+	return !endsWithWhitespace(getUnencodedText(lastChild));
 }
 
 /**
