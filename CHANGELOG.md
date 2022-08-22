@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.5.1
+
+### Patch Changes
+
+- d4afe5b: Fix TypeScript not working inside expressions
+
 ## 0.5.0
 
 ### Minor Changes
