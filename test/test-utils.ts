@@ -82,7 +82,7 @@ export function test(name: string, files: any, path: string, isMarkdown = false)
 		const opts = getOptions(files, path);
 
 		const formatted = formatFile(input, opts);
-		expect(formatted, 'Incorrect formating').toBe(output);
+		expect(formatted, 'Incorrect formatting').toBe(output);
 
 		// test that our formatting is idempotent
 		const formattedTwice = formatFile(formatted, opts);
