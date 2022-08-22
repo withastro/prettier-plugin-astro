@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.5.2
+
+### Patch Changes
+
+- 13810b7: End tag hugs text nodes not ending in whitespace
+- 5b2177e: Correctly break self-closing tags
+
 ## 0.5.1
 
 ### Patch Changes
