@@ -15,3 +15,5 @@ test('Can format html comments', files, 'basic/html-comment');
 test('Can format HTML custom elements', files, 'basic/html-custom-elements');
 
 test('Can properly format the class attribute', files, 'basic/html-class-attribute');
+
+test('Can format long self-closing tags with multiple attributes', files, 'basic/self-closing');
