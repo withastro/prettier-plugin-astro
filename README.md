@@ -96,7 +96,7 @@ Set if attributes with the same name as their expression should be formatted to 
 
 Pull requests of any size and any skill level are welcome, no contribution is too small. Changes to the Astro Prettier Plugin are subject to [Astro Governance](https://github.com/withastro/.github/blob/main/GOVERNANCE.md) and should adhere to the [Astro Style Guide](https://github.com/withastro/astro/blob/main/STYLE_GUIDE.md)
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to setup your development environnement
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to set up your development environment.
 
 ## Sponsors
 
