@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.5.3
+
+### Patch Changes
+
+- 1da195e: Update to latest version of the compiler
+
 ## 0.5.2
 
 ### Patch Changes
