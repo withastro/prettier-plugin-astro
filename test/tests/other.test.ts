@@ -87,3 +87,9 @@ test(
 	files,
 	'other/typescript-expression'
 );
+
+test(
+	'Can format expressions with characters not compatible with JSX',
+	files,
+	'other/non-jsx-compatible-characters'
+);
