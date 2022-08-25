@@ -4,9 +4,13 @@ import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 import { ExpressionNode } from './nodes';
 import {
 	AstPath,
+	atSignReplace,
+	closingBracketReplace,
+	dotReplace,
 	isNodeWithChildren,
 	isTagLikeNode,
 	manualDedent,
+	openingBracketReplace,
 	printFn,
 	printRaw,
 } from './utils';
@@ -58,8 +62,10 @@ export function embed(
 		// Create a Doc without the things we had to add to make the expression compatible with Babel
 		const astroDoc = mapDoc(content, (doc) => {
 			if (typeof doc === 'string') {
-				doc = doc.replace('_Pé', '{');
-				doc = doc.replace('èP_', '}');
+				doc = doc.replace(openingBracketReplace, '{');
+				doc = doc.replace(closingBracketReplace, '}');
+				doc = doc.replace(atSignReplace, '@');
+				doc = doc.replace(dotReplace, '.');
 			}
 
 			return doc;
@@ -170,10 +176,13 @@ function expressionParser(text: string, parsers: BuiltInParsers, options: Parser
 }
 
 /**
- * Due to the differences between Astro and JSX, Prettier's TypeScript parsers (be it `typescript`, `babel` or `babel-ts`)
- * are not able to parse all expressions. A list of the difference that matters here:
+ * Due to the differences between Astro and JSX, Prettier's TypeScript parsers (be it `typescript` or `babel-ts`) are not
+ * able to parse all expressions. So we need to first make the expression compatible before passing it to the parser
+ *
+ * A list of the difference that matters here:
  * - Astro allows a shorthand syntax for props. ex: `<Component {props} />`
  * - Astro allows multiple root elements. ex: `<div></div><div></div>`
+ * - Astro allows attributes to include at signs (@) and dots (.)
  */
 function makeNodeJSXCompatible<T>(node: any): T {
 	const newNode = { ...node };
@@ -182,10 +191,19 @@ function makeNodeJSXCompatible<T>(node: any): T {
 		newNode.children.forEach((child) => {
 			if (isTagLikeNode(child)) {
 				child.attributes.forEach((attr) => {
-					// Transform shorthand attributes into a form that is both compatible with JSX and that we can find back
+					// Transform shorthand attributes into an empty attribute, ex: `{shorthand}` becomes `shorthand` and wrap it
+					// so we can transform it back into {}
 					if (attr.kind === 'shorthand') {
 						attr.kind = 'empty';
-						attr.name = '_Pé' + attr.name + 'èP_';
+						attr.name = openingBracketReplace + attr.name + closingBracketReplace;
+					}
+
+					if (attr.name.includes('@')) {
+						attr.name = attr.name.replace('@', atSignReplace);
+					}
+
+					if (attr.name.includes('.')) {
+						attr.name = attr.name.replace('.', dotReplace);
 					}
 				});
 
