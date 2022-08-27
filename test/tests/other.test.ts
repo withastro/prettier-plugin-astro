@@ -1,7 +1,8 @@
 import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/other/*/*', {
-	assert: { type: 'raw' },
+	eager: true,
+	as: 'raw',
 });
 
 test('Can format an Astro file with frontmatter', files, 'other/frontmatter');

@@ -2,7 +2,8 @@ import { expect, it } from 'vitest';
 import { format } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/errors/**/*', {
-	assert: { type: 'raw' },
+	eager: true,
+	as: 'raw',
 });
 
 function getFile(allFiles: any, path: string): string {
