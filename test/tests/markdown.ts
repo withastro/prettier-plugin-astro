@@ -3,7 +3,8 @@
 import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/markdown/*/*', {
-	assert: { type: 'raw' },
+	eager: true,
+	as: 'raw',
 });
 
 // This test is currently disabled because a bug moves a style tag when it shouldn't
