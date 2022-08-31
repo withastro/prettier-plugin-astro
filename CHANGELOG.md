@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.5.4
+
+### Patch Changes
+
+- 4115a8e: Support formatting expressions with elements with attributes not compatible with JSX
+
 ## 0.5.3
 
 ### Patch Changes
