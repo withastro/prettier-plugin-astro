@@ -228,6 +228,8 @@ function embedStyle(
 	textToDoc: (text: string, options: object) => Doc,
 	options: ParserOptions
 ) {
+	const isEmpty = /^\s*$/.test(content);
+
 	switch (lang) {
 		case 'css':
 		case 'scss': {
@@ -240,7 +242,12 @@ function embedStyle(
 			// print
 			const attributes = path.map(print, 'attributes');
 			const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
-			return [openingTag, indent([hardline, formattedStyles]), hardline, '</style>'];
+			return [
+				openingTag,
+				indent([isEmpty ? '' : hardline, formattedStyles]),
+				isEmpty ? '' : hardline,
+				'</style>',
+			];
 		}
 		case 'sass': {
 			const lineEnding = options.endOfLine.toUpperCase() === 'CRLF' ? 'CRLF' : 'LF';
@@ -260,7 +267,12 @@ function embedStyle(
 			const formattedSass = join(hardline, formattedSassIndented.split('\n'));
 			const attributes = path.map(print, 'attributes');
 			const openingTag = group(['<style', indent(group(attributes)), softline, '>']);
-			return [openingTag, indent(group([hardline, formattedSass])), hardline, '</style>'];
+			return [
+				openingTag,
+				indent([isEmpty ? '' : hardline, formattedSass]),
+				isEmpty ? '' : hardline,
+				'</style>',
+			];
 		}
 	}
 }
