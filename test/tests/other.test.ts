@@ -94,3 +94,9 @@ test(
 	files,
 	'other/non-jsx-compatible-characters'
 );
+
+test(
+	'Can format expressions inside inline tags without adding a newline',
+	files,
+	'other/expression-in-inline-tag'
+);
