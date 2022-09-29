@@ -1,5 +1,13 @@
 # prettier-plugin-astro
 
+## 0.5.5
+
+### Patch Changes
+
+- fe68b94: Fix missing newline after attributes on inline elements when using singleAttributePerLine
+- 96e2b28: Fix expressions not hugging the end of the tag in cases where they should
+- 4e6fde8: Fix newlines being added to style tags even if they were empty
+
 ## 0.5.4
 
 ### Patch Changes
