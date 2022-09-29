@@ -103,8 +103,8 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			const isSelfClosingTag =
 				isEmpty && (node.type !== 'element' || selfClosingTags.includes(node.name));
 
-			const attributeLine =
-				opts.singleAttributePerLine && node.attributes.length > 1 ? breakParent : '';
+			const isSingleLinePerAttribute = opts.singleAttributePerLine && node.attributes.length > 1;
+			const attributeLine = isSingleLinePerAttribute ? breakParent : '';
 			const attributes = join(attributeLine, path.map(print, 'attributes'));
 
 			if (isSelfClosingTag) {
@@ -139,8 +139,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						isTextNodeStartingWithWhitespace(node.children[0]) &&
 						!isPreTagContent(path)
 							? () => line
-							: // () => (opts.jsxBracketNewLine ? '' : softline);
-							  () => softline;
+							: () => softline;
 				} else if (isPreTagContent(path)) {
 					body = () => printRaw(node);
 				} else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {
@@ -165,7 +164,10 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 				];
 
 				if (hugStart && hugEnd) {
-					const huggedContent = [softline, group(['>', body(), `</${node.name}`])];
+					const huggedContent = [
+						isSingleLinePerAttribute ? hardline : softline,
+						group(['>', body(), `</${node.name}`]),
+					];
 
 					const omitSoftlineBeforeClosingTag =
 						isEmpty || canOmitSoftlineBeforeClosingTag(path, opts);
