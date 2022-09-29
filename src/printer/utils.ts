@@ -2,7 +2,15 @@ import { createRequire } from 'node:module';
 import { AstPath as AstP, Doc, ParserOptions as ParserOpts } from 'prettier';
 import { createSyncFn } from 'synckit';
 import { blockElements, formattableAttributes, TagName } from './elements';
-import { anyNode, CommentNode, Node, ParentLikeNode, TagLikeNode, TextNode } from './nodes';
+import {
+	anyNode,
+	CommentNode,
+	ExpressionNode,
+	Node,
+	ParentLikeNode,
+	TagLikeNode,
+	TextNode,
+} from './nodes';
 
 export type printFn = (path: AstPath) => Doc;
 export type ParserOptions = ParserOpts<anyNode>;
@@ -143,6 +151,7 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 	}
 
 	const lastChild = children[children.length - 1];
+	if (isExpressionNode(lastChild)) return true;
 	if (!isTextNode(lastChild)) return false;
 	return !endsWithWhitespace(getUnencodedText(lastChild));
 }
@@ -223,6 +232,10 @@ export function manualDedent(input: string): {
 /** True if the node is of type text */
 export function isTextNode(node: anyNode): node is TextNode {
 	return node.type === 'text';
+}
+
+export function isExpressionNode(node: anyNode): node is ExpressionNode {
+	return node.type === 'expression';
 }
 
 /** True if the node is TagLikeNode:
