@@ -110,7 +110,7 @@ export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
 	return isTextNode(node) && endsWithWhitespace(getUnencodedText(node));
 }
 
-export function hasSetAttributes(node: TagLikeNode) {
+export function hasSetDirectives(node: TagLikeNode) {
 	const attributes = Array.from(node.attributes, (attr) => attr.name);
 	return attributes.some((attr) => ['set:html', 'set:text'].includes(attr));
 }

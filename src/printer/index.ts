@@ -6,7 +6,7 @@ import {
 	endsWithLinebreak,
 	getNextNode,
 	getUnencodedText,
-	hasSetAttributes,
+	hasSetDirectives,
 	isEmptyTextNode,
 	isInlineElement,
 	isPreTagContent,
@@ -103,7 +103,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			}
 			const isSelfClosingTag =
 				isEmpty &&
-				(node.type !== 'element' || selfClosingTags.includes(node.name) || hasSetAttributes(node));
+				(node.type !== 'element' || selfClosingTags.includes(node.name) || hasSetDirectives(node));
 
 			const isSingleLinePerAttribute = opts.singleAttributePerLine && node.attributes.length > 1;
 			const attributeLine = isSingleLinePerAttribute ? breakParent : '';
