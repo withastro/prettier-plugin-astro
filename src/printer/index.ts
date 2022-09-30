@@ -6,6 +6,7 @@ import {
 	endsWithLinebreak,
 	getNextNode,
 	getUnencodedText,
+	hasSetAttributes,
 	isEmptyTextNode,
 	isInlineElement,
 	isPreTagContent,
@@ -101,7 +102,8 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 				isEmpty = node.children.every((child) => isEmptyTextNode(child));
 			}
 			const isSelfClosingTag =
-				isEmpty && (node.type !== 'element' || selfClosingTags.includes(node.name));
+				isEmpty &&
+				(node.type !== 'element' || selfClosingTags.includes(node.name) || hasSetAttributes(node));
 
 			const isSingleLinePerAttribute = opts.singleAttributePerLine && node.attributes.length > 1;
 			const attributeLine = isSingleLinePerAttribute ? breakParent : '';

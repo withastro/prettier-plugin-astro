@@ -110,6 +110,11 @@ export function isTextNodeEndingWithWhitespace(node: Node): node is TextNode {
 	return isTextNode(node) && endsWithWhitespace(getUnencodedText(node));
 }
 
+export function hasSetAttributes(node: TagLikeNode) {
+	const attributes = Array.from(node.attributes, (attr) => attr.name);
+	return attributes.some((attr) => ['set:html', 'set:text'].includes(attr));
+}
+
 /**
  * Check if given node's start tag should hug its first child. This is the case for inline elements when there's
  * no whitespace between the `>` and the first child.
