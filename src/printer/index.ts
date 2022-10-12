@@ -5,6 +5,7 @@ import {
 	canOmitSoftlineBeforeClosingTag,
 	endsWithLinebreak,
 	getNextNode,
+	getPreferredQuote,
 	getUnencodedText,
 	hasSetDirectives,
 	isEmptyTextNode,
@@ -247,7 +248,6 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 		case 'attribute': {
 			const name = node.name.trim();
-			const quote = opts.jsxSingleQuote ? "'" : '"';
 			switch (node.kind) {
 				case 'empty':
 					return [line, name];
@@ -262,10 +262,14 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						value = printClassNames(value);
 					}
 
-					if (node.name === 'style') {
-					}
+					const unescapedValue = value.replace(/&apos;/g, "'").replace(/&quot;/g, '"');
+					const { escaped, quote, regex } = getPreferredQuote(
+						unescapedValue,
+						opts.jsxSingleQuote ? "'" : '"'
+					);
 
-					return [line, name, '=', quote, value, quote];
+					const result = unescapedValue.replace(regex, escaped);
+					return [line, name, '=', quote, result, quote];
 				case 'shorthand':
 					return [line, '{', name, '}'];
 				case 'spread':
