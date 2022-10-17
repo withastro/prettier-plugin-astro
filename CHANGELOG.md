@@ -1,5 +1,17 @@
 # prettier-plugin-astro
 
+## 0.6.0
+
+### Minor Changes
+
+- 699e02c: Allow elements with set:\* directives to self-close
+
+### Patch Changes
+
+- 163ffec: Fix `jsxSingleQuote` not considering if there was any incompatible characters inside the attribute value
+- 17af6ef: Fix style tags getting moved inside body tags
+  Fix fragments with expressions inside being moved to before the expressions in certain cases
+
 ## 0.5.5
 
 ### Patch Changes
