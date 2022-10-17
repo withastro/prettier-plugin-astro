@@ -288,3 +288,33 @@ export const isPreTagContent = (path: AstPath): boolean => {
 			(node.type === 'attribute' && !formattableAttributes.includes(node.name))
 	);
 };
+
+interface QuoteResult {
+	quote: '"' | "'";
+	regex: RegExp;
+	escaped: string;
+}
+
+// Adapted from Prettier's source code as it's unfortunately not exported
+// https://github.com/prettier/prettier/blob/237e681936fc533c27d7ce8577d3fc98838a3314/src/common/util.js#L238
+export function getPreferredQuote(rawContent: string, preferredQuote: string): QuoteResult {
+	const double: QuoteResult = { quote: '"', regex: /"/g, escaped: '&quot;' };
+	const single: QuoteResult = { quote: "'", regex: /'/g, escaped: '&apos;' };
+
+	const preferred = preferredQuote === "'" ? single : double;
+	const alternate = preferred === single ? double : single;
+
+	let result = preferred;
+
+	// If `rawContent` contains at least one of the quote preferred for enclosing
+	// the string, we might want to enclose with the alternate quote instead, to
+	// minimize the number of escaped quotes.
+	if (rawContent.includes(preferred.quote) || rawContent.includes(alternate.quote)) {
+		const numPreferredQuotes = (rawContent.match(preferred.regex) || []).length;
+		const numAlternateQuotes = (rawContent.match(alternate.regex) || []).length;
+
+		result = numPreferredQuotes > numAlternateQuotes ? alternate : preferred;
+	}
+
+	return result;
+}
