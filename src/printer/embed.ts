@@ -211,6 +211,8 @@ function makeNodeJSXCompatible<T>(node: any): T {
 					child = makeNodeJSXCompatible<typeof child>(child);
 				}
 
+				// If we don't have a previous children, or it's not an element AND
+				// we have a next children, and it's an element. Add the current children to the bundle
 				if (
 					(!previousChildren || isTextNode(previousChildren)) &&
 					nextChildren &&
@@ -220,6 +222,8 @@ function makeNodeJSXCompatible<T>(node: any): T {
 					return result;
 				}
 
+				// If we have elements in our bundle, and there's no next children, or it's a text node
+				// Create a fake parent, and add all the previous encountered elements as children of it
 				if (
 					(!nextChildren || isTextNode(nextChildren)) &&
 					childBundle[childBundleIndex].length > 0
