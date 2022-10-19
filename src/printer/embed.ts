@@ -1,7 +1,7 @@
 import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { ExpressionNode } from './nodes';
+import { AttributeNode, ExpressionNode, FragmentNode, Node } from './nodes';
 import {
 	AstPath,
 	atSignReplace,
@@ -9,6 +9,7 @@ import {
 	dotReplace,
 	isNodeWithChildren,
 	isTagLikeNode,
+	isTextNode,
 	manualDedent,
 	openingBracketReplace,
 	printFn,
@@ -34,7 +35,13 @@ export function embed(
 	if (!node) return null;
 
 	if (node.type === 'expression') {
-		const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
+		let jsxNode: ExpressionNode;
+		try {
+			jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
+		} catch (e) {
+			process.env.PRETTIER_DEBUG = 'true';
+			throw e;
+		}
 		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
@@ -186,35 +193,79 @@ function expressionParser(text: string, parsers: BuiltInParsers, options: Parser
  */
 function makeNodeJSXCompatible<T>(node: any): T {
 	const newNode = { ...node };
+	const childBundle: Node[][] = [];
+	let childBundleIndex = 0;
 
 	if (isNodeWithChildren(newNode)) {
-		newNode.children.forEach((child) => {
+		newNode.children = newNode.children.reduce((result: Node[], child, index) => {
+			const previousChildren = newNode.children.at(index - 1);
+			const nextChildren = newNode.children.at(index + 1);
 			if (isTagLikeNode(child)) {
-				child.attributes.forEach((attr) => {
-					// Transform shorthand attributes into an empty attribute, ex: `{shorthand}` becomes `shorthand` and wrap it
-					// so we can transform it back into {}
-					if (attr.kind === 'shorthand') {
-						attr.kind = 'empty';
-						attr.name = openingBracketReplace + attr.name + closingBracketReplace;
-					}
+				child.attributes = child.attributes.map(makeAttributeJSXCompatible);
 
-					if (attr.name.includes('@')) {
-						attr.name = attr.name.replace('@', atSignReplace);
-					}
-
-					if (attr.name.includes('.')) {
-						attr.name = attr.name.replace('.', dotReplace);
-					}
-				});
+				if (!childBundle[childBundleIndex]) {
+					childBundle[childBundleIndex] = [];
+				}
 
 				if (isNodeWithChildren(child)) {
-					child = makeNodeJSXCompatible(child);
+					child = makeNodeJSXCompatible<typeof child>(child);
 				}
+
+				if (
+					(!previousChildren || isTextNode(previousChildren)) &&
+					nextChildren &&
+					isTagLikeNode(nextChildren)
+				) {
+					childBundle[childBundleIndex].push(child);
+					return result;
+				}
+
+				if (
+					!nextChildren ||
+					(isTextNode(nextChildren) && childBundle[childBundleIndex].length > 0)
+				) {
+					childBundle[childBundleIndex].push(child);
+
+					const parentNode: FragmentNode = {
+						type: 'fragment',
+						name: '',
+						attributes: [],
+						children: childBundle[childBundleIndex],
+					};
+
+					childBundleIndex += 1;
+					result.push(parentNode);
+					return result;
+				}
+			} else {
+				childBundleIndex += 1;
 			}
-		});
+
+			result.push(child);
+			return result;
+		}, []);
 	}
 
 	return newNode;
+
+	function makeAttributeJSXCompatible(attr: AttributeNode): AttributeNode {
+		// Transform shorthand attributes into an empty attribute, ex: `{shorthand}` becomes `shorthand` and wrap it
+		// so we can transform it back into {}
+		if (attr.kind === 'shorthand') {
+			attr.kind = 'empty';
+			attr.name = openingBracketReplace + attr.name + closingBracketReplace;
+		}
+
+		if (attr.name.includes('@')) {
+			attr.name = attr.name.replace('@', atSignReplace);
+		}
+
+		if (attr.name.includes('.')) {
+			attr.name = attr.name.replace('.', dotReplace);
+		}
+
+		return attr;
+	}
 }
 
 /**
