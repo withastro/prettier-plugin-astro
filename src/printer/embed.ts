@@ -221,8 +221,8 @@ function makeNodeJSXCompatible<T>(node: any): T {
 				}
 
 				if (
-					!nextChildren ||
-					(isTextNode(nextChildren) && childBundle[childBundleIndex].length > 0)
+					(!nextChildren || isTextNode(nextChildren)) &&
+					childBundle[childBundleIndex].length > 0
 				) {
 					childBundle[childBundleIndex].push(child);
 
