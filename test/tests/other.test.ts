@@ -100,3 +100,9 @@ test(
 	files,
 	'other/expression-in-inline-tag'
 );
+
+test(
+	'Can format expressions who have multi-roots returns',
+	files,
+	'other/expression-multiple-roots'
+);

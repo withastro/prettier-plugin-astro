@@ -1,0 +1,44 @@
+{
+  hello ?? (
+    <>
+      <div />
+      <div />
+    </>
+  )
+}
+
+{
+  hello ? (
+    <>
+      <div />
+      <div />
+    </>
+  ) : (
+    <>
+      <span />
+      <span />
+    </>
+  )
+}
+
+{
+  [].map((value) => (
+    <>
+      <div>{value}</div>
+      <h1>{value}</h1>
+    </>
+  ))
+}
+
+{
+  [].map((value) => {
+    console.log(value);
+
+    return (
+      <>
+        <div />
+        <h1 />
+      </>
+    );
+  })
+}
