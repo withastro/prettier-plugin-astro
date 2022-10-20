@@ -35,13 +35,7 @@ export function embed(
 	if (!node) return null;
 
 	if (node.type === 'expression') {
-		let jsxNode: ExpressionNode;
-		try {
-			jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
-		} catch (e) {
-			process.env.PRETTIER_DEBUG = 'true';
-			throw e;
-		}
+		const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
 		const textContent = printRaw(jsxNode);
 
 		let content: Doc;
