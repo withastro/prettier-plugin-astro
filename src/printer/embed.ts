@@ -198,8 +198,8 @@ function makeNodeJSXCompatible<T>(node: any): T {
 
 	if (isNodeWithChildren(newNode)) {
 		newNode.children = newNode.children.reduce((result: Node[], child, index) => {
-			const previousChildren = newNode.children.at(index - 1);
-			const nextChildren = newNode.children.at(index + 1);
+			const previousChildren = newNode.children[index - 1];
+			const nextChildren = newNode.children[index + 1];
 			if (isTagLikeNode(child)) {
 				child.attributes = child.attributes.map(makeAttributeJSXCompatible);
 
