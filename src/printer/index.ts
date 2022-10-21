@@ -102,9 +102,19 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			} else {
 				isEmpty = node.children.every((child) => isEmptyTextNode(child));
 			}
+
+			/**
+			 * An element is allowed to self close only if:
+			 * It is empty AND
+			 *  It's a component OR
+			 *  It's in the HTML spec as a void element OR
+			 *  It has a `set:*` directive
+			 */
 			const isSelfClosingTag =
 				isEmpty &&
-				(node.type !== 'element' || selfClosingTags.includes(node.name) || hasSetDirectives(node));
+				(node.type === 'component' ||
+					selfClosingTags.includes(node.name) ||
+					hasSetDirectives(node));
 
 			const isSingleLinePerAttribute = opts.singleAttributePerLine && node.attributes.length > 1;
 			const attributeLine = isSingleLinePerAttribute ? breakParent : '';
