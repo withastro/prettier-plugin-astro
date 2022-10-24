@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@astrojs/compiler@0.29.0":
-  version "0.29.0"
-  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.29.0.tgz#a4603b63da47f933666af794cc58def298fc910b"
-  integrity sha512-PC7/uq2NCtZBzFdJ3sF17T7LDceeJidO3xWDZXTfsg9CJJQBEZ9HI2TTmwthdDhre57qL/mwbt+FHaw7Sp5IXQ==
+"@astrojs/compiler@^0.29.1":
+  version "0.29.1"
+  resolved "https://registry.yarnpkg.com/@astrojs/compiler/-/compiler-0.29.1.tgz#a7c0879e17f6704698a6e82e811989f5b1b38b5c"
+  integrity sha512-EXeXWQ0pW2HYJ8unzAoX2XCE1uHfdgjCooOhnV8ztvhRvtvcC4PfCHDQX+D8WzvYSR5rEEqRX4+Pw2h2dQDTkg==
 
 "@babel/code-frame@^7.0.0":
   version "7.16.0"
