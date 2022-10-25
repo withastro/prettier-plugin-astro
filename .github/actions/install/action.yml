@@ -5,6 +5,7 @@ inputs:
   node-version:
     description: 'Node version'
     required: false
+    type: number
     default: 16
 
 runs:
@@ -22,5 +23,3 @@ runs:
     - name: Install dependencies
       run: pnpm install
       shell: bash
-      env:
-        CI: true
