@@ -25,48 +25,60 @@ jobs:
     name: 'Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
     steps:
       - name: Check out code using Git
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
 
       - name: Set Node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node_version }}
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: Debug
-        run: yarn versions
+        run: pnpm versions
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: pnpm install --frozen-lockfile
+        env:
+          CI: true
 
       - name: Build prettier-plugin-astro
-        run: yarn build
+        run: pnpm build
 
       - name: Test
-        run: yarn test
+        run: pnpm test
 
   lint:
     runs-on: ubuntu-latest
     name: 'Lint: node-16, ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      - name: Setup pnpm
+      - uses: pnpm/action-setup@v2
         with:
-          fetch-depth: 0
+          version: 7
 
       - name: Set Node version to 16
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: Debug
-        run: yarn versions
+        run: pnpm versions
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
+        run: pnpm install --frozen-lockfile
+        env:
+          CI: true
 
       - name: Build prettier-plugin-astro
-        run: yarn build
+        run: pnpm build
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint

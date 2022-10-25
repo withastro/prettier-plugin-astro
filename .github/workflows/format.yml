@@ -6,25 +6,36 @@ on:
       - main
       - next
 
-env:
-  node_version: 14
-
 jobs:
   format:
     runs-on: ubuntu-latest
+    name: 'Format: node-16, ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.head_ref }}
-      - uses: actions/setup-node@v2
+
+      - name: Setup pnpm
+      - uses: pnpm/action-setup@v2
         with:
-          node-version: ${{ env.node_version }}
-      - run: yarn --frozen-lockfile --ignore-engines
+          version: 7
+
+      - name: Set Node version to 16
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'pnpm'
+
+      - name: Install dependencies
+      - run: pnpm install --frozen-lockfile
         env:
           CI: true
-      - run: yarn format
+
+      - name: Format
+      - run: pnpm format
+
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: '[ci] yarn format'
+          commit_message: '[ci] pnpm format'
           branch: ${{ github.head_ref }}
