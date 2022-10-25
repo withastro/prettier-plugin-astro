@@ -10,9 +10,9 @@
   ],
   "engines": {
     "node": "^14.15.0 || >=16.0.0",
-    "npm": ">=6.14.0",
-    "pnpm": ">=6"
+    "pnpm": ">=7.14.0"
   },
+  "packageManager": "pnpm@7.14.0",
   "homepage": "https://github.com/withastro/prettier-plugin-astro/",
   "issues": {
     "url": "https://github.com/withastro/prettier-plugin-astro/issues"
@@ -37,7 +37,8 @@
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "format": "prettier -w . --cache",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
     "@astrojs/compiler": "0.27.2",
@@ -58,6 +59,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-prettier-doc": "^1.1.0",
+    "only-allow": "^1.1.1",
     "rollup": "^3.2.2",
     "tslib": "^2.4.0",
     "typescript": "^4.8.4",
