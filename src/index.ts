@@ -30,7 +30,13 @@ export const parsers: Record<string, Parser> = {
 		parse: (source) => parse(source),
 		astFormat: 'astro',
 		locStart: (node) => node.position.start.offset - 1,
-		locEnd: (node) => node.position.end.offset,
+		locEnd: (node) => {
+			if (node.type === 'element') {
+				// TODO: upstream this change to the compiler
+				return node.position.end.offset + node.name.length + 1;
+			}
+			return node.position.end.offset;
+		},
 	},
 };
 

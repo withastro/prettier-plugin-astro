@@ -58,7 +58,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 		return '';
 	}
 
-	if (ignoreNext) {
+	if (ignoreNext && !isEmptyTextNode(node as any)) {
 		ignoreNext = false;
 		return [
 			opts.originalText
