@@ -1,0 +1,26 @@
+name: Install Tools & Dependencies
+description: Installs pnpm, Node.js & package dependencies
+
+inputs:
+  node-version:
+    description: 'Node version'
+    required: false
+    default: 16
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.2.4
+
+    - name: Setup Node ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+
+    - name: Install dependencies
+      run: pnpm install
+      shell: bash
+      env:
+        CI: true

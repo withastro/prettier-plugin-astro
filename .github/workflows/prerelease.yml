@@ -15,21 +15,8 @@ jobs:
         with:
           fetch-depth: 0 # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
 
-      - name: Setup pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
-      - name: Set up Node.js 16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        env:
-          CI: true
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets

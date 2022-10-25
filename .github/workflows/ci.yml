@@ -27,24 +27,10 @@ jobs:
       - name: Check out code using Git
         uses: actions/checkout@v3
 
-      - name: Setup pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
-      - name: Set Node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v3
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
         with:
           node-version: ${{ matrix.node_version }}
-          cache: 'pnpm'
-
-      - name: Debug
-        run: pnpm versions
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        env:
-          CI: true
 
       - name: Build prettier-plugin-astro
         run: pnpm build
@@ -58,24 +44,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 7
-
-      - name: Set Node version to 16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: 'pnpm'
-
-      - name: Debug
-        run: pnpm versions
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-        env:
-          CI: true
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
 
       - name: Build prettier-plugin-astro
         run: pnpm build
