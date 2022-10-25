@@ -38,7 +38,7 @@
     "lint:fix": "pnpm lint --fix",
     "format": "prettier -w . --cache",
     "release": "pnpm build && changeset publish",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "only-allow pnpm"
   },
   "dependencies": {
     "@astrojs/compiler": "0.27.2",
