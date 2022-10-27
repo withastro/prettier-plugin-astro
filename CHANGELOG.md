@@ -1,5 +1,16 @@
 # prettier-plugin-astro
 
+## 0.7.0
+
+### Minor Changes
+
+- 485fb91: Fixed custom-elements being allowed to self close despite the HTML spec saying otherwise
+
+### Patch Changes
+
+- b99b461: Add support for formatting expressions with multiple root elements
+- ca48060: Add support for prettier-ignore comments
+
 ## 0.6.0
 
 ### Minor Changes
