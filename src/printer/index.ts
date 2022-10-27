@@ -1,5 +1,6 @@
 import { Doc } from 'prettier';
 import { selfClosingTags } from './elements';
+import { TextNode } from './nodes';
 import {
 	AstPath,
 	canOmitSoftlineBeforeClosingTag,
@@ -9,6 +10,7 @@ import {
 	getUnencodedText,
 	hasSetDirectives,
 	isEmptyTextNode,
+	isIgnoreDirective,
 	isInlineElement,
 	isPreTagContent,
 	isTagLikeNode,
@@ -26,13 +28,25 @@ import {
 	trimTextNodeLeft,
 	trimTextNodeRight,
 } from './utils';
-import { TextNode } from './nodes';
 
 import _doc from 'prettier/doc';
 const {
-	builders: { breakParent, dedent, fill, group, indent, join, line, softline, hardline },
+	builders: {
+		breakParent,
+		dedent,
+		fill,
+		group,
+		indent,
+		join,
+		line,
+		softline,
+		hardline,
+		literalline,
+	},
 	utils: { stripTrailingHardline },
 } = _doc;
+
+let ignoreNext = false;
 
 // https://prettier.io/docs/en/plugins.html#print
 // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -42,6 +56,17 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 	// 1. handle special node types
 	if (!node) {
 		return '';
+	}
+
+	if (ignoreNext && !isEmptyTextNode(node)) {
+		ignoreNext = false;
+		return [
+			opts.originalText
+				.slice(opts.locStart(node), opts.locEnd(node))
+				.split('\n')
+				.map((lineContent, i) => (i == 0 ? [lineContent] : [literalline, lineContent]))
+				.flat(),
+		];
 	}
 
 	if (typeof node === 'string') {
@@ -298,6 +323,10 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 		}
 
 		case 'comment':
+			if (isIgnoreDirective(node)) {
+				ignoreNext = true;
+			}
+
 			const nextNode = getNextNode(path);
 			let trailingLine: _doc.builders.Concat | string = '';
 			if (nextNode && isTagLikeNode(nextNode)) {

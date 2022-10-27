@@ -29,8 +29,8 @@ export const parsers: Record<string, Parser> = {
 	astro: {
 		parse: (source) => parse(source),
 		astFormat: 'astro',
-		locStart: (node) => node.start,
-		locEnd: (node) => node.end,
+		locStart: (node) => node.position.start.offset,
+		locEnd: (node) => node.position.end.offset,
 	},
 };
 

@@ -43,6 +43,10 @@ export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
 	);
 }
 
+export function isIgnoreDirective(node: Node): boolean {
+	return node.type === 'comment' && node.value.trim() === 'prettier-ignore';
+}
+
 /**
  *  Returns the content of the node
  */
@@ -78,7 +82,7 @@ export function isNodeWithChildren(node: anyNode): node is anyNode & ParentLikeN
 	return node && 'children' in node && Array.isArray(node.children);
 }
 
-export const isEmptyTextNode = (node: Node): boolean => {
+export const isEmptyTextNode = (node: anyNode): boolean => {
 	return !!node && node.type === 'text' && getUnencodedText(node).trim() === '';
 };
 
