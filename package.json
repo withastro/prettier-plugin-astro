@@ -39,7 +39,7 @@
     "release": "yarn build && changeset publish"
   },
   "dependencies": {
-    "@astrojs/compiler": "^0.29.15",
+    "@astrojs/compiler": "^0.29.16",
     "prettier": "^2.7.1",
     "sass-formatter": "^0.7.5",
     "synckit": "^0.8.4"
