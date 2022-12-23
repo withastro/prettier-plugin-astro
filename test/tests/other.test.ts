@@ -109,3 +109,5 @@ test(
 	files,
 	'other/expression-multiple-roots'
 );
+
+test('Can ignore self-closing elements', files, 'other/ignore-self-close');
