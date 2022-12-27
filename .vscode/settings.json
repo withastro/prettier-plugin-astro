@@ -1,0 +1,8 @@
+{
+  // Make sure fixtures don't get formatted by accident while working on them
+  "[astro]": {
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false
+  }
+}

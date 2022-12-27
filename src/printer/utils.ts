@@ -128,6 +128,10 @@ export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
 		return false;
 	}
 
+	if (node.type === 'fragment') {
+		return false;
+	}
+
 	if (!isNodeWithChildren(node)) {
 		return false;
 	}
@@ -150,6 +154,10 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 		return false;
 	}
 
+	if (node.type === 'fragment') {
+		return false;
+	}
+
 	if (!isNodeWithChildren(node)) {
 		return false;
 	}
@@ -161,6 +169,7 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 
 	const lastChild = children[children.length - 1];
 	if (isExpressionNode(lastChild)) return true;
+	if (isTagLikeNode(lastChild)) return true;
 	if (!isTextNode(lastChild)) return false;
 	return !endsWithWhitespace(getUnencodedText(lastChild));
 }
