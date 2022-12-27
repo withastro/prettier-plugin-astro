@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.7.1
+
+### Patch Changes
+
+- 9fa788f: Upgrade `@astrojs/compiler`
+- a3ff2ef: Fix inline tags not hugging the end of their content if the last child was a tag
+
 ## 0.7.0
 
 ### Minor Changes
