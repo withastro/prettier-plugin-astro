@@ -25,48 +25,30 @@ jobs:
     name: 'Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
     steps:
       - name: Check out code using Git
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set Node version to ${{ matrix.node_version }}
-        uses: actions/setup-node@v2
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
         with:
           node-version: ${{ matrix.node_version }}
-          cache: 'yarn'
-
-      - name: Debug
-        run: yarn versions
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
 
       - name: Build prettier-plugin-astro
-        run: yarn build
+        run: pnpm build
 
       - name: Test
-        run: yarn test
+        run: pnpm test
 
   lint:
     runs-on: ubuntu-latest
     name: 'Lint: node-16, ubuntu-latest'
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v3
 
-      - name: Set Node version to 16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          cache: 'yarn'
-
-      - name: Debug
-        run: yarn versions
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --ignore-engines
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
 
       - name: Build prettier-plugin-astro
-        run: yarn build
+        run: pnpm build
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
