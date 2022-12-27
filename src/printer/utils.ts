@@ -36,11 +36,18 @@ export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNod
 
 export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
 	return (
-		node &&
-		node.type === 'element' &&
-		opts.htmlWhitespaceSensitivity !== 'strict' &&
-		(opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name as TagName))
+		(node &&
+			node.type === 'element' &&
+			opts.htmlWhitespaceSensitivity !== 'strict' &&
+			(opts.htmlWhitespaceSensitivity === 'ignore' ||
+				blockElements.includes(node.name as TagName))) ||
+		node.type === 'component' ||
+		node.type === 'fragment'
 	);
+}
+
+export function isIgnoreDirective(node: Node): boolean {
+	return node.type === 'comment' && node.value.trim() === 'prettier-ignore';
 }
 
 /**
@@ -78,7 +85,7 @@ export function isNodeWithChildren(node: anyNode): node is anyNode & ParentLikeN
 	return node && 'children' in node && Array.isArray(node.children);
 }
 
-export const isEmptyTextNode = (node: Node): boolean => {
+export const isEmptyTextNode = (node: anyNode): boolean => {
 	return !!node && node.type === 'text' && getUnencodedText(node).trim() === '';
 };
 
@@ -124,6 +131,10 @@ export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
 		return false;
 	}
 
+	if (node.type === 'fragment') {
+		return false;
+	}
+
 	if (!isNodeWithChildren(node)) {
 		return false;
 	}
@@ -157,8 +168,8 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 
 	const lastChild = children[children.length - 1];
 	if (isExpressionNode(lastChild)) return true;
-	if (!isTextNode(lastChild)) return false;
-	return !endsWithWhitespace(getUnencodedText(lastChild));
+	if (isTagLikeNode(lastChild)) return true;
+	return !isTextNodeEndingWithWhitespace(lastChild);
 }
 
 /**

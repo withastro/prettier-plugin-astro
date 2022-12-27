@@ -52,7 +52,7 @@ When submitting issues about formatting in VS Code, first make sure you're actua
 
 Due to an upstream issue, Prettier inside VS Code isn't able to automatically infer the right parser to use for Astro files when using pnpm
 
-As such, add the following settings to your `.prettierrc.js` config file:
+As such, add the following settings to your `.prettierrc.cjs` config file:
 
 ```js
 module.exports = {
@@ -84,7 +84,7 @@ Set if attributes with the same name as their expression should be formatted to 
 | ------- | -------------------------------- | ----------------------------- |
 | `false` | `--astro-allow-shorthand <bool>` | `astroAllowShorthand: <bool>` |
 
-### Example `.prettierrc.js`
+### Example `.prettierrc.cjs`
 
 ```js
 {
