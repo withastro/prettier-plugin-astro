@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.7.2
+
+### Patch Changes
+
+- a97750b: Fix packaging error causing the plugin to only be installable using pnpm
+
 ## 0.7.1
 
 ### Patch Changes
