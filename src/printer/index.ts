@@ -149,6 +149,11 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 				return group(['<', node.name, indent(attributes), line, `/>`]);
 			}
 
+			// If we're somehow here on a style or script tag, it means embed couldn't handle it. Just return as-is
+			if (['style', 'script'].includes(node.name)) {
+				return opts.originalText.slice(opts.locStart(node), opts.locEnd(node));
+			}
+
 			if (node.children) {
 				const children = node.children;
 				const firstChild = children[0];

@@ -21,7 +21,8 @@ const {
 	utils: { stripTrailingHardline, mapDoc },
 } = _doc;
 
-type supportedStyleLang = 'css' | 'scss' | 'sass';
+const supportedStyleLangValues = ['css', 'scss', 'sass', 'less'] as const;
+type supportedStyleLang = (typeof supportedStyleLangValues)[number];
 
 // https://prettier.io/docs/en/plugins.html#optional-embed
 export function embed(
@@ -127,16 +128,18 @@ export function embed(
 	// Style tags
 	if (node.type === 'element' && node.name === 'style') {
 		const content = printRaw(node);
-		const supportedStyleLangValues = ['css', 'scss', 'sass'];
-		let parserLang: supportedStyleLang = 'css';
+		let parserLang: supportedStyleLang | undefined = 'css';
 
 		if (node.attributes) {
 			const langAttribute = node.attributes.filter((x) => x.name === 'lang');
 			if (langAttribute.length) {
-				const styleLang = langAttribute[0].value.toLowerCase();
-				if (supportedStyleLangValues.includes(styleLang))
-					parserLang = styleLang as supportedStyleLang;
+				const styleLang = langAttribute[0].value.toLowerCase() as supportedStyleLang;
+				parserLang = supportedStyleLangValues.includes(styleLang) ? styleLang : undefined;
 			}
+		}
+
+		if (!parserLang) {
+			return null;
 		}
 
 		return embedStyle(parserLang, content, path, print, textToDoc, opts);
@@ -280,6 +283,7 @@ function embedStyle(
 	const isEmpty = /^\s*$/.test(content);
 
 	switch (lang) {
+		case 'less':
 		case 'css':
 		case 'scss': {
 			let formattedStyles = wrapParserTryCatch(textToDoc, content, { ...options, parser: lang });
