@@ -138,10 +138,6 @@ export function embed(
 			}
 		}
 
-		if (!parserLang) {
-			return null;
-		}
-
 		return embedStyle(parserLang, content, path, print, textToDoc, opts);
 	}
 
@@ -273,7 +269,7 @@ function makeNodeJSXCompatible<T>(node: any): T {
  * Format the content of a style tag and print the entire element
  */
 function embedStyle(
-	lang: supportedStyleLang,
+	lang: supportedStyleLang | undefined,
 	content: string,
 	path: AstPath,
 	print: printFn,
@@ -326,6 +322,13 @@ function embedStyle(
 				isEmpty ? '' : hardline,
 				'</style>',
 			];
+		}
+		case undefined: {
+			const node = path.getNode();
+
+			if (node) {
+				return options.originalText.slice(options.locStart(node), options.locEnd(node));
+			}
 		}
 	}
 }
