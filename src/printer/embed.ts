@@ -92,6 +92,15 @@ export function embed(
 		return [line, name, '=', '{', attrNodeValue, '}'];
 	}
 
+	if (node.type === 'attribute' && node.kind === 'spread') {
+		const spreadContent = wrapParserTryCatch(textToDoc, forceIntoExpression(node.name), {
+			...opts,
+			parser: expressionParser,
+		});
+
+		return [line, '{...', spreadContent, '}'];
+	}
+
 	// Frontmatter
 	if (node.type === 'frontmatter') {
 		const frontmatterContent = wrapParserTryCatch(textToDoc, node.value, {
