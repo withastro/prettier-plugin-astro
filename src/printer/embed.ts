@@ -275,7 +275,7 @@ function embedStyle(
 	print: printFn,
 	textToDoc: (text: string, options: object) => Doc,
 	options: ParserOptions
-) {
+): Doc | null {
 	const isEmpty = /^\s*$/.test(content);
 
 	switch (lang) {
@@ -329,6 +329,8 @@ function embedStyle(
 			if (node) {
 				return options.originalText.slice(options.locStart(node), options.locEnd(node));
 			}
+
+			return null;
 		}
 	}
 }
