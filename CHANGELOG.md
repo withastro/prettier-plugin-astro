@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.8.0
+
+### Minor Changes
+
+- c724082: Add support for LESS style tags, fixed crash on style tags with unknown languages
+- 18cd321: Add support for formatting spread attributes
+
 ## 0.7.2
 
 ### Patch Changes
