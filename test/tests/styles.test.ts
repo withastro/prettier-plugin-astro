@@ -31,9 +31,12 @@ test(
 	'styles/format-nested-sass-style-tag-content'
 );
 
-// TODO: needs to fix in the compiler
-// test(
-//   'Can format a basic Astro file with styles and a body tag',
-//   files,
-//   'styles/with-styles-and-body-tag'
-// );
+test(
+	'Can format a basic Astro file with styles and a body tag',
+	files,
+	'styles/with-styles-and-body-tag'
+);
+
+test('Can format .less styles', files, 'styles/with-less');
+
+test('does not format unknown CSS languages', files, 'styles/with-unknown');

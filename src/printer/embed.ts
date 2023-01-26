@@ -21,7 +21,8 @@ const {
 	utils: { stripTrailingHardline, mapDoc },
 } = _doc;
 
-type supportedStyleLang = 'css' | 'scss' | 'sass';
+const supportedStyleLangValues = ['css', 'scss', 'sass', 'less'] as const;
+type supportedStyleLang = (typeof supportedStyleLangValues)[number];
 
 // https://prettier.io/docs/en/plugins.html#optional-embed
 export function embed(
@@ -127,15 +128,13 @@ export function embed(
 	// Style tags
 	if (node.type === 'element' && node.name === 'style') {
 		const content = printRaw(node);
-		const supportedStyleLangValues = ['css', 'scss', 'sass'];
-		let parserLang: supportedStyleLang = 'css';
+		let parserLang: supportedStyleLang | undefined = 'css';
 
 		if (node.attributes) {
 			const langAttribute = node.attributes.filter((x) => x.name === 'lang');
 			if (langAttribute.length) {
-				const styleLang = langAttribute[0].value.toLowerCase();
-				if (supportedStyleLangValues.includes(styleLang))
-					parserLang = styleLang as supportedStyleLang;
+				const styleLang = langAttribute[0].value.toLowerCase() as supportedStyleLang;
+				parserLang = supportedStyleLangValues.includes(styleLang) ? styleLang : undefined;
 			}
 		}
 
@@ -270,16 +269,17 @@ function makeNodeJSXCompatible<T>(node: any): T {
  * Format the content of a style tag and print the entire element
  */
 function embedStyle(
-	lang: supportedStyleLang,
+	lang: supportedStyleLang | undefined,
 	content: string,
 	path: AstPath,
 	print: printFn,
 	textToDoc: (text: string, options: object) => Doc,
 	options: ParserOptions
-) {
+): Doc | null {
 	const isEmpty = /^\s*$/.test(content);
 
 	switch (lang) {
+		case 'less':
 		case 'css':
 		case 'scss': {
 			let formattedStyles = wrapParserTryCatch(textToDoc, content, { ...options, parser: lang });
@@ -322,6 +322,15 @@ function embedStyle(
 				isEmpty ? '' : hardline,
 				'</style>',
 			];
+		}
+		case undefined: {
+			const node = path.getNode();
+
+			if (node) {
+				return options.originalText.slice(options.locStart(node), options.locEnd(node));
+			}
+
+			return null;
 		}
 	}
 }
