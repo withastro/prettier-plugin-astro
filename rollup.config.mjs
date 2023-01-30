@@ -5,7 +5,7 @@ import { defineConfig } from 'rollup';
 export default defineConfig({
 	input: 'src/index.ts',
 	plugins: [commonjs(), typescript()],
-	external: ['prettier', 'prettier/doc', 'synckit', 'sass-formatter', 'node:module'],
+	external: ['prettier', 'prettier/doc', 'synckit', 'sass-formatter', 'node:module', 'node:buffer'],
 	output: {
 		dir: 'dist',
 		format: 'cjs',
