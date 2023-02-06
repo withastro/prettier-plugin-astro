@@ -1,5 +1,5 @@
 import { Doc } from 'prettier';
-import { selfClosingTags } from './elements';
+import { selfClosingTags, type TagName } from './elements';
 import { TextNode } from './nodes';
 import {
 	AstPath,
@@ -130,16 +130,18 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 			/**
 			 * An element is allowed to self close only if:
+			 * It's already self-closing OR
 			 * It is empty AND
 			 *  It's a component OR
 			 *  It's in the HTML spec as a void element OR
 			 *  It has a `set:*` directive
 			 */
 			const isSelfClosingTag =
-				isEmpty &&
-				(node.type === 'component' ||
-					selfClosingTags.includes(node.name) ||
-					hasSetDirectives(node));
+				(node.position?.end && opts.originalText.at(opts.locEnd(node) - 1) == '/') ||
+				(isEmpty &&
+					(node.type === 'component' ||
+						selfClosingTags.includes(node.name as TagName) ||
+						hasSetDirectives(node)));
 
 			const isSingleLinePerAttribute = opts.singleAttributePerLine && node.attributes.length > 1;
 			const attributeLine = isSingleLinePerAttribute ? breakParent : '';

@@ -1,31 +1,50 @@
-export type TagName = keyof HTMLElementTagNameMap | 'svg';
+export type TagName = keyof HTMLElementTagNameMap | keyof SVGElementTagNameMap;
 
-// https://github.com/prettier/prettier/blob/main/vendors/html-void-elements.json
-export const selfClosingTags = [
+export const selfClosingTags: TagName[] = [
 	'area',
 	'base',
-	'basefont',
-	'bgsound',
 	'br',
 	'col',
-	'command',
 	'embed',
-	'frame',
 	'hr',
 	'image',
 	'img',
 	'input',
-	'isindex',
-	'keygen',
 	'link',
-	'menuitem',
 	'meta',
-	'nextid',
-	'param',
 	'slot',
 	'source',
 	'track',
 	'wbr',
+
+	// The SVG spec doesn't really have a concept of void elements, everything is allowed
+	// However, some tags are very commonly self-closed by users, and as such they find it confusing for them to not be closed
+	'circle',
+	'ellipse',
+	'line',
+	'path',
+	'polygon',
+	'polyline',
+	'rect',
+	'stop',
+	'use',
+
+	// Filters
+	'feBlend',
+	'feColorMatrix',
+	'feComponentTransfer',
+	'feComposite',
+	'feConvolveMatrix',
+	'feDiffuseLighting',
+	'feDisplacementMap',
+	'feFlood',
+	'feGaussianBlur',
+	'feMerge',
+	'feMorphology',
+	'feOffset',
+	'feSpecularLighting',
+	'feTile',
+	'feTurbulence',
 ];
 
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
