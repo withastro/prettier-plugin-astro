@@ -26,6 +26,23 @@ Due to [an upstream issue in Prettier](https://github.com/prettier/prettier/issu
 prettier -w --plugin-search-dir=. .
 ```
 
+Or set the `plugins-search-dir` in the configuration file.
+The following is a complete `.prettierrc` configuration of
+this Prettier Astro plugin for pnpm projects:
+
+```
+{
+  "overrides": [
+    {
+      "files": "**/*.astro",
+      "options": { "parser": "astro" }
+    }
+  ],
+  "pluginSearchDirs": ["./"]
+}
+```
+
+
 ## Using in VS Code
 
 First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration so VS Code is aware that Prettier can be used for Astro files:
