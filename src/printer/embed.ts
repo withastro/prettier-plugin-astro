@@ -105,12 +105,54 @@ export function embed(
 
 	// Frontmatter
 	if (node.type === 'frontmatter') {
-		const frontmatterContent = wrapParserTryCatch(textToDoc, node.value, {
+		const textContent = node.value.replace(/\breturn\b/g, '___astro_return;throw');
+		const frontmatterContent = wrapParserTryCatch(textToDoc, textContent, {
 			...opts,
 			parser: 'typescript',
 		});
+		const frontmatterDoc = mapDoc(frontmatterContent, (doc) => {
+			// Fix any spots we changed inside comments
+			if (typeof doc === 'string') {
+				return doc.replace(/___astro_return;throw/g, 'return');
+			}
+			if (Array.isArray(doc)) {
+				// Flatten the array
+				const parts = [];
+				for (const p of doc) {
+					if (Array.isArray(p)) {
+						parts.push(...p);
+					} else {
+						parts.push(p);
+					}
+				}
+				// Clean up the astro returns
+				for (let i = parts.length - 1; i > 0; i--) {
+					if (parts[i] === 'throw') {
+						for (let j = i - 1; j >= 0; j--) {
+							if (parts[j] === '___astro_return') {
+								// Restore the throw to a return
+								parts[i] = 'return';
+								// Remove the extra parts added from our marker
+								parts.splice(j, i - j);
+								// Move our search up to skip the deleted parts
+								i = j;
+								// Go back to looking for another throw
+								break;
+							}
+						}
+					}
+				}
 
-		return [group(['---', hardline, frontmatterContent, '---', hardline]), hardline];
+				return parts;
+			}
+			if ('parts' in doc) {
+				// Flatten "concat" nodes
+				return doc.parts;
+			}
+			return doc;
+		});
+
+		return [group(['---', hardline, frontmatterDoc, '---', hardline]), hardline];
 	}
 
 	// Script tags

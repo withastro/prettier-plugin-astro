@@ -1,0 +1,26 @@
+---
+// Test 1: we can use the word return in a comment without problems
+  // return "return" 'return' ;return
+
+// Test 2: we can use return in an import
+  import _return from 'return'
+
+// Test 3: we can use return in a function
+  function t() {
+    ;return "return"
+  }
+
+// Test 4: we can use return in a block
+  if (false) {
+    return 'return';
+  }
+
+// Test 5: we can use return outside a block
+  return `return`
+
+// Test 6: we can return multiple things
+  return 1, 2 as const
+---
+
+<!-- Test 7: we can use return in HTML -->
+  <div>return</div>
