@@ -219,7 +219,7 @@ function forceIntoExpression(statement: string) {
 }
 
 function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
-	const ast = parsers['babel-ts'](text, options);
+	const ast = parsers['babel-ts'](text, parsers, options);
 
 	return {
 		...ast,
