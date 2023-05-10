@@ -1,13 +1,23 @@
 import { test } from '../test-utils';
 
-const files = import.meta.glob('/test/fixtures/other/*/*', {
-	eager: true,
-	as: 'raw',
-});
+const files = {
+	...import.meta.glob('/test/fixtures/other/*/*', {
+		eager: true,
+		as: 'raw',
+	}),
+	...import.meta.glob('/test/fixtures/other/*/*.js', {
+		eager: true,
+	}),
+};
 
 test('Can format an Astro file with frontmatter', files, 'other/frontmatter');
 
 test('Can format an Astro file with embedded JSX expressions', files, 'other/embedded-expr');
+test(
+	'Options are passed to other Prettier Plugins when parsing embedded JSX expressions',
+	files,
+	'other/embedded-expr-options'
+);
 
 test(
 	'Can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
