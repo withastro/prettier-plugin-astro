@@ -55,6 +55,10 @@ function getFiles(file: any, path: string, isMarkdown = false) {
 }
 
 function getOptions(files: any, path: string) {
+	if (files[`/test/fixtures/${path}/options.js`] !== undefined) {
+		return files[`/test/fixtures/${path}/options.js`].default;
+	}
+
 	let opts: object;
 	try {
 		opts = JSON.parse(files[`/test/fixtures/${path}/options.json`]);

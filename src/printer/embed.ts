@@ -219,7 +219,11 @@ function forceIntoExpression(statement: string) {
 }
 
 function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
-	const ast = parsers['babel-ts'](text, options);
+	// @ts-ignore
+	// The type `RequiredOptions['parser]` is wrong. It uses `BuiltInParsers` as the type for the 2nd argument.
+	// However, the parsers produced by `getParsers()` include ALL registered parsers, not just the built-in ones.
+	// And the type of the built-in parsers and custom parsers all take (text[, parsers[, options]]) as arguments.
+	const ast = parsers['babel-ts'](text, parsers, options);
 
 	return {
 		...ast,
