@@ -12,7 +12,7 @@ function getFile(allFiles: any, path: string): string {
 
 it('Correctly errors when parsing faulty frontmatter', async () => {
 	const content = getFile(files, '/test/fixtures/errors/frontmatter.astro');
-	expect(() => format(content, {})).toThrowError('Expression expected');
+	expect(() => format(content, {})).toThrowError('Unexpected token (3:1)');
 });
 
 it('Correctly errors when parsing faulty expressions', async () => {
