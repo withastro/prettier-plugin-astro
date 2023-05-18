@@ -171,8 +171,8 @@ function wrapParserTryCatch(
 }
 
 function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
-// note the trailing newline: if the statement ends in a // comment, 
-// we can't add the closing bracket right afterwards
+	// note the trailing newline: if the statement ends in a // comment,
+	// we can't add the closing bracket right afterwards
 	const expressionContent = `<>{${text}\n}</>`;
 
 	// @ts-ignore
