@@ -42,7 +42,7 @@ export function embed(
 
 		let content: Doc;
 
-		content = wrapParserTryCatch(textToDoc, forceIntoExpression(textContent), {
+		content = wrapParserTryCatch(textToDoc, textContent, {
 			...opts,
 			parser: expressionParser,
 		});
@@ -82,7 +82,7 @@ export function embed(
 		const value = node.value.trim();
 		const name = node.name.trim();
 
-		const attrNodeValue = wrapParserTryCatch(textToDoc, forceIntoExpression(value), {
+		const attrNodeValue = wrapParserTryCatch(textToDoc, value, {
 			...opts,
 			parser: expressionParser,
 		});
@@ -95,7 +95,7 @@ export function embed(
 	}
 
 	if (node.type === 'attribute' && node.kind === 'spread') {
-		const spreadContent = wrapParserTryCatch(textToDoc, forceIntoExpression(node.name), {
+		const spreadContent = wrapParserTryCatch(textToDoc, node.name, {
 			...opts,
 			parser: expressionParser,
 		});
@@ -105,54 +105,12 @@ export function embed(
 
 	// Frontmatter
 	if (node.type === 'frontmatter') {
-		const textContent = node.value.replace(/\breturn\b/g, '___astro_return;throw');
-		const frontmatterContent = wrapParserTryCatch(textToDoc, textContent, {
+		const frontmatterContent = wrapParserTryCatch(textToDoc, node.value, {
 			...opts,
-			parser: 'typescript',
-		});
-		const frontmatterDoc = mapDoc(frontmatterContent, (doc) => {
-			// Fix any spots we changed inside comments
-			if (typeof doc === 'string') {
-				return doc.replace(/___astro_return;throw/g, 'return');
-			}
-			if (Array.isArray(doc)) {
-				// Flatten the array
-				const parts = [];
-				for (const p of doc) {
-					if (Array.isArray(p)) {
-						parts.push(...p);
-					} else {
-						parts.push(p);
-					}
-				}
-				// Clean up the astro returns
-				for (let i = parts.length - 1; i > 0; i--) {
-					if (parts[i] === 'throw') {
-						for (let j = i - 1; j >= 0; j--) {
-							if (parts[j] === '___astro_return') {
-								// Restore the throw to a return
-								parts[i] = 'return';
-								// Remove the extra parts added from our marker
-								parts.splice(j, i - j);
-								// Move our search up to skip the deleted parts
-								i = j;
-								// Go back to looking for another throw
-								break;
-							}
-						}
-					}
-				}
-
-				return parts;
-			}
-			if ('parts' in doc) {
-				// Flatten "concat" nodes
-				return doc.parts;
-			}
-			return doc;
+			parser: 'babel-ts',
 		});
 
-		return [group(['---', hardline, frontmatterDoc, '---', hardline]), hardline];
+		return [group(['---', hardline, frontmatterContent, '---', hardline]), hardline];
 	}
 
 	// Script tags
@@ -212,18 +170,14 @@ function wrapParserTryCatch(
 	}
 }
 
-function forceIntoExpression(statement: string) {
-	// note the trailing newline: if the statement ends in a // comment,
-	// we can't add the closing bracket right afterwards
-	return `<>{${statement}\n}</>`;
-}
-
 function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
+	const expressionContent = `<>{${text}\n}</>`;
+
 	// @ts-ignore
 	// The type `RequiredOptions['parser]` is wrong. It uses `BuiltInParsers` as the type for the 2nd argument.
 	// However, the parsers produced by `getParsers()` include ALL registered parsers, not just the built-in ones.
 	// And the type of the built-in parsers and custom parsers all take (text[, parsers[, options]]) as arguments.
-	const ast = parsers['babel-ts'](text, parsers, options);
+	const ast = parsers['babel-ts'](expressionContent, parsers, options);
 
 	return {
 		...ast,

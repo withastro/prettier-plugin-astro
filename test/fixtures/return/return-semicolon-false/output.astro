@@ -19,8 +19,11 @@ if (false) {
 return `return`
 
 // Test 6: we can return multiple things
-return (1, 2 as const)
+return 1, 2 as const
+
+// Test 7: we can return inline
+if (Astro.cookies.get("token").value) return Astro.redirect("/")
 ---
 
-<!-- Test 7: we can use return in HTML -->
+<!-- Test 8: we can use return in HTML -->
 <div>return</div>
