@@ -54,6 +54,8 @@ test('Autocloses open tags.', files, 'other/autocloses-open-tags');
 
 test('Can format an Astro file with a script tag inside it', files, 'other/with-script');
 
+test('Can format an Astro file with scripts in different languages', files, 'other/script-types');
+
 test(
 	'Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html',
 	files,

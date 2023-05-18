@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { BuiltInParsers, Doc, ParserOptions } from 'prettier';
+import { BuiltInParsers, Doc, ParserOptions, type BuiltInParserName } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
 import { AttributeNode, ExpressionNode, FragmentNode, Node } from './nodes';
@@ -8,6 +8,7 @@ import {
 	atSignReplace,
 	closingBracketReplace,
 	dotReplace,
+	inferParserByTypeAttribute,
 	isNodeWithChildren,
 	isTagLikeNode,
 	isTextNode,
@@ -157,10 +158,17 @@ export function embed(
 
 	// Script tags
 	if (node.type === 'element' && node.name === 'script') {
+		const typeAttribute = node.attributes.find((attr) => attr.name === 'type')?.value;
+
+		let parser: BuiltInParserName = 'babel-ts';
+		if (typeAttribute) {
+			parser = inferParserByTypeAttribute(typeAttribute);
+		}
+
 		const scriptContent = printRaw(node);
 		let formattedScript = wrapParserTryCatch(textToDoc, scriptContent, {
 			...opts,
-			parser: 'typescript',
+			parser: parser,
 		});
 
 		formattedScript = stripTrailingHardline(formattedScript);
