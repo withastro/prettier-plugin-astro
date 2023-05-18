@@ -1,15 +1,15 @@
 import { createRequire } from 'node:module';
-import { AstPath as AstP, Doc, ParserOptions as ParserOpts } from 'prettier';
+import { AstPath as AstP, BuiltInParserName, Doc, ParserOptions as ParserOpts } from 'prettier';
 import { createSyncFn } from 'synckit';
-import { blockElements, formattableAttributes, TagName } from './elements';
+import { TagName, blockElements, formattableAttributes } from './elements';
 import {
-	anyNode,
 	CommentNode,
 	ExpressionNode,
 	Node,
 	ParentLikeNode,
 	TagLikeNode,
 	TextNode,
+	anyNode,
 } from './nodes';
 
 export type printFn = (path: AstPath) => Doc;
@@ -328,4 +328,37 @@ export function getPreferredQuote(rawContent: string, preferredQuote: string): Q
 	}
 
 	return result;
+}
+
+// Adapted from: https://github.com/prettier/prettier/blob/20ab6d6f1c5bd774621230b493a3b71d39383a2c/src/language-html/utils/index.js#LL336C1-L369C2
+export function inferParserByTypeAttribute(type: string): BuiltInParserName {
+	if (!type) {
+		return 'babel-ts';
+	}
+
+	switch (type) {
+		case 'module':
+		case 'text/javascript':
+		case 'text/babel':
+		case 'application/javascript':
+			return 'babel';
+
+		case 'application/x-typescript':
+			return 'babel-ts';
+
+		case 'text/markdown':
+			return 'markdown';
+
+		case 'text/html':
+			return 'html';
+
+		case 'text/x-handlebars-template':
+			return 'glimmer';
+
+		default:
+			if (type.endsWith('json') || type.endsWith('importmap') || type === 'speculationrules') {
+				return 'json';
+			}
+			return 'babel-ts';
+	}
 }
