@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.9.0
+
+### Minor Changes
+
+- abecea0: Use the babel-ts parser to parse the frontmatter. This parser was already used for expressions inside the template, so the experience should now be more homogenous all throughout the file.
+- d2a2c26: Add support for formatting script tags containing JSON, Markdown and other content
+
 ## 0.8.1
 
 ### Patch Changes
