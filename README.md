@@ -46,7 +46,7 @@ First install the [VS Code Prettier extension](https://marketplace.visualstudio.
 }
 ```
 
- The settings above ensure that VS Code is aware that Prettier can be used for Astro files, and sets Prettier as the default formatter for Astro files.
+The settings above ensure that VS Code is aware that Prettier can be used for Astro files, and sets Prettier as the default formatter for Astro files.
 
 ### Reporting issues
 
