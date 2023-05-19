@@ -10,7 +10,7 @@ npm i --save-dev prettier-plugin-astro prettier
 
 ### Recommended configuration
 
-For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying your plugins and the parser to use for Astro files in your Prettier config, like such:
+For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying your plugins and the parser to use for Astro files in your Prettier config as shown in the example below:
 
 ```js
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
 };
 ```
 
-The `require.resolve` call can alternatively be changed to a direct path, like such: `plugins: ["./node_modules/prettier-plugin-astro"]` for usage inside a non-JS config file.
+Alternatively, for use inside a non-JS config file, the `require.resolve` call can be changed to a direct path, such as `plugins: ["./node_modules/prettier-plugin-astro"]`.
 
 To customize formatting behavior, see the [Configuration](#configuration) section below.
 
@@ -35,7 +35,7 @@ To customize formatting behavior, see the [Configuration](#configuration) sectio
 > **Note**
 > If you're using [Astro's VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode), Prettier and this plugin are already included. Only follow the guide below to format using Prettier's official extension.
 
-First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration so VS Code is aware that Prettier can be used for Astro files and set it as the default formatter for Astro files:
+First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration:
 
 ```json
 {
@@ -46,7 +46,11 @@ First install the [VS Code Prettier extension](https://marketplace.visualstudio.
 }
 ```
 
-When submitting issues about formatting in VS Code, please specify if you're using the Astro extension or the Prettier extension to format your files.
+ The settings above ensure that VS Code is aware that Prettier can be used for Astro files, and sets Prettier as the default formatter for Astro files.
+
+### Reporting issues
+
+When submitting issues about formatting your `.astro` files in VS Code, please specify which extension you are using to format your files: Astro's own extension or the Prettier extension.
 
 ## Configuration
 
