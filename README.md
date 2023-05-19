@@ -1,6 +1,6 @@
 # [Prettier](https://prettier.io/) Plugin for [Astro](https://astro.build/)
 
-Official Prettier plugin adding support for formatting `.astro` files
+Official Prettier plugin adding support for formatting `.astro` files.
 
 ## Installation
 
@@ -8,51 +8,9 @@ Official Prettier plugin adding support for formatting `.astro` files
 npm i --save-dev prettier-plugin-astro prettier
 ```
 
-To customize formatting behavior, see the [Configuration](#configuration) section below
+### Recommended configuration
 
-## Using with the Prettier CLI
-
-When using the CLI, Prettier will automatically pick up the plugin
-
-```shell
-prettier -w .
-```
-
-### pnpm support
-
-Due to [an upstream issue in Prettier](https://github.com/prettier/prettier/issues/8056), the `plugin-search-dir` parameter should be set to the current directory when using pnpm or Prettier won't be able to find the plugin automatically
-
-```shell
-prettier -w --plugin-search-dir=. .
-```
-
-## Using in VS Code
-
-First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration so VS Code is aware that Prettier can be used for Astro files:
-
-```json
-{
-  "prettier.documentSelectors": ["**/*.astro"]
-}
-```
-
-Additionally, you should set Prettier as the default formatter for Astro files or VS Code will ask you to choose a formatter everytime you format since the Astro VS Code extension also includes a formatter for Astro files:
-
-```json
-{
-  "[astro]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
-}
-```
-
-When submitting issues about formatting in VS Code, first make sure you're actually using Prettier to format your files and not the Astro VS Code extension included formatter
-
-### pnpm support
-
-Due to an upstream issue, Prettier inside VS Code isn't able to automatically infer the right parser to use for Astro files when using pnpm
-
-As such, add the following settings to your `.prettierrc.cjs` config file:
+For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying your plugins and the parser to use for Astro files in your Prettier config as shown in the example below:
 
 ```js
 module.exports = {
@@ -68,7 +26,31 @@ module.exports = {
 };
 ```
 
-The `require.resolve` call can alternatively be changed to a direct path, like such: `plugins: ["./node_modules/prettier-plugin-astro"]` for usage inside a non-JS config file
+Alternatively, for use inside a non-JS config file, the `require.resolve` call can be changed to a direct path, such as `plugins: ["./node_modules/prettier-plugin-astro"]`.
+
+To customize formatting behavior, see the [Configuration](#configuration) section below.
+
+## Using in VS Code
+
+> **Note**
+> If you're using [Astro's VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode), Prettier and this plugin are already included. Only follow the guide below to format using Prettier's official extension.
+
+First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration:
+
+```json
+{
+  "prettier.documentSelectors": ["**/*.astro"],
+  "[astro]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
+```
+
+ The settings above ensure that VS Code is aware that Prettier can be used for Astro files, and sets Prettier as the default formatter for Astro files.
+
+### Reporting issues
+
+When submitting issues about formatting your `.astro` files in VS Code, please specify which extension you are using to format your files: Astro's own extension or the Prettier extension.
 
 ## Configuration
 
@@ -77,8 +59,6 @@ Most [options from Prettier](https://prettier.io/docs/en/options.html) will work
 ### Astro Allow Shorthand
 
 Set if attributes with the same name as their expression should be formatted to the short form automatically (for example, if enabled `<element name={name} />` will become simply `<element {name} />`)
-
-> Please note that at the time of writing, [the shorthand form is not currently supported inside the Astro VS Code extension](https://github.com/withastro/language-tools/issues/225)
 
 | Default | CLI Override                     | API Override                  |
 | ------- | -------------------------------- | ----------------------------- |
@@ -94,7 +74,7 @@ Set if attributes with the same name as their expression should be formatted to 
 
 ## Contributing
 
-Pull requests of any size and any skill level are welcome, no contribution is too small. Changes to the Astro Prettier Plugin are subject to [Astro Governance](https://github.com/withastro/.github/blob/main/GOVERNANCE.md) and should adhere to the [Astro Style Guide](https://github.com/withastro/astro/blob/main/STYLE_GUIDE.md)
+Pull requests of any size and any skill level are welcome, no contribution is too small. Changes to the Astro Prettier Plugin are subject to [Astro Governance](https://github.com/withastro/.github/blob/main/GOVERNANCE.md) and should adhere to the [Astro Style Guide](https://github.com/withastro/astro/blob/main/STYLE_GUIDE.md).
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to set up your development environment.
 
