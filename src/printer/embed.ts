@@ -115,7 +115,7 @@ export function embed(
 	}
 
 	// Script tags
-	if (node.type === 'element' && node.name === 'script') {
+	if (node.type === 'element' && node.name === 'script' && node.children.length) {
 		const typeAttribute = node.attributes.find((attr) => attr.name === 'type')?.value;
 
 		let parser: BuiltInParserName = 'babel-ts';
