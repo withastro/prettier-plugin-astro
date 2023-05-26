@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.9.1
+
+### Patch Changes
+
+- 97c4b07: fix: prevent parsing empty script tags
+
 ## 0.9.0
 
 ### Minor Changes
