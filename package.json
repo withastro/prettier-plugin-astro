@@ -40,7 +40,7 @@
     "release": "pnpm build && changeset publish"
   },
   "dependencies": {
-    "@astrojs/compiler": "link:../compiler/packages/compiler",
+    "@astrojs/compiler": "0.0.0-dual-20230531170756",
     "prettier": "^2.8.8",
     "sass-formatter": "^0.7.6"
   },
