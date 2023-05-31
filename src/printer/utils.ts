@@ -1,7 +1,12 @@
 import { serialize } from '@astrojs/compiler/utils';
-import { AstPath as AstP, BuiltInParserName, Doc, ParserOptions as ParserOpts } from 'prettier';
-import { TagName, blockElements, formattableAttributes } from './elements';
 import {
+	type AstPath as AstP,
+	type BuiltInParserName,
+	type Doc,
+	type ParserOptions as ParserOpts,
+} from 'prettier';
+import { blockElements, formattableAttributes, type TagName } from './elements';
+import type {
 	CommentNode,
 	ExpressionNode,
 	Node,

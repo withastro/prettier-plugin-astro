@@ -1,5 +1,5 @@
 import { parse } from '@astrojs/compiler/sync';
-import { Parser, Printer, SupportLanguage } from 'prettier';
+import type { Parser, Printer, SupportLanguage } from 'prettier';
 import { options } from './options';
 import { print } from './printer';
 import { embed } from './printer/embed';

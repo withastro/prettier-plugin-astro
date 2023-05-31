@@ -1,8 +1,7 @@
-import { Doc } from 'prettier';
+import { type Doc } from 'prettier';
 import { selfClosingTags } from './elements';
-import { TextNode } from './nodes';
+import { type TextNode } from './nodes';
 import {
-	AstPath,
 	canOmitSoftlineBeforeClosingTag,
 	endsWithLinebreak,
 	getNextNode,
@@ -18,15 +17,16 @@ import {
 	isTextNodeEndingWithWhitespace,
 	isTextNodeStartingWithLinebreak,
 	isTextNodeStartingWithWhitespace,
-	ParserOptions,
 	printClassNames,
-	printFn,
 	printRaw,
 	shouldHugEnd,
 	shouldHugStart,
 	startsWithLinebreak,
 	trimTextNodeLeft,
 	trimTextNodeRight,
+	type AstPath,
+	type ParserOptions,
+	type printFn,
 } from './utils';
 
 import _doc from 'prettier/doc';
