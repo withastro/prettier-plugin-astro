@@ -40,7 +40,7 @@
     "release": "pnpm build && changeset publish"
   },
   "dependencies": {
-    "@astrojs/compiler": "^1.0.1",
+    "@astrojs/compiler": "link:../compiler/packages/compiler",
     "prettier": "^2.8.3",
     "sass-formatter": "^0.7.5",
     "synckit": "^0.8.4"

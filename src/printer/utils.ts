@@ -1,6 +1,5 @@
-import { createRequire } from 'node:module';
+import { serialize } from '@astrojs/compiler/utils';
 import { AstPath as AstP, BuiltInParserName, Doc, ParserOptions as ParserOpts } from 'prettier';
-import { createSyncFn } from 'synckit';
 import { TagName, blockElements, formattableAttributes } from './elements';
 import {
 	CommentNode,
@@ -15,15 +14,6 @@ import {
 export type printFn = (path: AstPath) => Doc;
 export type ParserOptions = ParserOpts<anyNode>;
 export type AstPath = AstP<anyNode>;
-
-const req = createRequire(import.meta.url);
-let workerPath;
-try {
-	workerPath = req.resolve('../workers/serialize-worker.js');
-} catch (e) {
-	workerPath = req.resolve('prettier-plugin-astro/workers/serialize-worker.js');
-}
-const serialize = createSyncFn(req.resolve(workerPath));
 
 export const openingBracketReplace = '_Pé';
 export const closingBracketReplace = 'èP_';
