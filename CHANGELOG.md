@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.10.0
+
+### Minor Changes
+
+- af9324e: Use the sync entrypoint of the Astro compiler instead of `synckit`, improving performance and reducing the dependency count of the plugin
+
 ## 0.9.1
 
 ### Patch Changes
