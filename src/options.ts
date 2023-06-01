@@ -1,4 +1,4 @@
-import { SupportOption } from 'prettier';
+import type { SupportOption } from 'prettier';
 
 interface PluginOptions {
 	astroAllowShorthand: boolean;

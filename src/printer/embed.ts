@@ -1,10 +1,9 @@
 import { Buffer } from 'node:buffer';
-import { BuiltInParsers, Doc, ParserOptions, type BuiltInParserName } from 'prettier';
+import type { BuiltInParserName, BuiltInParsers, Doc, ParserOptions } from 'prettier';
 import _doc from 'prettier/doc';
-import { SassFormatter, SassFormatterConfig } from 'sass-formatter';
-import { AttributeNode, ExpressionNode, FragmentNode, Node } from './nodes';
+import { SassFormatter, type SassFormatterConfig } from 'sass-formatter';
+import type { AttributeNode, ExpressionNode, FragmentNode, Node } from './nodes';
 import {
-	AstPath,
 	atSignReplace,
 	closingBracketReplace,
 	dotReplace,
@@ -14,8 +13,9 @@ import {
 	isTextNode,
 	manualDedent,
 	openingBracketReplace,
-	printFn,
 	printRaw,
+	type AstPath,
+	type printFn,
 } from './utils';
 
 const {
