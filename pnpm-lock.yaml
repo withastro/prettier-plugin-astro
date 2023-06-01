@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@astrojs/compiler': 0.0.0-dual-20230531170756
+  '@astrojs/compiler': ^1.5.0
   '@changesets/cli': ^2.26.1
   '@rollup/plugin-commonjs': ^25.0.0
   '@rollup/plugin-typescript': ^11.1.1
@@ -22,7 +22,7 @@ specifiers:
   vitest: ^0.31.3
 
 dependencies:
-  '@astrojs/compiler': 0.0.0-dual-20230531170756
+  '@astrojs/compiler': 1.5.0
   prettier: 2.8.8
   sass-formatter: 0.7.6
 
@@ -46,8 +46,8 @@ devDependencies:
 
 packages:
 
-  /@astrojs/compiler/0.0.0-dual-20230531170756:
-    resolution: {integrity: sha512-A2sT9d1wJWkhBkN4laKKdjaQuP6wnTw+rj6RROcNbOzCHsqUxg2FSYdghq9vnm9lRpeqzBjL9QSOIzzPWenn3A==}
+  /@astrojs/compiler/1.5.0:
+    resolution: {integrity: sha512-k04X/7nlMklU0HQUScxbCTf5n8/Vr+0U0bawb9QWulWxd6qJf3FmBrNATgTYiltjB4pc5HBqmmttAfFi7m4lLg==}
     dev: false
 
   /@babel/code-frame/7.18.6:
