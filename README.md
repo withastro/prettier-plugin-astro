@@ -10,7 +10,7 @@ npm i --save-dev prettier-plugin-astro prettier
 
 ### Recommended configuration
 
-For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying your plugins and the parser to use for Astro files in your Prettier config as shown in the example below:
+For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying the parser to use for Astro files in your Prettier config as shown in the example below:
 
 ```js
 module.exports = {
