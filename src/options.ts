@@ -12,7 +12,6 @@ declare module 'prettier' {
 // https://prettier.io/docs/en/plugins.html#options
 export const options: Record<keyof PluginOptions, SupportOption> = {
 	astroAllowShorthand: {
-		since: '0.0.10',
 		category: 'Astro',
 		type: 'boolean',
 		default: false,

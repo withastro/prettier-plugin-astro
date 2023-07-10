@@ -51,7 +51,7 @@ let ignoreNext = false;
 // https://prettier.io/docs/en/plugins.html#print
 // eslint-disable-next-line @typescript-eslint/no-shadow
 export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
-	const node = path.getValue();
+	const node = path.node;
 
 	// 1. handle special node types
 	if (!node) {
@@ -156,14 +156,14 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 				// No hugging of content means it's either a block element and/or there's whitespace at the start/end
 				let noHugSeparatorStart:
-					| _doc.builders.Concat
 					| _doc.builders.Line
 					| _doc.builders.Softline
+					| _doc.builders.Hardline
 					| string = softline;
 				let noHugSeparatorEnd:
-					| _doc.builders.Concat
 					| _doc.builders.Line
 					| _doc.builders.Softline
+					| _doc.builders.Hardline
 					| string = softline;
 				const hugStart = shouldHugStart(node, opts);
 				const hugEnd = shouldHugEnd(node, opts);
@@ -328,7 +328,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 			}
 
 			const nextNode = getNextNode(path);
-			let trailingLine: _doc.builders.Concat | string = '';
+			let trailingLine: string | _doc.builders.Hardline = '';
 			if (nextNode && isTagLikeNode(nextNode)) {
 				trailingLine = hardline;
 			}
@@ -351,7 +351,7 @@ function splitTextToDocs(node: TextNode): Doc[] {
 
 	const textLines = text.split(/[\t\n\f\r ]+/);
 
-	let docs = join(line, textLines).parts.filter((s) => s !== '');
+	let docs = join(line, textLines);
 
 	if (startsWithLinebreak(text)) {
 		docs[0] = hardline;

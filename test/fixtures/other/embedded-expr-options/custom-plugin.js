@@ -1,6 +1,8 @@
-let prettierParserBabel = require('prettier/parser-babel');
+import prettierParserBabel from 'prettier/parser-babel';
 
-module.exports.options = {
+let original = prettierParserBabel.parsers['babel-ts'];
+
+export const options = {
 	customPluginClass: {
 		since: '1.0.0',
 		category: 'foo',
@@ -10,10 +12,7 @@ module.exports.options = {
 	},
 };
 
-let original = prettierParserBabel.parsers['babel-ts'];
-
-/** @type {Record<string, import('prettier').Parser<any>>} */
-module.exports.parsers = {
+export const parsers = {
 	'babel-ts': {
 		parse(text, parsers, options) {
 			let ast = original.parse(text, parsers, options);

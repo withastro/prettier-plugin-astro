@@ -1,8 +1,11 @@
 import { parse } from '@astrojs/compiler/sync';
 import type { Parser, Printer, SupportLanguage } from 'prettier';
+import * as prettierPluginBabel from 'prettier/plugins/babel';
 import { options } from './options';
 import { print } from './printer';
 import { embed } from './printer/embed';
+
+const babelParser = prettierPluginBabel.parsers['babel-ts'];
 
 // https://prettier.io/docs/en/plugins.html#languages
 export const languages: Partial<SupportLanguage>[] = [
@@ -22,6 +25,22 @@ export const parsers: Record<string, Parser> = {
 		locStart: (node) => node.position.start.offset,
 		locEnd: (node) => node.position.end.offset,
 	},
+	expressionParser: {
+		...babelParser,
+		preprocess(text) {
+			// note the trailing newline: if the statement ends in a // comment,
+			// we can't add the closing bracket right afterwards
+			return `<>{${text}\n}</>`;
+		},
+		parse(text, options) {
+			const ast = babelParser.parse(text, options);
+
+			return {
+				...ast,
+				program: ast.program.body[0].expression.children[0].expression,
+			};
+		},
+	},
 };
 
 // https://prettier.io/docs/en/plugins.html#printers
@@ -36,4 +55,4 @@ const defaultOptions = {
 	tabWidth: 2,
 };
 
-export { options, defaultOptions };
+export { defaultOptions, options };
