@@ -75,7 +75,7 @@ function getOptions(files: any, path: string) {
  * @param {string} path Fixture path.
  * @param {boolean} isMarkdown For markdown files
  */
-export function test(name: string, files: any, path: string, isMarkdown: boolean = false) {
+export function test(name: string, files: any, path: string, isMarkdown = false) {
 	it(`${path}\n${name}`, async () => {
 		const { input, output } = getFiles(files, path, isMarkdown);
 
