@@ -25,7 +25,7 @@ export const parsers: Record<string, Parser> = {
 		locStart: (node) => node.position.start.offset,
 		locEnd: (node) => node.position.end.offset,
 	},
-	expressionParser: {
+	astroExpressionParser: {
 		...babelParser,
 		preprocess(text) {
 			// note the trailing newline: if the statement ends in a // comment,

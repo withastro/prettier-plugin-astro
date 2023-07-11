@@ -60,7 +60,7 @@ export const embed = ((path: AstPath, options: Options) => {
 
 			content = await wrapParserTryCatch(textToDoc, textContent, {
 				...options,
-				parser: 'expressionParser',
+				parser: 'astroExpressionParser',
 			});
 
 			content = stripTrailingHardline(content);
@@ -100,7 +100,7 @@ export const embed = ((path: AstPath, options: Options) => {
 
 			const attrNodeValue = await wrapParserTryCatch(textToDoc, value, {
 				...options,
-				parser: 'expressionParser',
+				parser: 'astroExpressionParser',
 			});
 
 			if (name === value && options.astroAllowShorthand) {
@@ -113,7 +113,7 @@ export const embed = ((path: AstPath, options: Options) => {
 		if (node.type === 'attribute' && node.kind === 'spread') {
 			const spreadContent = await wrapParserTryCatch(textToDoc, node.name, {
 				...options,
-				parser: 'expressionParser',
+				parser: 'astroExpressionParser',
 			});
 
 			return [line, '{...', spreadContent, '}'];

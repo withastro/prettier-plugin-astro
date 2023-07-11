@@ -14,12 +14,11 @@ test('Can format an Astro file with frontmatter', files, 'other/frontmatter');
 
 test('Can format an Astro file with embedded JSX expressions', files, 'other/embedded-expr');
 
-// TODO: This doesn't seem to work in Prettier 3, hmm
-// test(
-// 	'Options are passed to other Prettier Plugins when parsing embedded JSX expressions',
-// 	files,
-// 	'other/embedded-expr-options'
-// );
+test(
+	'Options are passed to other Prettier Plugins when parsing embedded JSX expressions',
+	files,
+	'other/embedded-expr-options'
+);
 
 test(
 	'Can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
