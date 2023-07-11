@@ -1,6 +1,8 @@
-let prettierParserBabel = require('prettier/parser-babel');
+import * as astro from '../../../../dist/index.js';
 
-module.exports.options = {
+let original = astro.parsers.astroExpressionParser;
+
+export const options = {
 	customPluginClass: {
 		since: '1.0.0',
 		category: 'foo',
@@ -10,13 +12,11 @@ module.exports.options = {
 	},
 };
 
-let original = prettierParserBabel.parsers['babel-ts'];
-
-/** @type {Record<string, import('prettier').Parser<any>>} */
-module.exports.parsers = {
-	'babel-ts': {
-		parse(text, parsers, options) {
-			let ast = original.parse(text, parsers, options);
+export const parsers = {
+	astroExpressionParser: {
+		...original,
+		parse(text, options) {
+			let ast = original.parse(text, options);
 
 			let nodes = [ast.program];
 			while (nodes.length) {

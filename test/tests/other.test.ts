@@ -13,6 +13,7 @@ const files = {
 test('Can format an Astro file with frontmatter', files, 'other/frontmatter');
 
 test('Can format an Astro file with embedded JSX expressions', files, 'other/embedded-expr');
+
 test(
 	'Options are passed to other Prettier Plugins when parsing embedded JSX expressions',
 	files,

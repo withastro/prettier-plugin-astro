@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import type { BuiltInParserName, BuiltInParsers, Doc, ParserOptions } from 'prettier';
+import type { BuiltInParserName, Doc, Options } from 'prettier';
 import _doc from 'prettier/doc';
 import { SassFormatter, type SassFormatterConfig } from 'sass-formatter';
 import type { AttributeNode, ExpressionNode, FragmentNode, Node } from './nodes';
@@ -15,6 +15,7 @@ import {
 	openingBracketReplace,
 	printRaw,
 	type AstPath,
+	type ParserOptions,
 	type printFn,
 } from './utils';
 
@@ -27,148 +28,159 @@ const supportedStyleLangValues = ['css', 'scss', 'sass', 'less'] as const;
 type supportedStyleLang = (typeof supportedStyleLangValues)[number];
 
 // https://prettier.io/docs/en/plugins.html#optional-embed
-export function embed(
-	path: AstPath,
-	print: printFn,
-	textToDoc: (text: string, options: object) => Doc,
-	opts: ParserOptions
-) {
-	const node = path.getValue();
+type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 
-	if (!node) return null;
+type Embed =
+	| ((
+			path: AstPath,
+			options: Options
+	  ) =>
+			| ((
+					textToDoc: TextToDoc,
+					print: (selector?: string | number | Array<string | number> | AstPath) => Doc,
+					path: AstPath,
+					options: Options
+			  ) => Promise<Doc | undefined> | Doc | undefined)
+			| Doc
+			| null)
+	| undefined;
 
-	if (node.type === 'expression') {
-		const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
-		const textContent = printRaw(jsxNode);
+export const embed = ((path: AstPath, options: Options) => {
+	const parserOption = options as ParserOptions;
+	return async (textToDoc, print) => {
+		const node = path.node;
 
-		let content: Doc;
+		if (!node) return undefined;
 
-		content = wrapParserTryCatch(textToDoc, textContent, {
-			...opts,
-			parser: expressionParser,
-		});
+		if (node.type === 'expression') {
+			const jsxNode = makeNodeJSXCompatible<ExpressionNode>(node);
+			const textContent = printRaw(jsxNode);
 
-		content = stripTrailingHardline(content);
+			let content: Doc;
 
-		// HACK: Bit of a weird hack to get if a document is exclusively comments
-		// Using `mapDoc` directly to build the array for some reason caused it to always be undefined? Not sure why
-		const strings: string[] = [];
-		mapDoc(content, (doc) => {
-			if (typeof doc === 'string') {
-				strings.push(doc);
+			content = await wrapParserTryCatch(textToDoc, textContent, {
+				...options,
+				parser: 'astroExpressionParser',
+			});
+
+			content = stripTrailingHardline(content);
+
+			// HACK: Bit of a weird hack to get if a document is exclusively comments
+			// Using `mapDoc` directly to build the array for some reason caused it to always be undefined? Not sure why
+			const strings: string[] = [];
+			mapDoc(content, (doc) => {
+				if (typeof doc === 'string') {
+					strings.push(doc);
+				}
+			});
+
+			if (strings.every((value) => value.startsWith('//'))) {
+				return group(['{', content, softline, lineSuffixBoundary, '}']);
 			}
-		});
 
-		if (strings.every((value) => value.startsWith('//'))) {
-			return group(['{', content, softline, lineSuffixBoundary, '}']);
+			// Create a Doc without the things we had to add to make the expression compatible with Babel
+			const astroDoc = mapDoc(content, (doc) => {
+				if (typeof doc === 'string') {
+					doc = doc.replace(openingBracketReplace, '{');
+					doc = doc.replace(closingBracketReplace, '}');
+					doc = doc.replace(atSignReplace, '@');
+					doc = doc.replace(dotReplace, '.');
+				}
+
+				return doc;
+			});
+
+			return group(['{', indent([softline, astroDoc]), softline, lineSuffixBoundary, '}']);
 		}
 
-		// Create a Doc without the things we had to add to make the expression compatible with Babel
-		const astroDoc = mapDoc(content, (doc) => {
-			if (typeof doc === 'string') {
-				doc = doc.replace(openingBracketReplace, '{');
-				doc = doc.replace(closingBracketReplace, '}');
-				doc = doc.replace(atSignReplace, '@');
-				doc = doc.replace(dotReplace, '.');
+		// Attribute using an expression as value
+		if (node.type === 'attribute' && node.kind === 'expression') {
+			const value = node.value.trim();
+			const name = node.name.trim();
+
+			const attrNodeValue = await wrapParserTryCatch(textToDoc, value, {
+				...options,
+				parser: 'astroExpressionParser',
+			});
+
+			if (name === value && options.astroAllowShorthand) {
+				return [line, '{', attrNodeValue, '}'];
 			}
 
-			return doc;
-		});
-
-		return group(['{', indent([softline, astroDoc]), softline, lineSuffixBoundary, '}']);
-	}
-
-	// Attribute using an expression as value
-	if (node.type === 'attribute' && node.kind === 'expression') {
-		const value = node.value.trim();
-		const name = node.name.trim();
-
-		const attrNodeValue = wrapParserTryCatch(textToDoc, value, {
-			...opts,
-			parser: expressionParser,
-		});
-
-		if (name === value && opts.astroAllowShorthand) {
-			return [line, '{', attrNodeValue, '}'];
+			return [line, name, '=', '{', attrNodeValue, '}'];
 		}
 
-		return [line, name, '=', '{', attrNodeValue, '}'];
-	}
+		if (node.type === 'attribute' && node.kind === 'spread') {
+			const spreadContent = await wrapParserTryCatch(textToDoc, node.name, {
+				...options,
+				parser: 'astroExpressionParser',
+			});
 
-	if (node.type === 'attribute' && node.kind === 'spread') {
-		const spreadContent = wrapParserTryCatch(textToDoc, node.name, {
-			...opts,
-			parser: expressionParser,
-		});
-
-		return [line, '{...', spreadContent, '}'];
-	}
-
-	// Frontmatter
-	if (node.type === 'frontmatter') {
-		const frontmatterContent = wrapParserTryCatch(textToDoc, node.value, {
-			...opts,
-			parser: 'babel-ts',
-		});
-
-		return [group(['---', hardline, frontmatterContent, '---', hardline]), hardline];
-	}
-
-	// Script tags
-	if (node.type === 'element' && node.name === 'script' && node.children.length) {
-		const typeAttribute = node.attributes.find((attr) => attr.name === 'type')?.value;
-
-		let parser: BuiltInParserName = 'babel-ts';
-		if (typeAttribute) {
-			parser = inferParserByTypeAttribute(typeAttribute);
+			return [line, '{...', spreadContent, '}'];
 		}
 
-		const scriptContent = printRaw(node);
-		let formattedScript = wrapParserTryCatch(textToDoc, scriptContent, {
-			...opts,
-			parser: parser,
-		});
+		// Frontmatter
+		if (node.type === 'frontmatter') {
+			const frontmatterContent = await wrapParserTryCatch(textToDoc, node.value, {
+				...options,
+				parser: 'babel-ts',
+			});
 
-		formattedScript = stripTrailingHardline(formattedScript);
-		const isEmpty = /^\s*$/.test(scriptContent);
+			return [group(['---', hardline, frontmatterContent, hardline, '---', hardline]), hardline];
+		}
 
-		// print
-		const attributes = path.map(print, 'attributes');
-		const openingTag = group(['<script', indent(group(attributes)), softline, '>']);
-		return [
-			openingTag,
-			indent([isEmpty ? '' : hardline, formattedScript]),
-			isEmpty ? '' : hardline,
-			'</script>',
-		];
-	}
+		// Script tags
+		if (node.type === 'element' && node.name === 'script' && node.children.length) {
+			const typeAttribute = node.attributes.find((attr) => attr.name === 'type')?.value;
 
-	// Style tags
-	if (node.type === 'element' && node.name === 'style') {
-		const content = printRaw(node);
-		let parserLang: supportedStyleLang | undefined = 'css';
-
-		if (node.attributes) {
-			const langAttribute = node.attributes.filter((x) => x.name === 'lang');
-			if (langAttribute.length) {
-				const styleLang = langAttribute[0].value.toLowerCase() as supportedStyleLang;
-				parserLang = supportedStyleLangValues.includes(styleLang) ? styleLang : undefined;
+			let parser: BuiltInParserName = 'babel-ts';
+			if (typeAttribute) {
+				parser = inferParserByTypeAttribute(typeAttribute);
 			}
+
+			const scriptContent = printRaw(node);
+			let formattedScript = await wrapParserTryCatch(textToDoc, scriptContent, {
+				...options,
+				parser: parser,
+			});
+
+			formattedScript = stripTrailingHardline(formattedScript);
+			const isEmpty = /^\s*$/.test(scriptContent);
+
+			// print
+			const attributes = path.map(print, 'attributes');
+			const openingTag = group(['<script', indent(group(attributes)), softline, '>']);
+			return [
+				openingTag,
+				indent([isEmpty ? '' : hardline, formattedScript]),
+				isEmpty ? '' : hardline,
+				'</script>',
+			];
 		}
 
-		return embedStyle(parserLang, content, path, print, textToDoc, opts);
-	}
+		// Style tags
+		if (node.type === 'element' && node.name === 'style') {
+			const content = printRaw(node);
+			let parserLang: supportedStyleLang | undefined = 'css';
 
-	return null;
-}
+			if (node.attributes) {
+				const langAttribute = node.attributes.filter((x) => x.name === 'lang');
+				if (langAttribute.length) {
+					const styleLang = langAttribute[0].value.toLowerCase() as supportedStyleLang;
+					parserLang = supportedStyleLangValues.includes(styleLang) ? styleLang : undefined;
+				}
+			}
 
-function wrapParserTryCatch(
-	cb: (text: string, options: object) => Doc,
-	text: string,
-	options: ParserOptions
-) {
+			return await embedStyle(parserLang, content, path, print, textToDoc, parserOption);
+		}
+
+		return undefined;
+	};
+}) satisfies Embed;
+
+async function wrapParserTryCatch(cb: TextToDoc, text: string, options: Options) {
 	try {
-		return cb(text, options);
+		return await cb(text, options);
 	} catch (e) {
 		// If we couldn't parse the expression (ex: syntax error) and we throw here, Prettier fallback to `print` and we'll
 		// get a totally useless error message (ex: unhandled node type). An undocumented way to work around this is to set
@@ -176,23 +188,6 @@ function wrapParserTryCatch(
 		process.env.PRETTIER_DEBUG = 'true';
 		throw e;
 	}
-}
-
-function expressionParser(text: string, parsers: BuiltInParsers, options: ParserOptions) {
-	// note the trailing newline: if the statement ends in a // comment,
-	// we can't add the closing bracket right afterwards
-	const expressionContent = `<>{${text}\n}</>`;
-
-	// @ts-ignore
-	// The type `RequiredOptions['parser]` is wrong. It uses `BuiltInParsers` as the type for the 2nd argument.
-	// However, the parsers produced by `getParsers()` include ALL registered parsers, not just the built-in ones.
-	// And the type of the built-in parsers and custom parsers all take (text[, parsers[, options]]) as arguments.
-	const ast = parsers['babel-ts'](expressionContent, parsers, options);
-
-	return {
-		...ast,
-		program: ast.program.body[0].expression.children[0].expression,
-	};
 }
 
 /**
@@ -288,21 +283,24 @@ function makeNodeJSXCompatible<T>(node: any): T {
 /**
  * Format the content of a style tag and print the entire element
  */
-function embedStyle(
+async function embedStyle(
 	lang: supportedStyleLang | undefined,
 	content: string,
 	path: AstPath,
 	print: printFn,
-	textToDoc: (text: string, options: object) => Doc,
+	textToDoc: TextToDoc,
 	options: ParserOptions
-): Doc | null {
+): Promise<_doc.builders.Doc | undefined> {
 	const isEmpty = /^\s*$/.test(content);
 
 	switch (lang) {
 		case 'less':
 		case 'css':
 		case 'scss': {
-			let formattedStyles = wrapParserTryCatch(textToDoc, content, { ...options, parser: lang });
+			let formattedStyles = await wrapParserTryCatch(textToDoc, content, {
+				...options,
+				parser: lang,
+			});
 
 			// The css parser appends an extra indented hardline, which we want outside of the `indent()`,
 			// so we remove the last element of the array
@@ -319,7 +317,7 @@ function embedStyle(
 			];
 		}
 		case 'sass': {
-			const lineEnding = options.endOfLine.toUpperCase() === 'CRLF' ? 'CRLF' : 'LF';
+			const lineEnding = options?.endOfLine?.toUpperCase() === 'CRLF' ? 'CRLF' : 'LF';
 			const sassOptions: Partial<SassFormatterConfig> = {
 				tabSize: options.tabWidth,
 				insertSpaces: !options.useTabs,
@@ -352,7 +350,7 @@ function embedStyle(
 					.toString();
 			}
 
-			return null;
+			return undefined;
 		}
 	}
 }

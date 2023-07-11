@@ -1,15 +1,16 @@
 import prettier from 'prettier';
-import { fileURLToPath } from 'url';
 import { expect, it } from 'vitest';
+
+const plugins = [new URL('../dist/index.js', import.meta.url).href];
 
 /**
  * format the contents of an astro file
  */
-export function format(contents: string, options: prettier.Options = {}): string {
+export async function format(contents: string, options: prettier.Options = {}): Promise<string> {
 	try {
-		return prettier.format(contents, {
+		return await prettier.format(contents, {
 			parser: 'astro',
-			plugins: [fileURLToPath(new URL('../', import.meta.url).toString())],
+			plugins,
 			...options,
 		});
 	} catch (e) {
@@ -23,11 +24,11 @@ export function format(contents: string, options: prettier.Options = {}): string
 	return '';
 }
 
-function markdownFormat(contents: string, options: prettier.Options = {}): string {
+async function markdownFormat(contents: string, options: prettier.Options = {}): Promise<string> {
 	try {
-		return prettier.format(contents, {
+		return await prettier.format(contents, {
 			parser: 'markdown',
-			plugins: [fileURLToPath(new URL('../', import.meta.url).toString())],
+			plugins,
 			...options,
 		});
 	} catch (e) {
@@ -85,11 +86,11 @@ export function test(name: string, files: any, path: string, isMarkdown = false)
 
 		const opts = getOptions(files, path);
 
-		const formatted = formatFile(input, opts);
+		const formatted = await formatFile(input, opts);
 		expect(formatted, 'Incorrect formatting').toBe(output);
 
 		// test that our formatting is idempotent
-		const formattedTwice = formatFile(formatted, opts);
+		const formattedTwice = await formatFile(formatted, opts);
 		expect(formatted === formattedTwice, 'Formatting is not idempotent').toBe(true);
 	});
 }
