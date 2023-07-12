@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.11.0
+
+### Minor Changes
+
+- 94ed904: Migrated the plugin to Prettier 3's new APIs. It's unfortunately not possible for a plugin to support both version 2 and 3 of Prettier. As such, from this version on, only Prettier 3 is supported.
+
 ## 0.10.0
 
 ### Minor Changes
