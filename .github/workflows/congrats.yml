@@ -1,0 +1,14 @@
+name: Congratsbot
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  congrats:
+    if: ${{ github.repository_owner == 'withastro' && github.event.head_commit.message != '[ci] format' }}
+    uses: withastro/automation/.github/workflows/congratsbot.yml@main
+    with:
+      EMOJIS: '💐,🌼,🌻,🌹,🌺,🪷,🌷,🏵️'
+    secrets:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_CONGRATS }}
