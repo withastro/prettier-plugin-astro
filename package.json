@@ -9,8 +9,7 @@
     "workers/*"
   ],
   "engines": {
-    "node": "^14.15.0 || >=16.0.0",
-    "pnpm": ">=7.14.0"
+    "node": "^14.15.0 || >=16.0.0"
   },
   "packageManager": "pnpm@8.6.2",
   "homepage": "https://github.com/withastro/prettier-plugin-astro/",
