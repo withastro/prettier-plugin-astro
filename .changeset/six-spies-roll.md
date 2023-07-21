@@ -1,5 +1,5 @@
 ---
-'prettier-plugin-astro': minor
+'prettier-plugin-astro': patch
 ---
 
 removes pnpm from engines
