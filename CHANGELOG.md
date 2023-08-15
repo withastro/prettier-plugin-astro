@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.11.1
+
+### Patch Changes
+
+- 62fe714: removes pnpm from engines
+
 ## 0.11.0
 
 ### Minor Changes
