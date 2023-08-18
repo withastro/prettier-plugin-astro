@@ -198,7 +198,12 @@ export function trimTextNodeRight(node: TextNode): void {
 }
 
 export function printClassNames(value: string) {
-	return value.trim().split(/\s+/).join(' ');
+	const lines = value.trim().split(/[\r\n]+/);
+	const formattedLines = lines.map((line) => {
+		const spaces = line.match(/^\s+/);
+		return (spaces ? spaces[0] : '') + line.trim().split(/\s+/).join(' ');
+	});
+	return formattedLines.join('\n');
 }
 
 /** dedent string & return tabSize (the last part is what we need) */
