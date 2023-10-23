@@ -13,6 +13,7 @@ npm i --save-dev prettier prettier-plugin-astro
 Then add the plugin to your Prettier configuration:
 
 ```js
+// .prettierrc.mjs
 /** @type {import("prettier").Config} */
 export default {
   plugins: ['prettier-plugin-astro'],
@@ -24,6 +25,7 @@ export default {
 For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying the parser to use for Astro files in your Prettier config as shown in the example below:
 
 ```js
+// .prettierrc.mjs
 /** @type {import("prettier").Config} */
 export default {
   plugins: ['prettier-plugin-astro'],
