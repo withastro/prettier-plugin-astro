@@ -81,10 +81,10 @@ export const embed = ((path: AstPath, options: Options) => {
 			// Create a Doc without the things we had to add to make the expression compatible with Babel
 			const astroDoc = mapDoc(content, (doc) => {
 				if (typeof doc === 'string') {
-					doc = doc.replace(openingBracketReplace, '{');
-					doc = doc.replace(closingBracketReplace, '}');
-					doc = doc.replace(atSignReplace, '@');
-					doc = doc.replace(dotReplace, '.');
+					doc = doc.replaceAll(openingBracketReplace, '{');
+					doc = doc.replaceAll(closingBracketReplace, '}');
+					doc = doc.replaceAll(atSignReplace, '@');
+					doc = doc.replaceAll(dotReplace, '.');
 				}
 
 				return doc;
@@ -269,11 +269,11 @@ function makeNodeJSXCompatible<T>(node: any): T {
 		}
 
 		if (attr.name.includes('@')) {
-			attr.name = attr.name.replace('@', atSignReplace);
+			attr.name = attr.name.replaceAll('@', atSignReplace);
 		}
 
 		if (attr.name.includes('.')) {
-			attr.name = attr.name.replace('.', dotReplace);
+			attr.name = attr.name.replaceAll('.', dotReplace);
 		}
 
 		return attr;
