@@ -1,5 +1,21 @@
 # prettier-plugin-astro
 
+## 0.12.0
+
+### Minor Changes
+
+- fa1a6e3: Do not delete line breaks and indentation of lines in class attribute
+
+### Patch Changes
+
+- b806845: Format doctype as lowercase to match Prettier 3.0
+
+## 0.11.1
+
+### Patch Changes
+
+- 62fe714: removes pnpm from engines
+
 ## 0.11.0
 
 ### Minor Changes
