@@ -1,27 +1,15 @@
-name: 'Format Code'
+name: Format
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-      - next
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{ github.head_ref }}
-
-      - name: Install Tools & Dependencies
-        uses: ./.github/actions/install
-
-      - name: Format
-        run: pnpm format
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: '[ci] format'
-          branch: ${{ github.head_ref }}
+  prettier:
+    if: github.repository_owner == 'withastro'
+    uses: withastro/automation/.github/workflows/format.yml@main
+    with:
+      command: "format:ci"
+    secrets: inherit
