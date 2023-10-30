@@ -4,8 +4,20 @@ Official Prettier plugin adding support for formatting `.astro` files.
 
 ## Installation
 
+First install Prettier and the plugin:
+
 ```shell
-npm i --save-dev prettier-plugin-astro prettier
+npm i --save-dev prettier prettier-plugin-astro
+```
+
+Then add the plugin to your Prettier configuration:
+
+```js
+// .prettierrc.mjs
+/** @type {import("prettier").Config} */
+export default {
+  plugins: ['prettier-plugin-astro'],
+};
 ```
 
 ### Recommended configuration
@@ -13,8 +25,10 @@ npm i --save-dev prettier-plugin-astro prettier
 For optimal compatibility with the different package managers and Prettier plugins, we recommend manually specifying the parser to use for Astro files in your Prettier config as shown in the example below:
 
 ```js
-module.exports = {
-  plugins: [require.resolve('prettier-plugin-astro')],
+// .prettierrc.mjs
+/** @type {import("prettier").Config} */
+export default {
+  plugins: ['prettier-plugin-astro'],
   overrides: [
     {
       files: '*.astro',
@@ -25,8 +39,6 @@ module.exports = {
   ],
 };
 ```
-
-Alternatively, for use inside a non-JS config file, the `require.resolve` call can be changed to a direct path, such as `plugins: ["./node_modules/prettier-plugin-astro"]`.
 
 To customize formatting behavior, see the [Configuration](#configuration) section below.
 

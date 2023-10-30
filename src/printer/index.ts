@@ -319,7 +319,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 		case 'doctype': {
 			// https://www.w3.org/wiki/Doctypes_and_markup_styles
-			return ['<!DOCTYPE html>', hardline];
+			return ['<!doctype html>', hardline];
 		}
 
 		case 'comment':
