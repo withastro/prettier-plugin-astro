@@ -9,7 +9,6 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    name: 'Format: node-16, ubuntu-latest'
     steps:
       - uses: actions/checkout@v3
         with:

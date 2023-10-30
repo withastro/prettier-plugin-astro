@@ -6,7 +6,7 @@ inputs:
     description: 'Node version'
     required: false
     type: number
-    default: 16
+    default: latest
 
 runs:
   using: composite
