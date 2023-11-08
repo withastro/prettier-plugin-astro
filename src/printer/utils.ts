@@ -24,6 +24,7 @@ export const openingBracketReplace = '_Pé';
 export const closingBracketReplace = 'èP_';
 export const atSignReplace = 'ΩP_';
 export const dotReplace = 'ωP_';
+export const interrogationReplace = 'ΔP_';
 
 export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): boolean {
 	return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);

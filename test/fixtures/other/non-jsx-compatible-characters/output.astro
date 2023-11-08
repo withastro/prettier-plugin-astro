@@ -3,3 +3,9 @@
 {(<div do.do={0}>Astro!</div>)}
 
 {true && <div x-on:click.stop.prevent="console.log('yay');">blah</div>}
+
+{arr.map(() => <button {...object?.data} />)}
+
+{() => <button {object?.something} />}
+
+{(<div something={object?.somethingelse} />)}
