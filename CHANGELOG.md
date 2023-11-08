@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.12.2
+
+### Patch Changes
+
+- 11b0dc7: Fix attributes using optional chaining not formatting correctly
+
 ## 0.12.1
 
 ### Patch Changes
