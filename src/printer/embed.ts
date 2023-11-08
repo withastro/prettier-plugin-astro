@@ -8,6 +8,7 @@ import {
 	closingBracketReplace,
 	dotReplace,
 	inferParserByTypeAttribute,
+	interrogationReplace,
 	isNodeWithChildren,
 	isTagLikeNode,
 	isTextNode,
@@ -85,6 +86,7 @@ export const embed = ((path: AstPath, options: Options) => {
 					doc = doc.replaceAll(closingBracketReplace, '}');
 					doc = doc.replaceAll(atSignReplace, '@');
 					doc = doc.replaceAll(dotReplace, '.');
+					doc = doc.replaceAll(interrogationReplace, '?');
 				}
 
 				return doc;
@@ -268,12 +270,19 @@ function makeNodeJSXCompatible<T>(node: any): T {
 			attr.name = openingBracketReplace + attr.name + closingBracketReplace;
 		}
 
-		if (attr.name.includes('@')) {
-			attr.name = attr.name.replaceAll('@', atSignReplace);
-		}
+		// For spreads, we don't need to do anything because it should already be JSX compatible
+		if (attr.kind !== 'spread') {
+			if (attr.name.includes('@')) {
+				attr.name = attr.name.replaceAll('@', atSignReplace);
+			}
 
-		if (attr.name.includes('.')) {
-			attr.name = attr.name.replaceAll('.', dotReplace);
+			if (attr.name.includes('.')) {
+				attr.name = attr.name.replaceAll('.', dotReplace);
+			}
+
+			if (attr.name.includes('?')) {
+				attr.name = attr.name.replaceAll('?', interrogationReplace);
+			}
 		}
 
 		return attr;
