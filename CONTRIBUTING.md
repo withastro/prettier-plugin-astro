@@ -5,7 +5,7 @@
 1. `git clone git@github.com:withastro/prettier-plugin-astro.git`
 1. `pnpm install`
 1. `pnpm build`
-1. Run [tests](https://vitest.dev/guide/) with `pnpm test` or `pnpm test:w` for watch mode
+1. Run [tests](https://vitest.dev/guide/) with `pnpm test` or `pnpm test:watch` for watch mode
 1. Lint code with `pnpm lint`
 1. Format code with `pnpm format`
 1. Run `pnpm changeset` to add your changes to the changelog on version bump.

@@ -1,6 +1,6 @@
 export type TagName = keyof HTMLElementTagNameMap | 'svg';
 
-// https://github.com/prettier/prettier/blob/main/vendors/html-void-elements.json
+// https://github.com/prettier/prettier/blob/b77d912c0c1a5df85e3e9b5b192fc92523e411ee/vendors/html-void-elements.json
 export const selfClosingTags = [
 	'area',
 	'base',
@@ -28,7 +28,7 @@ export const selfClosingTags = [
 	'wbr',
 ];
 
-// https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#Elements
+// https://web.archive.org/web/20230108213516/https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements#elements
 export const blockElements: TagName[] = [
 	'address',
 	'article',
