@@ -351,7 +351,7 @@ function splitTextToDocs(node: TextNode): Doc[] {
 
 	const textLines = text.split(/[\t\n\f\r ]+/);
 
-	let docs = join(line, textLines);
+	let docs = join(line, textLines).filter((doc) => doc !== '');
 
 	if (startsWithLinebreak(text)) {
 		docs[0] = hardline;

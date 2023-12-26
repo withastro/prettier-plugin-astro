@@ -81,6 +81,8 @@ test('Can format nested comment', files, 'other/nested-comment');
 
 test('Format binary expressions', files, 'other/binary-expression');
 
+test('Format self-closing tags without additional content', files, 'other/clean-self-closing');
+
 test('Format directives', files, 'other/directive');
 
 test('Format slots', files, 'other/slots');
