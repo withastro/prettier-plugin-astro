@@ -123,6 +123,12 @@ test(
 	'other/expression-multiple-roots'
 );
 
+test(
+	'Can format expressions who have multi-roots returns - extreme cases',
+	files,
+	'other/expression-multiple-roots-stress'
+);
+
 test('Can ignore self-closing elements', files, 'other/ignore-self-close');
 
 test('can format spread attributes', files, 'other/spread-attributes');

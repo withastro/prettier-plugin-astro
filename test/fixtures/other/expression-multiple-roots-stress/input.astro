@@ -1,0 +1,27 @@
+{
+	Promise.all([
+	[].map((something) => {
+		return [
+			<div></div>,
+			<div></div>,
+			<div></div>,
+			<div></div>
+		]
+	}),
+	[].map((something) => {
+		return <div></div><div></div><div></div><div></div>
+	}),
+	[].map((something) => {
+		return <div></div><div></div><div></div><div></div> + <div></div><div></div><div></div><div></div>
+	}),
+	[].map((something) => {
+		return <div></div><div></div><div></div><div></div> + {something: <div></div><div></div><div></div><div></div>}
+	}),
+
+	<div></div><div></div><div></div><div></div>
+	])
+}
+
+{
+	<div></div><div></div><div></div>
+}
