@@ -32,13 +32,10 @@ export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNod
 
 export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
 	return (
-		(node &&
-			node.type === 'element' &&
-			opts.htmlWhitespaceSensitivity !== 'strict' &&
-			(opts.htmlWhitespaceSensitivity === 'ignore' ||
-				blockElements.includes(node.name as TagName))) ||
-		node.type === 'component' ||
-		node.type === 'fragment'
+		node &&
+		node.type === 'element' &&
+		opts.htmlWhitespaceSensitivity !== 'strict' &&
+		(opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name as TagName))
 	);
 }
 
@@ -124,10 +121,6 @@ export function hasSetDirectives(node: TagLikeNode) {
  */
 export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
 	if (isBlockElement(node, opts)) {
-		return false;
-	}
-
-	if (node.type === 'fragment') {
 		return false;
 	}
 
