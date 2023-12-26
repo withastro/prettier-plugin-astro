@@ -239,7 +239,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 					}
 					if (!hugEnd && lastChild && isTextNode(lastChild)) {
 						if (isInlineElement(path, opts, node) && !didSetEndSeparator) {
-							noHugSeparatorEnd = softline;
+							noHugSeparatorEnd = line;
 						}
 						trimTextNodeRight(lastChild);
 					}

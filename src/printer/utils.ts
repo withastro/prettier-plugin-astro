@@ -27,7 +27,7 @@ export const dotReplace = 'ωP_';
 export const interrogationReplace = 'ΔP_';
 
 export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): boolean {
-	return node && node.type === 'element' && !isBlockElement(node, opts) && !isPreTagContent(path);
+	return node && isTagLikeNode(node) && !isBlockElement(node, opts) && !isPreTagContent(path);
 }
 
 export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
