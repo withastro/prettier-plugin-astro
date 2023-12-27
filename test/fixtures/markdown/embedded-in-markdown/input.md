@@ -59,9 +59,7 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
       }
     </style>
   </head>
-  <body>
-    ...
-  </body>
+  <body> ...</body>
 </html>
 ```
 
