@@ -42,12 +42,12 @@ export default {
 
 To customize formatting behavior, see the [Configuration](#configuration) section below.
 
-## Using in VS Code
+## Using in VS Code with the Prettier extension
 
 > **Note**
-> If you're using [Astro's VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode), Prettier and this plugin are already included. Only follow the guide below to format using Prettier's official extension.
+> This section ONLY applies if you want to use Prettier's VS Code extension to format. [The Astro VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) uses Prettier and this plugin in the background to format, but does not support all of the features of the Prettier extension, such as the toolbar panel showing Prettier's status.
 
-First install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration:
+Install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration:
 
 ```json
 {
@@ -92,7 +92,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to set up your 
 
 ## Sponsors
 
-Astro is generously supported by Netlify, Storyblok, and several other amazing organizations.
+Astro is free, open source software made possible by these wonderful sponsors.
 
 [❤️ Sponsor Astro! ❤️](https://github.com/withastro/.github/blob/main/FUNDING.md)
 
