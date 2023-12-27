@@ -1,5 +1,12 @@
 # prettier-plugin-astro
 
+## 0.12.3
+
+### Patch Changes
+
+- e75f9c7: Fix `<br />` tags sometimes causing additional spaces to appear
+- b4b0918: Fix not being able to format expressions with more than 2 roots
+
 ## 0.12.2
 
 ### Patch Changes
