@@ -42,10 +42,13 @@ export default {
 
 To customize formatting behavior, see the [Configuration](#configuration) section below.
 
-## Using in VS Code with the Prettier extension
+## Formatting with the VS Code Prettier extension directly
 
 > **Note**
-> This section ONLY applies if you want to use Prettier's VS Code extension to format. [The Astro VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) uses Prettier and this plugin in the background to format, but does not support all of the features of the Prettier extension, such as the toolbar panel showing Prettier's status.
+[The Astro VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) uses Prettier and this plugin (`prettier-plugin-astro`) to format your code. You will only need to install the VS Code Prettier extension separately for formatting if:
+
+- You are not using Astro's VS Code extension.
+- You want to use features of the Prettier extension that not supported by Astro's own VS Code extension, such as the toolbar panel showing Prettier's status.
 
 Install the [VS Code Prettier extension](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and add the following settings to your VS Code configuration:
 
