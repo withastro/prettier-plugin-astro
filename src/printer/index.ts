@@ -8,6 +8,7 @@ import {
 	getPreferredQuote,
 	getUnencodedText,
 	hasSetDirectives,
+	isBreakChildrenElement,
 	isEmptyTextNode,
 	isIgnoreDirective,
 	isInlineElement,
@@ -182,6 +183,8 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 					body = () => printRaw(node);
 				} else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {
 					body = () => path.map(print, 'children');
+				} else if (isBreakChildrenElement(node)) {
+					body = () => [breakParent, ...path.map(print, 'children')];
 				} else {
 					body = () => path.map(print, 'children');
 				}
