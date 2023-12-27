@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.13.0
+
+### Minor Changes
+
+- e97406a: Fix plugin sometimes including significant whitespace inside components, fragments and custom elements
+
 ## 0.12.3
 
 ### Patch Changes
