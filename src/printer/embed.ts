@@ -123,6 +123,10 @@ export const embed = ((path: AstPath, options: Options) => {
 
 		// Frontmatter
 		if (node.type === 'frontmatter') {
+			if (options.astroSkipFrontmatter) {
+				return [group(['---', node.value, '---', hardline]), hardline]
+			}
+
 			const frontmatterContent = await wrapParserTryCatch(textToDoc, node.value, {
 				...options,
 				parser: 'babel-ts',

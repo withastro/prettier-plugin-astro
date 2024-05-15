@@ -79,11 +79,20 @@ Set if attributes with the same name as their expression should be formatted to 
 | ------- | -------------------------------- | ----------------------------- |
 | `false` | `--astro-allow-shorthand <bool>` | `astroAllowShorthand: <bool>` |
 
+### Astro Skip Frontmatter
+
+If you are using another tool to format your JavaScript code, like Biome for example, it is possible to skip formatting the frontmatter.
+
+| Default | CLI Override                     | API Override                  |
+| ------- | -------------------------------- | ----------------------------- |
+| `false` | `--astro-skip-frontmatter <bool>` | `astroSkipFrontmatter: <bool>` |
+
 ### Example `.prettierrc.cjs`
 
 ```js
 {
   astroAllowShorthand: false;
+  astroSkipFrontmatter: false;
 }
 ```
 
