@@ -22,6 +22,6 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
 		category: 'Astro',
 		type: 'boolean',
 		default: false,
-		description: 'Skips the formatting of the frontmatter.'
+		description: 'Skips the formatting of the frontmatter.',
 	},
 };
