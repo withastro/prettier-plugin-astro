@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.14.0
+
+### Minor Changes
+
+- bb756df: Adds a new option called `astroSkipFrontmatter` to disable formatting the frontmatter. This can be useful when using other tools to format the frontmatter, such as Biome or dprint.
+
 ## 0.13.0
 
 ### Minor Changes
