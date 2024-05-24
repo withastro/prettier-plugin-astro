@@ -5,7 +5,7 @@
     "editor.formatOnPaste": false,
     "editor.formatOnType": false,
     "editor.codeActionsOnSave": {
-      "source.organizeImports": false
+      "source.organizeImports": "never"
     }
   }
 }
