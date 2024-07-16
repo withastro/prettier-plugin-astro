@@ -25,12 +25,10 @@ jobs:
     name: 'Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
     steps:
       - name: Check out code using Git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Tools & Dependencies
         uses: ./.github/actions/install
-        with:
-          node-version: ${{ matrix.node_version }}
 
       - name: Build prettier-plugin-astro
         run: pnpm build
@@ -42,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Lint: node-16, ubuntu-latest'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Tools & Dependencies
         uses: ./.github/actions/install
