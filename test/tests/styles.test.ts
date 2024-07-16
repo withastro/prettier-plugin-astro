@@ -37,6 +37,12 @@ test(
 	'styles/with-styles-and-body-tag'
 );
 
+test(
+	'Can format a basic Astro file with styles and a body tag II',
+	files,
+	'styles/with-styles-and-body-tag-complex'
+);
+
 test('Can format .less styles', files, 'styles/with-less');
 
 test('does not format unknown CSS languages', files, 'styles/with-unknown');
