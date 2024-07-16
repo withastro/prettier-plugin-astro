@@ -45,7 +45,7 @@ To customize formatting behavior, see the [Configuration](#configuration) sectio
 ## Formatting with the VS Code Prettier extension directly
 
 > **Note**
-[The Astro VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) uses Prettier and this plugin (`prettier-plugin-astro`) to format your code. You will only need to install the VS Code Prettier extension separately for formatting if:
+> [The Astro VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) uses Prettier and this plugin (`prettier-plugin-astro`) to format your code. You will only need to install the VS Code Prettier extension separately for formatting if:
 
 - You are not using Astro's VS Code extension.
 - You want to use features of the Prettier extension that not supported by Astro's own VS Code extension, such as the toolbar panel showing Prettier's status.
@@ -83,8 +83,8 @@ Set if attributes with the same name as their expression should be formatted to 
 
 If you are using another tool to format your JavaScript code, like Biome for example, it is possible to skip formatting the frontmatter.
 
-| Default | CLI Override                     | API Override                  |
-| ------- | -------------------------------- | ----------------------------- |
+| Default | CLI Override                      | API Override                   |
+| ------- | --------------------------------- | ------------------------------ |
 | `false` | `--astro-skip-frontmatter <bool>` | `astroSkipFrontmatter: <bool>` |
 
 ### Example `.prettierrc.cjs`
