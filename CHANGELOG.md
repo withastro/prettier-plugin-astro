@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.14.1
+
+### Patch Changes
+
+- 7282bcb: Fixes an issue where style and script tags would sometimes get moved to other tags
+
 ## 0.14.0
 
 ### Minor Changes
