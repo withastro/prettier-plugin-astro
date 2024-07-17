@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@astrojs/compiler':
-    specifier: ^1.5.5
-    version: 1.5.5
+    specifier: ^2.9.1
+    version: 2.9.1
   prettier:
     specifier: ^3.0.0
     version: 3.0.0
@@ -72,8 +72,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@astrojs/compiler@1.5.5:
-    resolution: {integrity: sha512-8LEj9nUr5+92ms8/ZUyajcLYqurhXHTNMERctsHZ1JyRrnjseheUHCM+MC34bMP0uOou2JXJFWVJudDTTe4S/A==}
+  /@astrojs/compiler@2.9.1:
+    resolution: {integrity: sha512-s8Ge2lWHx/s3kl4UoerjL/iPtwdtogNM/BLOaGCwQA6crMOVYpphy5wUkYlKyuh8GAeGYH/5haLAFBsgNy9AQQ==}
     dev: false
 
   /@babel/code-frame@7.22.5:

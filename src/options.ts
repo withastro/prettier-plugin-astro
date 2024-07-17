@@ -2,6 +2,7 @@ import type { SupportOption } from 'prettier';
 
 interface PluginOptions {
 	astroAllowShorthand: boolean;
+	astroSkipFrontmatter: boolean;
 }
 
 declare module 'prettier' {
@@ -16,5 +17,11 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
 		type: 'boolean',
 		default: false,
 		description: 'Enable/disable attribute shorthand if attribute name and expression are the same',
+	},
+	astroSkipFrontmatter: {
+		category: 'Astro',
+		type: 'boolean',
+		default: false,
+		description: 'Skips the formatting of the frontmatter.',
 	},
 };
