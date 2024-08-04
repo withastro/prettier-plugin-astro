@@ -5,7 +5,12 @@ import {
 	type Doc,
 	type ParserOptions as ParserOpts,
 } from 'prettier';
-import { blockElements, formattableAttributes, type TagName } from './elements';
+import {
+	blockElements,
+	breakChildrenElements,
+	formattableAttributes,
+	type TagName,
+} from './elements';
 import type {
 	CommentNode,
 	ExpressionNode,
@@ -28,6 +33,10 @@ export const interrogationReplace = 'ΔP_';
 
 export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNode): boolean {
 	return node && isTagLikeNode(node) && !isBlockElement(node, opts) && !isPreTagContent(path);
+}
+
+export function isBreakChildrenElement(node: anyNode): boolean {
+	return node && node.type === 'element' && breakChildrenElements.includes(node.name as TagName);
 }
 
 export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
@@ -120,7 +129,7 @@ export function hasSetDirectives(node: TagLikeNode) {
  * no whitespace between the `>` and the first child.
  */
 export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
-	if (isBlockElement(node, opts)) {
+	if (isBlockElement(node, opts) || isBreakChildrenElement(node)) {
 		return false;
 	}
 
@@ -142,7 +151,7 @@ export function shouldHugStart(node: anyNode, opts: ParserOptions): boolean {
  * no whitespace between the last child and the `</`.
  */
 export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
-	if (isBlockElement(node, opts)) {
+	if (isBlockElement(node, opts) || isBreakChildrenElement(node)) {
 		return false;
 	}
 
