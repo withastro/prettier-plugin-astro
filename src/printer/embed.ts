@@ -34,13 +34,13 @@ type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 type Embed =
 	| ((
 			path: AstPath,
-			options: Options
+			options: Options,
 	  ) =>
 			| ((
 					textToDoc: TextToDoc,
 					print: (selector?: string | number | Array<string | number> | AstPath) => Doc,
 					path: AstPath,
-					options: Options
+					options: Options,
 			  ) => Promise<Doc | undefined> | Doc | undefined)
 			| Doc
 			| null)
@@ -314,7 +314,7 @@ async function embedStyle(
 	path: AstPath,
 	print: printFn,
 	textToDoc: TextToDoc,
-	options: ParserOptions
+	options: ParserOptions,
 ): Promise<_doc.builders.Doc | undefined> {
 	const isEmpty = /^\s*$/.test(content);
 

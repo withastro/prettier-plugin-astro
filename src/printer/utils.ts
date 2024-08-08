@@ -290,7 +290,7 @@ export const isPreTagContent = (path: AstPath): boolean => {
 	return path.stack.some(
 		(node: anyNode) =>
 			(node.type === 'element' && node.name.toLowerCase() === 'pre') ||
-			(node.type === 'attribute' && !formattableAttributes.includes(node.name))
+			(node.type === 'attribute' && !formattableAttributes.includes(node.name)),
 	);
 };
 

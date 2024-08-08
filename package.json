@@ -35,7 +35,7 @@
     "test:ui": "vitest --ui",
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
-    "format": "prettier -w . --cache",
+    "format": "biome format --write",
     "release": "pnpm build && changeset publish"
   },
   "dependencies": {
@@ -44,21 +44,20 @@
     "sass-formatter": "^0.7.6"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.8.1",
     "@changesets/cli": "^2.26.1",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-typescript": "^11.1.1",
     "@types/node": "^20.2.5",
-    "@typescript-eslint/eslint-plugin": "^5.61.0",
-    "@typescript-eslint/parser": "^5.61.0",
     "@vitest/ui": "^0.31.3",
-    "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "5.0.0-alpha.2",
+    "eslint": "^9.8.0",
+    "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-prettier-doc": "^1.1.0",
     "rollup": "^3.23.0",
     "tslib": "^2.5.2",
-    "typescript": "^5.0.4",
-    "vitest": "^0.31.3",
-    "vite": "^4.4.3"
+    "typescript": "^5.5.4",
+    "vite": "^4.4.3",
+    "typescript-eslint": "^8.0.1",
+    "vitest": "^0.31.3"
   }
 }

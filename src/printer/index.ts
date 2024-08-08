@@ -195,9 +195,9 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 							hugStart
 								? ''
 								: !isPreTagContent(path) && !opts.bracketSameLine
-								? dedent(softline)
-								: '',
-						])
+									? dedent(softline)
+									: '',
+						]),
 					),
 				];
 
@@ -300,7 +300,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 					const unescapedValue = value.replace(/&apos;/g, "'").replace(/&quot;/g, '"');
 					const { escaped, quote, regex } = getPreferredQuote(
 						unescapedValue,
-						opts.jsxSingleQuote ? "'" : '"'
+						opts.jsxSingleQuote ? "'" : '"',
 					);
 
 					const result = unescapedValue.replace(regex, escaped);

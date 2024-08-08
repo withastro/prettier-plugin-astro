@@ -17,13 +17,13 @@ test('Can format an Astro file with embedded JSX expressions', files, 'other/emb
 test(
 	'Options are passed to other Prettier Plugins when parsing embedded JSX expressions',
 	files,
-	'other/embedded-expr-options'
+	'other/embedded-expr-options',
 );
 
 test(
 	'Can format an Astro file with a `<!DOCTYPE html>` + embedded JSX expressions',
 	files,
-	'other/doctype-with-embedded-expr'
+	'other/doctype-with-embedded-expr',
 );
 
 // // note(drew): this should be fixed in new Parser. And as this is an HTML4 / deprecated / extreme edge case, probably fine to ignore?
@@ -34,13 +34,13 @@ test('Can format an Astro file with fragments', files, 'other/fragment');
 test(
 	'Can format an Astro file with a JSX expression in an attribute',
 	files,
-	'other/attribute-with-embedded-expr'
+	'other/attribute-with-embedded-expr',
 );
 
 test(
 	'Can format an Astro file with a JSX expression and an HTML Comment',
 	files,
-	'other/expr-and-html-comment'
+	'other/expr-and-html-comment',
 );
 
 // test.failing('an Astro file with an invalidly unclosed tag is still formatted', Prettier, 'unclosed-tag');
@@ -48,7 +48,7 @@ test(
 test(
 	'Can format an Astro file with components that are the uppercase version of html elements',
 	files,
-	'other/preserve-tag-case'
+	'other/preserve-tag-case',
 );
 
 test('Autocloses open tags.', files, 'other/autocloses-open-tags');
@@ -60,13 +60,13 @@ test('Can format an Astro file with scripts in different languages', files, 'oth
 test(
 	'Can format an Astro file with a HTML style prettier ignore comment: https://prettier.io/docs/en/ignore.html',
 	files,
-	'other/prettier-ignore-html'
+	'other/prettier-ignore-html',
 );
 
 test(
 	'Can format an Astro file with a JS style prettier ignore comment: https://prettier.io/docs/en/ignore.html',
 	files,
-	'other/prettier-ignore-js'
+	'other/prettier-ignore-js',
 );
 
 // // note(drew): this _may_ be covered under the 'prettier-ignore-html' test. But if any bugs arise, let’s add more tests!
@@ -90,13 +90,13 @@ test('Format slots', files, 'other/slots');
 test(
 	'Can format expressions with shorthands props in them',
 	files,
-	'other/shorthand-in-expression'
+	'other/shorthand-in-expression',
 );
 
 test(
 	'Can format expression with inline comments in it',
 	files,
-	'other/expression-with-inline-comments'
+	'other/expression-with-inline-comments',
 );
 
 test('Can format JSX comments properly', files, 'other/jsx-comments');
@@ -104,31 +104,31 @@ test('Can format JSX comments properly', files, 'other/jsx-comments');
 test(
 	'Can format expression with TypeScript in them properly',
 	files,
-	'other/typescript-expression'
+	'other/typescript-expression',
 );
 
 test(
 	'Can format expressions with characters not compatible with JSX',
 	files,
-	'other/non-jsx-compatible-characters'
+	'other/non-jsx-compatible-characters',
 );
 
 test(
 	'Can format expressions inside inline tags without adding a newline',
 	files,
-	'other/expression-in-inline-tag'
+	'other/expression-in-inline-tag',
 );
 
 test(
 	'Can format expressions who have multi-roots returns',
 	files,
-	'other/expression-multiple-roots'
+	'other/expression-multiple-roots',
 );
 
 test(
 	'Can format expressions who have multi-roots returns - extreme cases',
 	files,
-	'other/expression-multiple-roots-stress'
+	'other/expression-multiple-roots-stress',
 );
 
 test('Can ignore self-closing elements', files, 'other/ignore-self-close');

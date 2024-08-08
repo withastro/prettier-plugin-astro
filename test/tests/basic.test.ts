@@ -20,7 +20,7 @@ test('Can properly format the class attribute', files, 'basic/html-class-attribu
 test(
 	'Can properly format the class attribute with line breaks',
 	files,
-	'basic/html-class-attribute-with-line-breaks'
+	'basic/html-class-attribute-with-line-breaks',
 );
 
 test('Can format long self-closing tags with multiple attributes', files, 'basic/self-closing');

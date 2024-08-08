@@ -9,5 +9,5 @@ test(
 	'can format an Astro file containing an Astro file embedded in a codeblock',
 	files,
 	'markdown/embedded-in-markdown',
-	true
+	true,
 );
