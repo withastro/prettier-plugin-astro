@@ -50,8 +50,8 @@ function getFiles(file: any, path: string, isMarkdown = false) {
 	let input: string = file[`/test/fixtures/${path}/input.${ext}`];
 	let output: string = file[`/test/fixtures/${path}/output.${ext}`];
 	// workaround: normalize end of lines to pass windows ci
-	if (input) input = input.replace(/(\r\n|\r)/gm, '\n');
-	if (output) output = output.replace(/(\r\n|\r)/gm, '\n');
+	if (input) input = input.replace(/\r\n|\r/g, '\n');
+	if (output) output = output.replace(/\r\n|\r/g, '\n');
 	return { input, output };
 }
 
@@ -63,7 +63,7 @@ function getOptions(files: any, path: string) {
 	let opts: object;
 	try {
 		opts = JSON.parse(files[`/test/fixtures/${path}/options.json`]);
-	} catch (e) {
+	} catch {
 		opts = {};
 	}
 	return opts;

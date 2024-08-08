@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { builtinModules } from 'node:module';
 
 import tseslint from 'typescript-eslint';
 
@@ -28,7 +27,7 @@ export default [
 		languageOptions: {
 			parser: typescriptParser,
 			parserOptions: {
-				project: ['./tsconfig.json'],
+				project: ['./tsconfig.eslint.json'],
 				tsconfigRootDir: __dirname,
 			},
 		},

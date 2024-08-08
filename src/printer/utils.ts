@@ -194,7 +194,7 @@ export function trimTextNodeRight(node: TextNode): void {
 export function printClassNames(value: string) {
 	const lines = value.trim().split(/[\r\n]+/);
 	const formattedLines = lines.map((line) => {
-		const spaces = line.match(/^\s+/);
+		const spaces = /^\s+/.exec(line);
 		return (spaces ? spaces[0] : '') + line.trim().split(/\s+/).join(' ');
 	});
 	return formattedLines.join('\n');
@@ -216,11 +216,11 @@ export function manualDedent(input: string): {
 	for (const line of result.split('\n')) {
 		if (!line) continue;
 		// if any line begins with a non-whitespace char, minTabSize is 0
-		if (line[0] && /^[^\s]/.test(line[0])) {
+		if (line[0] && /^\S/.test(line[0])) {
 			minTabSize = 0;
 			break;
 		}
-		const match = line.match(/^(\s+)\S+/); // \S ensures we don’t count lines of pure whitespace
+		const match = /^(\s+)\S+/.exec(line); // \S ensures we don’t count lines of pure whitespace
 		if (match) {
 			if (match[1] && !char) char = match[1][0];
 			if (match[1].length < minTabSize) minTabSize = match[1].length;
@@ -315,8 +315,8 @@ export function getPreferredQuote(rawContent: string, preferredQuote: string): Q
 	// the string, we might want to enclose with the alternate quote instead, to
 	// minimize the number of escaped quotes.
 	if (rawContent.includes(preferred.quote) || rawContent.includes(alternate.quote)) {
-		const numPreferredQuotes = (rawContent.match(preferred.regex) || []).length;
-		const numAlternateQuotes = (rawContent.match(alternate.regex) || []).length;
+		const numPreferredQuotes = (preferred.regex.exec(rawContent) || []).length;
+		const numAlternateQuotes = (alternate.regex.exec(rawContent) || []).length;
 
 		result = numPreferredQuotes > numAlternateQuotes ? alternate : preferred;
 	}

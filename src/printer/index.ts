@@ -94,8 +94,8 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 
 			if (isEmptyTextNode(node)) {
 				const hasWhiteSpace = rawText.trim().length < getUnencodedText(node).length;
-				const hasOneOrMoreNewlines = /\n/.test(getUnencodedText(node));
-				const hasTwoOrMoreNewlines = /\n\r?\s*\n\r?/.test(getUnencodedText(node));
+				const hasOneOrMoreNewlines = getUnencodedText(node).includes('\n');
+				const hasTwoOrMoreNewlines = /\n\s*\n\r?/.test(getUnencodedText(node));
 				if (hasTwoOrMoreNewlines) {
 					return [hardline, hardline];
 				}
