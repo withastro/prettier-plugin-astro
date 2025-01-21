@@ -10,6 +10,14 @@ First install Prettier and the plugin:
 npm i --save-dev prettier prettier-plugin-astro
 ```
 
+<details>
+<summary>Installation with pnpm</summary>
+
+```shell
+pnpm add --save-dev prettier prettier-plugin-astro
+```
+</details>
+
 Then add the plugin to your Prettier configuration:
 
 ```js
