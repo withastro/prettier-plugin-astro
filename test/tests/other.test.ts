@@ -134,3 +134,5 @@ test(
 test('Can ignore self-closing elements', files, 'other/ignore-self-close');
 
 test('can format spread attributes', files, 'other/spread-attributes');
+
+test('can format with cursor position', files, 'other/format-with-cursor-position', false, 313);

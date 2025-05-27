@@ -4,6 +4,7 @@ import * as prettierPluginBabel from 'prettier/plugins/babel';
 import { options } from './options';
 import { print } from './printer';
 import { embed } from './printer/embed';
+import { getVisitorKeys } from './get-visitor-keys';
 
 const babelParser = prettierPluginBabel.parsers['babel-ts'];
 
@@ -23,7 +24,7 @@ export const parsers: Record<string, Parser> = {
 		parse: (source) => parse(source, { position: true }).ast,
 		astFormat: 'astro',
 		locStart: (node) => node.position.start.offset,
-		locEnd: (node) => node.position.end.offset,
+		locEnd: (node) => node.position.end?.offset,
 	},
 	astroExpressionParser: {
 		...babelParser,
@@ -48,6 +49,7 @@ export const printers: Record<string, Printer> = {
 	astro: {
 		print,
 		embed,
+		getVisitorKeys,
 	},
 };
 
