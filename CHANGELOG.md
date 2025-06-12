@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 0.14.2
+
+### Patch Changes
+
+- 49456da: Handle potential undefined position.end in locEnd, and add a getVisitorKeys method to avoid unnecessary traversal.
+
 ## 0.14.1
 
 ### Patch Changes
