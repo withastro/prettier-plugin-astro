@@ -6,11 +6,15 @@ const plugins = [new URL('../dist/index.js', import.meta.url).href];
 /**
  * format the contents of an astro file
  */
-export async function format(contents: string, options: prettier.Options = {}): Promise<string> {
+export async function format(
+	contents: string,
+	options: Partial<prettier.CursorOptions>,
+): Promise<prettier.CursorResult> {
 	try {
-		return await prettier.format(contents, {
+		return await prettier.formatWithCursor(contents, {
 			parser: 'astro',
 			plugins,
+			cursorOffset: -1,
 			...options,
 		});
 	} catch (e) {
@@ -21,14 +25,21 @@ export async function format(contents: string, options: prettier.Options = {}): 
 			throw new Error(e);
 		}
 	}
-	return '';
+	return {
+		formatted: '',
+		cursorOffset: -1,
+	};
 }
 
-async function markdownFormat(contents: string, options: prettier.Options = {}): Promise<string> {
+async function markdownFormat(
+	contents: string,
+	options: Partial<prettier.CursorOptions>,
+): Promise<prettier.CursorResult> {
 	try {
-		return await prettier.format(contents, {
+		return await prettier.formatWithCursor(contents, {
 			parser: 'markdown',
 			plugins,
+			cursorOffset: -1,
 			...options,
 		});
 	} catch (e) {
@@ -39,7 +50,10 @@ async function markdownFormat(contents: string, options: prettier.Options = {}):
 			throw new Error(e);
 		}
 	}
-	return '';
+	return {
+		formatted: '',
+		cursorOffset: -1,
+	};
 }
 
 /**
@@ -74,8 +88,15 @@ function getOptions(files: any, path: string) {
  * @param {any} files Files from import.meta.glob.
  * @param {string} path Fixture path.
  * @param {boolean} isMarkdown For markdown files
+ * @param {number} cursorOffset Specify where the cursor is.
  */
-export function test(name: string, files: any, path: string, isMarkdown = false) {
+export function test(
+	name: string,
+	files: any,
+	path: string,
+	isMarkdown = false,
+	cursorOffset = -1,
+) {
 	it(`${path}\n${name}`, async () => {
 		const { input, output } = getFiles(files, path, isMarkdown);
 
@@ -84,13 +105,16 @@ export function test(name: string, files: any, path: string, isMarkdown = false)
 
 		const formatFile = isMarkdown ? markdownFormat : format;
 
-		const opts = getOptions(files, path);
+		const opts = {
+			...getOptions(files, path),
+			cursorOffset,
+		};
 
-		const formatted = await formatFile(input, opts);
-		expect(formatted, 'Incorrect formatting').toBe(output);
+		const firstPass = await formatFile(input, opts);
+		expect(firstPass.formatted, 'Incorrect formatting').toBe(output);
 
 		// test that our formatting is idempotent
-		const formattedTwice = await formatFile(formatted, opts);
-		expect(formatted === formattedTwice, 'Formatting is not idempotent').toBe(true);
+		const secondPass = await formatFile(firstPass.formatted, opts);
+		expect(firstPass.formatted === secondPass.formatted, 'Formatting is not idempotent').toBe(true);
 	});
 }

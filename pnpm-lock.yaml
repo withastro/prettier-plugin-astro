@@ -9,8 +9,8 @@ dependencies:
     specifier: ^2.9.1
     version: 2.9.1
   prettier:
-    specifier: ^3.0.0
-    version: 3.0.0
+    specifier: ^3.5.3
+    version: 3.5.3
   sass-formatter:
     specifier: ^0.7.6
     version: 0.7.6
@@ -2619,8 +2619,8 @@ packages:
     hasBin: true
     dev: true
 
-  /prettier@3.0.0:
-    resolution: {integrity: sha512-zBf5eHpwHOGPC47h0zrPyNn+eAEIdEzfywMoYn2XPi0P44Zp0tSq64rq0xAREh4auw2cJZHo9QUob+NqCQky4g==}
+  /prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
     engines: {node: '>=14'}
     hasBin: true
     dev: false
