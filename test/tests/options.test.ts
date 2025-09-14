@@ -185,6 +185,11 @@ test(
 	files,
 	'options/option-html-whitespace-sensitivity-ignore',
 );
+test(
+	'Can format components with prettier "htmlWhitespaceSensitivity: ignore" option',
+	files,
+	'options/option-html-whitespace-sensitivity-ignore-component',
+);
 
 // https://prettier.io/docs/en/options.html#single-attribute-per-line
 test(
