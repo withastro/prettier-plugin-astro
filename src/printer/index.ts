@@ -177,7 +177,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						isTextNodeStartingWithWhitespace(node.children[0]) &&
 						!isPreTagContent(path)
 							? () => line
-							: () => node.children.length > 0 ? softline : '';
+							: () => (node.children.length > 0 ? softline : '');
 				} else if (isPreTagContent(path)) {
 					body = () => printRaw(node);
 				} else if (isInlineElement(path, opts, node) && !isPreTagContent(path)) {

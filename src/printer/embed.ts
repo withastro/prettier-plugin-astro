@@ -156,10 +156,10 @@ export const embed = ((path: AstPath, options: Options) => {
 			// print
 			const attributes = path.map(print, 'attributes');
 			const openingTag = group([
-				'<script', 
-				indent(group(attributes)), 
+				'<script',
+				indent(group(attributes)),
 				options.bracketSameLine ? '' : softline,
-				'>'
+				'>',
 			]);
 			return [
 				openingTag,
