@@ -1,5 +1,13 @@
 # prettier-plugin-astro
 
+## 0.14.2
+
+### Patch Changes
+
+- de79d60: Fixes a bug with formatting empty elements with bracketSameLine: true and htmlWhitespaceSensitivity: ignore
+- 49456da: Handle potential undefined position.end in locEnd, and add a getVisitorKeys method to avoid unnecessary traversal.
+- c380d32: Format custom elements & components as block elements with htmlWhitespaceSensitivity: ignore
+
 ## 0.14.1
 
 ### Patch Changes
