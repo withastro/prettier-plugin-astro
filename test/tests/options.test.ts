@@ -205,6 +205,14 @@ test(
 	'options/single-attribute-per-line-false',
 );
 
+// https://prettier.io/docs/options.html#bracket-line
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test(
+	'Can format an Astro file with prettier "bracketSameLine: true, htmlWhitespaceSensitivity: ignore" options',
+	files,
+	'options/option-bracket-same-line-html-true-whitespace-sensitivity-ignore',
+);
+
 // // astro option: astroSortOrder
 // test('Can format an Astro file with prettier "astroSortOrder: markup | styles" option',  'option-astro-sort-order-markup-styles');
 
