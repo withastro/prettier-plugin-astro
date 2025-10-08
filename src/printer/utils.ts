@@ -31,11 +31,20 @@ export function isInlineElement(path: AstPath, opts: ParserOptions, node: anyNod
 }
 
 export function isBlockElement(node: anyNode, opts: ParserOptions): boolean {
+	if (!node) {
+		return false;
+	}
+
+	// All tags (element, custom-element, component, fragment) are considered
+	// block elements when htmlWhitespaceSensitivity is set to "ignore".
+	if (opts.htmlWhitespaceSensitivity === 'ignore') {
+		return true;
+	}
+
 	return (
-		node &&
 		node.type === 'element' &&
 		opts.htmlWhitespaceSensitivity !== 'strict' &&
-		(opts.htmlWhitespaceSensitivity === 'ignore' || blockElements.includes(node.name as TagName))
+		blockElements.includes(node.name as TagName)
 	);
 }
 
