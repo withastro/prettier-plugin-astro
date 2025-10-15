@@ -68,6 +68,8 @@ export const blockElements: TagName[] = [
 	'html',
 ];
 
+export const breakChildrenElements: TagName[] = ['html', 'head', 'body', 'ul', 'ol', 'select'];
+
 /**
  * HTML attributes that we may safely reformat (trim whitespace, add or remove newlines)
  */
