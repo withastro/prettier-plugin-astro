@@ -136,3 +136,9 @@ test('Can ignore self-closing elements', files, 'other/ignore-self-close');
 test('can format spread attributes', files, 'other/spread-attributes');
 
 test('can format with cursor position', files, 'other/format-with-cursor-position', false, 313);
+
+test(
+	'Formats long last child of block parent idempotently',
+	files,
+	'other/long-last-child-of-block-parent',
+);

@@ -170,26 +170,8 @@ export function shouldHugEnd(node: anyNode, opts: ParserOptions): boolean {
 	return !isTextNodeEndingWithWhitespace(lastChild);
 }
 
-/**
- * Returns true if the softline between `</tagName` and `>` can be omitted.
- */
-export function canOmitSoftlineBeforeClosingTag(path: AstPath, opts: ParserOptions): boolean {
-	return isLastChildWithinParentBlockElement(path, opts);
-}
-
 function getChildren(node: anyNode): Node[] {
 	return isNodeWithChildren(node) ? node.children : [];
-}
-
-function isLastChildWithinParentBlockElement(path: AstPath, opts: ParserOptions): boolean {
-	const parent = path.getParentNode();
-	if (!parent || !isBlockElement(parent, opts)) {
-		return false;
-	}
-
-	const children = getChildren(parent);
-	const lastChild = children[children.length - 1];
-	return lastChild === path.getNode();
 }
 
 export function trimTextNodeLeft(node: TextNode): void {

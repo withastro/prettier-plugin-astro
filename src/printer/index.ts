@@ -2,7 +2,6 @@ import { type Doc } from 'prettier';
 import { selfClosingTags } from './elements';
 import { type TextNode } from './nodes';
 import {
-	canOmitSoftlineBeforeClosingTag,
 	endsWithLinebreak,
 	getNextNode,
 	getPreferredQuote,
@@ -207,12 +206,10 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						group(['>', body(), `</${node.name}`]),
 					];
 
-					const omitSoftlineBeforeClosingTag =
-						isEmpty || canOmitSoftlineBeforeClosingTag(path, opts);
 					return group([
 						...openingTag,
 						isEmpty ? group(huggedContent) : group(indent(huggedContent)),
-						omitSoftlineBeforeClosingTag ? '' : softline,
+						isEmpty ? '' : softline,
 						'>',
 					]);
 				}
@@ -259,7 +256,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 						...openingTag,
 						'>',
 						indent([noHugSeparatorStart, group([body(), `</${node.name}`])]),
-						canOmitSoftlineBeforeClosingTag(path, opts) ? '' : softline,
+						softline,
 						'>',
 					]);
 				}
