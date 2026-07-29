@@ -4,8 +4,10 @@ import { type TextNode } from './nodes';
 import {
 	canOmitSoftlineBeforeClosingTag,
 	endsWithLinebreak,
+	getEndOffset,
 	getNextNode,
 	getPreferredQuote,
+	getStartOffset,
 	getUnencodedText,
 	hasSetDirectives,
 	isEmptyTextNode,
@@ -62,7 +64,7 @@ export function print(path: AstPath, opts: ParserOptions, print: printFn): Doc {
 		ignoreNext = false;
 		return [
 			opts.originalText
-				.slice(opts.locStart(node), opts.locEnd(node))
+				.slice(getStartOffset(node, opts), getEndOffset(path, opts))
 				.split('\n')
 				.map((lineContent, i) => (i == 0 ? [lineContent] : [literalline, lineContent]))
 				.flat(),

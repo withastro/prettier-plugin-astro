@@ -253,6 +253,72 @@ export function isTextNode(node: anyNode): node is TextNode {
 	return node.type === 'text';
 }
 
+/**
+ * Returns the offset at which the given node starts in the original text.
+ *
+ * The compiler sometimes reports the start of self-closing components after
+ * the leading `<`, so walk back to it when needed.
+ */
+export function getStartOffset(node: anyNode, opts: ParserOptions): number {
+	const start = opts.locStart(node);
+	if (isTagLikeNode(node) && opts.originalText[start] !== '<') {
+		const startOfTag = opts.originalText.lastIndexOf('<', start);
+		if (startOfTag !== -1) return startOfTag;
+	}
+	return start;
+}
+
+/**
+ * Returns the offset at which the given node ends in the original text.
+ *
+ * The compiler can return a missing or incorrect `position.end` for certain
+ * nodes, notably self-closing tags with attributes, so `opts.locEnd(node)`
+ * cannot always be trusted. Since sibling nodes are contiguous in the source
+ * text, the start of the node's next sibling is used as the end of the node
+ * whenever possible. For childless tags without a next sibling, the end of
+ * the tag is found in the original text instead.
+ */
+export function getEndOffset(path: AstPath, opts: ParserOptions): number | undefined {
+	const node = path.getNode();
+	if (!node) return undefined;
+
+	const nextNode = getNextNode(path);
+	if (nextNode) {
+		return opts.locStart(nextNode);
+	}
+
+	if (isTagLikeNode(node) && node.children.length === 0) {
+		const endOfTag = findEndOfTag(opts.originalText, getStartOffset(node, opts));
+		if (endOfTag !== undefined) return endOfTag;
+	}
+
+	return opts.locEnd(node);
+}
+
+/**
+ * Returns the offset right after the `>` closing the tag starting at the given
+ * offset, ignoring any `>` inside quoted attribute values or expressions.
+ */
+function findEndOfTag(text: string, startOffset: number): number | undefined {
+	let quoteChar: string | undefined;
+	let braceDepth = 0;
+	for (let i = startOffset; i < text.length; i++) {
+		const char = text[i];
+		if (quoteChar) {
+			if (char === quoteChar) quoteChar = undefined;
+		} else if (char === '"' || char === "'" || char === '`') {
+			quoteChar = char;
+		} else if (char === '{') {
+			braceDepth++;
+		} else if (char === '}') {
+			braceDepth--;
+		} else if (char === '>' && braceDepth === 0) {
+			return i + 1;
+		}
+	}
+	return undefined;
+}
+
 export function isExpressionNode(node: anyNode): node is ExpressionNode {
 	return node.type === 'expression';
 }
