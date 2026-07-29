@@ -133,6 +133,18 @@ test(
 
 test('Can ignore self-closing elements', files, 'other/ignore-self-close');
 
+test(
+	'Can ignore self-closing tags with attributes without corrupting subsequent siblings',
+	files,
+	'other/prettier-ignore-self-closing',
+);
+
+test(
+	'Can ignore self-closing components with attributes',
+	files,
+	'other/prettier-ignore-self-closing-component',
+);
+
 test('can format spread attributes', files, 'other/spread-attributes');
 
 test('can format with cursor position', files, 'other/format-with-cursor-position', false, 313);
