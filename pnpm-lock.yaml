@@ -8,9 +8,6 @@ dependencies:
   '@astrojs/compiler-rs':
     specifier: link:../../compiler-rs/local-rewrite-integration/packages/compiler
     version: link:../../compiler-rs/local-rewrite-integration/packages/compiler
-  prettier:
-    specifier: ^3.5.3
-    version: 3.5.3
   sass-formatter:
     specifier: ^0.7.6
     version: 0.7.6
@@ -43,6 +40,9 @@ devDependencies:
   eslint-plugin-regexp:
     specifier: ^2.6.0
     version: 2.6.0(eslint@9.8.0)
+  prettier:
+    specifier: 3.5.3
+    version: 3.5.3
   rollup:
     specifier: ^3.23.0
     version: 3.23.0
@@ -2619,7 +2619,7 @@ packages:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
     engines: {node: '>=14'}
     hasBin: true
-    dev: false
+    dev: true
 
   /pretty-format@27.5.1:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}

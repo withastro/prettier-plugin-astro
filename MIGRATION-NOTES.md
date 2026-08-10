@@ -120,12 +120,23 @@ is out of the void-element list and is printed self-closing only when it has no 
 
 ## Prettier version sensitivity
 
-Checked against prettier 3.9.5 as well as the pinned 3.5.3: no crashes, no `Missing visitor keys`,
-no `embed` breakage — the 3.7.0 `embed.getVisitorKeys` change that broke printer-wrapping plugins
-(withastro/prettier-plugin-astro#452) falls back to ours. 8 of 94 fixtures differ, and all 8 are
-upstream printer changes in `textToDoc`-delegated content, reproducible with no plugin involved:
-seven `return/*` fixtures hit `return 1, 2 as const` → `return (1, 2 as const)` in `babel-ts`, and
-`styles/format-nested-style-tag-content` hits the CSS printer's selector-case change.
+`prettier` is a **peer dependency**, not a regular one. This matters more than it used to: the
+printer imports `prettier/plugins/estree` directly, so if the plugin resolves a *different*
+prettier than the one running the format, core and the estree plugin disagree and `attachComments`
+throws `Cannot read properties of undefined (reading 'value')` on **any file containing a JSX or
+expression comment**. Two copies is not hypothetical — it is what a regular `dependencies` entry
+produces for a user on a newer 3.x.
+
+With a single prettier, 3.5.3 and 3.9.5 both work: no crashes, no `Missing visitor keys`, no
+`embed` breakage — the 3.7.0 `embed.getVisitorKeys` change that broke printer-wrapping plugins
+(withastro/prettier-plugin-astro#452) falls back to ours.
+
+The dev dependency is pinned to an exact `3.5.3` so fixture output is deterministic. Under 3.9.5,
+8 of 94 fixtures differ, and all 8 are upstream printer changes in `textToDoc`-delegated content,
+reproducible with no plugin involved: seven `return/*` fixtures hit
+`return 1, 2 as const` → `return (1, 2 as const)` in `babel-ts`, and
+`styles/format-nested-style-tag-content` hits the CSS printer's selector-case change. Bumping the
+pin means regenerating those 8.
 
 `...estree` is spread, never enumerated, and `prettier` plus `prettier/plugins/estree` are external
 in `rollup.config.mjs` — bundling the latter is what silently corrupted output in

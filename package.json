@@ -42,11 +42,14 @@
   "//TODO": "@astrojs/compiler-rs is linked to a local build (compiler-rs#136 + withastro/oxc#7). Replace with a published version before merging.",
   "dependencies": {
     "@astrojs/compiler-rs": "link:../../compiler-rs/local-rewrite-integration/packages/compiler",
-    "prettier": "^3.5.3",
     "sass-formatter": "^0.7.6"
+  },
+  "peerDependencies": {
+    "prettier": "^3.5.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.1",
+    "prettier": "3.5.3",
     "@changesets/cli": "^2.26.1",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-typescript": "^11.1.1",
