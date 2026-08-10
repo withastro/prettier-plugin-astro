@@ -1,11 +1,13 @@
-{(<div @do={0}>Astro!</div>)}
+{<div @do={0}>Astro!</div>}
 
-{(<div do.do={0}>Astro!</div>)}
+{<div do.do={0}>Astro!</div>}
 
 {true && <div x-on:click.stop.prevent="console.log('yay');">blah</div>}
 
-{arr.map(() => <button {...object?.data} />)}
+{arr.map(() => (
+  <button {...object?.data}></button>
+))}
 
-{() => <button {object?.something} />}
+{() => <button {object?.something}></button>}
 
-{(<div something={object?.somethingelse} />)}
+{<div something={object?.somethingelse}></div>}

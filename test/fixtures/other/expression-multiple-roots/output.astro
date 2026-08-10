@@ -1,44 +1,36 @@
-{
-  hello ?? (
-    <>
-      <div />
-      <div />
-    </>
-  )
-}
+{hello ?? (
+  <>
+    <div></div>
+    <div></div>
+  </>
+)}
 
-{
-  hello ? (
-    <>
-      <div />
-      <div />
-    </>
-  ) : (
-    <>
-      <span />
-      <span />
-    </>
-  )
-}
+{hello ? (
+  <>
+    <div></div>
+    <div></div>
+  </>
+) : (
+  <>
+    <span></span>
+    <span></span>
+  </>
+)}
 
-{
-  [].map((value) => (
+{[].map((value) => (
+  <>
+    <div>{value}</div>
+    <h1>{value}</h1>
+  </>
+))}
+
+{[].map((value) => {
+  console.log(value);
+
+  return (
     <>
-      <div>{value}</div>
-      <h1>{value}</h1>
+      <div></div>
+      <h1></h1>
     </>
-  ))
-}
-
-{
-  [].map((value) => {
-    console.log(value);
-
-    return (
-      <>
-        <div />
-        <h1 />
-      </>
-    );
-  })
-}
+  );
+})}

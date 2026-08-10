@@ -59,7 +59,7 @@ For best results, you should only have one `<style>` tag per-Astro component. Th
       }
     </style>
   </head>
-  <body> ...</body>
+  <body>...</body>
 </html>
 ```
 
@@ -153,7 +153,9 @@ const items = ["Dog", "Cat", "Platipus"];
 ---
 
 <ul>
-  {items.map((item) => <li>{item}</li>)}
+  {items.map((item) => (
+    <li>{item}</li>
+  ))}
 </ul>
 ```
 
@@ -168,7 +170,9 @@ const { greeting = "Hello", name } = Astro.props;
 ---
 
 <div>
-  <h1>{greeting}, {name}!</h1>
+  <h1>
+    {greeting}, {name}!
+  </h1>
 </div>
 ```
 
@@ -187,7 +191,9 @@ const { greeting = "Hello", name } = Astro.props;
 ---
 
 <div>
-  <h1>{greeting}, {name}!</h1>
+  <h1>
+    {greeting}, {name}!
+  </h1>
 </div>
 ```
 
@@ -198,8 +204,7 @@ const { greeting = "Hello", name } = Astro.props;
 ```astro
 <!-- Example: MyComponent.astro -->
 <div id="my-component">
-  <slot />
-  <!-- children will go here -->
+  <slot /> <!-- children will go here -->
 </div>
 
 <!-- Usage -->
@@ -274,15 +279,13 @@ const items = ["Dog", "Cat", "Platipus"];
 ---
 
 <ul>
-  {
-    items.map((item) => (
-      <>
-        <li>Red {item}</li>
-        <li>Blue {item}</li>
-        <li>Green {item}</li>
-      </>
-    ))
-  }
+  {items.map((item) => (
+    <>
+      <li>Red {item}</li>
+      <li>Blue {item}</li>
+      <li>Green {item}</li>
+    </>
+  ))}
 </ul>
 ```
 
