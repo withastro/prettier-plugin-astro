@@ -22,7 +22,7 @@ interface Diagnostic {
 }
 
 export function parse(source: string, options: ParserOptions): AstroNode {
-	const { ast, diagnostics } = parseAstro(source, { utf16Offsets: true }) as unknown as {
+	const { ast, diagnostics } = parseAstro(source) as unknown as {
 		ast: AstroNode;
 		diagnostics: Diagnostic[];
 	};

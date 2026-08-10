@@ -21,8 +21,8 @@ Two unreleased compiler changes are load-bearing:
 
 - **`comments` on the AST root** (compiler-rs #136). Published `0.3.2` puts no comments in the AST
   at all, so under a print-from-AST architecture *every comment in every file is silently deleted*.
-- **`utf16Offsets` parse option** (same PR). Offsets default to UTF-8 bytes; Prettier indexes
-  UTF-16 strings, so any source slicing drifts right of a multibyte character.
+- **UTF-16 parse offsets** (same PR). `parse()` used to report UTF-8 byte offsets; Prettier indexes
+  UTF-16 strings, so any source slicing drifted right of a multibyte character.
 - **Corrected Astro shorthand attribute spans** (withastro/oxc #7). `<C {foo} />` used to report
   the same span for the attribute and its name, which is how shorthand is now detected.
 
