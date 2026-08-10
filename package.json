@@ -36,8 +36,7 @@
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "format": "biome format --write",
-    "release": "pnpm build && changeset publish",
-    "corpus:manifest": "node scripts/build-manifest.mjs"
+    "release": "pnpm build && changeset publish"
   },
   "//TODO": "@astrojs/compiler-rs is linked to a local build (compiler-rs#136 + withastro/oxc#7). Replace with a published version before merging.",
   "dependencies": {
