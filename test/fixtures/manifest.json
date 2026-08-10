@@ -686,6 +686,15 @@
       "status": "active"
     },
     {
+      "id": "other/frontmatter-leading-whitespace",
+      "name": "Frontmatter leading whitespace",
+      "group": "other",
+      "parser": "astro",
+      "input": "other/frontmatter-leading-whitespace/input.astro",
+      "output": "other/frontmatter-leading-whitespace/output.astro",
+      "status": "active"
+    },
+    {
       "id": "other/hugging",
       "name": "Keeps inline content hugging its tags when it fits",
       "group": "other",

@@ -84,8 +84,9 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 
 	if (node.type === 'AstroFrontmatter') {
 		if (node.end === 0 || options.astroSkipFrontmatter) return undefined;
-		// `Program.start` points at the first statement, so slicing from it eats leading comments.
-		const source = options.originalText.slice(node.start + 3, node.end - 3);
+		// `Program.start` skips leading comments and `node.start` includes preceding whitespace.
+		const fence = options.originalText.indexOf('---', node.start);
+		const source = options.originalText.slice(fence + 3, node.end - 3);
 		if (!source.trim()) return undefined;
 		return async (textToDoc: TextToDoc) => [
 			'---',

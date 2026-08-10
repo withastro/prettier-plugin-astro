@@ -36,7 +36,8 @@ function printAstroNode(path: AstPath<AstroNode>, options: ParserOptions, print:
 		case 'AstroFrontmatter': {
 			const body = (node.program as AstroNode).body as unknown[];
 			if (options.astroSkipFrontmatter) {
-				return replaceEndOfLine(options.originalText.slice(node.start, node.end));
+				const fence = options.originalText.indexOf('---', node.start);
+				return replaceEndOfLine(options.originalText.slice(fence, node.end));
 			}
 			return body.length > 0
 				? ['---', hardline, print('program'), '---']
