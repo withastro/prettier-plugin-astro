@@ -8,6 +8,9 @@ dependencies:
   '@astrojs/compiler':
     specifier: ^2.9.1
     version: 2.9.1
+  '@astrojs/compiler-rs':
+    specifier: link:../../compiler-rs/local-rewrite-integration/packages/compiler
+    version: link:../../compiler-rs/local-rewrite-integration/packages/compiler
   prettier:
     specifier: ^3.5.3
     version: 3.5.3

@@ -36,10 +36,12 @@
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "format": "biome format --write",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "corpus:manifest": "node scripts/build-manifest.mjs"
   },
+  "//TODO": "@astrojs/compiler-rs is linked to a local build (compiler-rs#136 + withastro/oxc#7). Replace with a published version before merging.",
   "dependencies": {
-    "@astrojs/compiler": "^2.9.1",
+    "@astrojs/compiler-rs": "link:../../compiler-rs/local-rewrite-integration/packages/compiler",
     "prettier": "^3.5.3",
     "sass-formatter": "^0.7.6"
   },
@@ -51,13 +53,13 @@
     "@types/node": "^20.2.5",
     "@vitest/ui": "^0.31.3",
     "eslint": "^9.8.0",
-    "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-prettier-doc": "^1.1.0",
+    "eslint-plugin-regexp": "^2.6.0",
     "rollup": "^3.23.0",
     "tslib": "^2.5.2",
     "typescript": "^5.5.4",
-    "vite": "^4.4.3",
     "typescript-eslint": "^8.0.1",
+    "vite": "^4.4.3",
     "vitest": "^0.31.3"
   }
 }
