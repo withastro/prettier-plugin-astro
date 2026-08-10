@@ -38,9 +38,8 @@
     "format": "biome format --write",
     "release": "pnpm build && changeset publish"
   },
-  "//TODO": "@astrojs/compiler-rs is linked to a local build (compiler-rs#136 + withastro/oxc#7). Replace with a published version before merging.",
   "dependencies": {
-    "@astrojs/compiler-rs": "link:../../compiler-rs/local-rewrite-integration/packages/compiler",
+    "@astrojs/compiler-rs": "^0.4.0",
     "sass-formatter": "^0.7.6"
   },
   "peerDependencies": {
