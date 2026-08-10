@@ -118,6 +118,19 @@ is out of the void-element list and is printed self-closing only when it has no 
   marker distinguishing them from `a={`x`}`. Same for shorthand attributes, which are detected from
   the attribute span starting at `{`. Both would be better as compiler flags.
 
+## Prettier version sensitivity
+
+Checked against prettier 3.9.5 as well as the pinned 3.5.3: no crashes, no `Missing visitor keys`,
+no `embed` breakage — the 3.7.0 `embed.getVisitorKeys` change that broke printer-wrapping plugins
+(withastro/prettier-plugin-astro#452) falls back to ours. 8 of 94 fixtures differ, and all 8 are
+upstream printer changes in `textToDoc`-delegated content, reproducible with no plugin involved:
+seven `return/*` fixtures hit `return 1, 2 as const` → `return (1, 2 as const)` in `babel-ts`, and
+`styles/format-nested-style-tag-content` hits the CSS printer's selector-case change.
+
+`...estree` is spread, never enumerated, and `prettier` plus `prettier/plugins/estree` are external
+in `rollup.config.mjs` — bundling the latter is what silently corrupted output in
+prettier-plugin-svelte#506.
+
 ## Corpus
 
 The manifest-driven corpus from the whitespace spike came across: `test/fixtures/manifest.json`
