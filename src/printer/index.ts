@@ -1,8 +1,9 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
-import { type AstroNode, astroVisitorKeys, synthetic } from '../ast';
+import { type AstroNode, astroVisitorKeys, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
 import { opensRawSubtree } from '../whitespace';
+import { printChildren } from './children';
 import { embed } from './embed';
 
 const { hardline } = doc.builders;
@@ -97,10 +98,14 @@ export const printer = {
 	...estree,
 	embed,
 	getVisitorKeys(node: AstroNode, nonTraversableKeys: Set<string>): string[] {
-		return astroVisitorKeys[node.type] ?? estree.getVisitorKeys(node, nonTraversableKeys);
+		const keys = astroVisitorKeys[node.type] ?? estree.getVisitorKeys(node, nonTraversableKeys);
+		return node.astroChildren
+			? keys.map((key) => (key === 'children' ? 'astroChildren' : key))
+			: keys;
 	},
 	print(path: AstPath<AstroNode>, options: ParserOptions, print: PrintFn, args?: unknown): Doc {
 		const node = path.node;
+		if (node[ownChildren]) return path.callParent(() => printChildren(path, options, print));
 		if (node[synthetic]) return '';
 		if (node.astroIgnored) {
 			return replaceEndOfLine(options.originalText.slice(node.start, node.end));

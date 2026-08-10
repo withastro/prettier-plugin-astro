@@ -9,11 +9,17 @@ import {
 	isNode,
 	synthetic,
 	tagNameOf,
+	takeOverChildren,
 	walk,
 } from './ast';
 import { rawTextElements, voidElements } from './elements';
 import { printClassNames } from './printer/utils';
-import { normalizeWhitespace, opensRawSubtree } from './whitespace';
+import {
+	type Settings,
+	blankContentIsFree,
+	normalizeWhitespace,
+	opensRawSubtree,
+} from './whitespace';
 
 interface Diagnostic {
 	severity: string;
@@ -37,11 +43,15 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 
 	const body = ast.body as AstroNode[];
 	const template = templateFragment(ast, body);
-	normalizeWhitespace(template.node as AstroNode, {
+	const settings = {
 		mode: options.astroCompressHTML,
 		sensitivity: options.htmlWhitespaceSensitivity,
-	});
+	};
+	// Prettier always breaks between two adjacent non-text children, which only `jsx` can absorb.
+	if (settings.mode === 'jsx') normalizeWhitespace(template.node as AstroNode, settings);
+	else resolveBlankContainers(template.node as AstroNode, settings);
 	normalizeTagPairs(body, source);
+	if (settings.mode !== 'jsx') claimChildren(template.node as AstroNode);
 
 	ast.template = template;
 	delete ast.body;
@@ -139,6 +149,7 @@ function templateFragment(root: AstroNode, body: AstroNode[]): AstroNode {
 			type: 'JSXFragment',
 			start,
 			end,
+			astroRoot: true,
 			openingFragment: { type: 'JSXOpeningFragment', start, end: start, [synthetic]: true },
 			children: body,
 			closingFragment: { type: 'JSXClosingFragment', start: end, end, [synthetic]: true },
@@ -184,6 +195,35 @@ function normalizeTagPairs(body: AstroNode[], source: string): void {
 		} else if (!closing && !selfClosable) {
 			pairUp(node, tag);
 		}
+	});
+}
+
+// Decided here rather than in the children printer so tag pairing sees the final child count.
+function resolveBlankContainers(template: AstroNode, settings: Settings): void {
+	walk(template, (node) => {
+		if (node.type !== 'JSXElement' && node.type !== 'JSXFragment') return;
+		if (node.type === 'JSXElement' && opensRawSubtree(node)) return;
+		const children = node.children as AstroNode[];
+		if (children.length === 0) return;
+		const blank = children.every(
+			(child) => child.type === 'JSXText' && String(child.raw ?? '').trim() === '',
+		);
+		if (!blank) return;
+
+		const run = children.map((child) => String(child.raw ?? '')).join('');
+		const free = blankContentIsFree(node, run, node.astroRoot === true, settings);
+		children.length = 0;
+		if (!free) {
+			children.push({ type: 'JSXText', start: node.start, end: node.start, raw: ' ', value: ' ' });
+		}
+	});
+}
+
+function claimChildren(template: AstroNode): void {
+	walk(template, (node) => {
+		if (node.type !== 'JSXElement' && node.type !== 'JSXFragment') return;
+		if (node.type === 'JSXElement' && opensRawSubtree(node)) return;
+		takeOverChildren(node);
 	});
 }
 

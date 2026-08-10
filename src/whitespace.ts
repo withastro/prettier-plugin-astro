@@ -11,7 +11,7 @@ import type { CompressHTML } from './options';
 
 type Sensitivity = 'css' | 'strict' | 'ignore';
 
-interface Settings {
+export interface Settings {
 	mode: CompressHTML;
 	sensitivity: Sensitivity;
 }
@@ -47,6 +47,83 @@ function displayOf(node: AstroNode): string {
 	const tag = tagNameOf(node);
 	if (tag === null || isComponentName(tag) || tag.includes('-')) return 'inline';
 	return displayOfTag(tag);
+}
+
+export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
+
+export interface PrinterBoundary {
+	container: AstroNode;
+	prev: AstroNode | null;
+	next: AstroNode | null;
+	isRoot: boolean;
+	loneChild: boolean;
+	edge: boolean;
+}
+
+const isBlankRun = (run: string) => /[\n\r][^\S\n\r]*[\n\r]/.test(run);
+
+/** A text neighbour never decides significance; at a container edge only the container does. */
+function sidesFor(boundary: PrinterBoundary): (AstroNode | null)[] | null {
+	if (boundary.edge) return [null];
+	const sides: (AstroNode | null)[] = [];
+	if (boundary.prev === null) sides.push(null);
+	else if (boundary.prev.type !== 'JSXText') sides.push(boundary.prev);
+	if (boundary.next === null) sides.push(null);
+	else if (boundary.next.type !== 'JSXText') sides.push(boundary.next);
+	return sides.length > 0 ? sides : null;
+}
+
+/** `<slot>` and custom elements get a slot iff they have content, so their blank content is content. */
+export function blankContentIsFree(
+	container: AstroNode,
+	run: string,
+	isRoot: boolean,
+	settings: Settings,
+): boolean {
+	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
+	if (tag === 'slot') return false;
+	if (tag !== null && !isComponentName(tag) && tag.includes('-')) return false;
+
+	const boundary: Boundary = {
+		container,
+		context: { ...settings, isRoot, inRaw: false },
+		prev: null,
+		next: null,
+		sides: [null],
+		atStart: true,
+		atEnd: true,
+		loneChild: true,
+	};
+	return isFree(boundary) || mayAlterRenderedWhitespace(boundary);
+}
+
+export function separatorFor(
+	run: string,
+	boundary: PrinterBoundary,
+	settings: Settings,
+): Separator {
+	const sides = sidesFor(boundary);
+	const internal: Boundary = {
+		container: boundary.container,
+		context: { ...settings, isRoot: boundary.isRoot, inRaw: false },
+		prev: boundary.prev,
+		next: boundary.next,
+		sides: sides ?? [],
+		atStart: boundary.prev === null,
+		atEnd: boundary.next === null,
+		loneChild: boundary.loneChild,
+	};
+
+	if (isSlotFallback(internal)) return run === '' ? 'none' : 'space';
+	const free = isFree(internal) || (sides !== null && mayAlterRenderedWhitespace(internal));
+	if (boundary.edge) {
+		if (free) return 'soft';
+		return run === '' ? 'none' : 'space';
+	}
+	if (isBlankRun(run)) return 'blank';
+	if (hasNewline(run)) return 'break';
+	if (free) return 'soft';
+	return run === '' ? 'none' : 'space';
 }
 
 export function normalizeWhitespace(template: AstroNode, options: Settings): void {

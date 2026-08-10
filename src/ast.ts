@@ -1,10 +1,12 @@
 export const synthetic: unique symbol = Symbol.for('prettier-plugin-astro.synthetic');
+export const ownChildren: unique symbol = Symbol.for('prettier-plugin-astro.ownChildren');
 
 export interface AstroNode {
 	type: string;
 	start: number;
 	end: number;
 	[synthetic]?: boolean;
+	[ownChildren]?: boolean;
 	[key: string]: unknown;
 }
 
@@ -59,9 +61,31 @@ export const hasSetDirective = (node: AstroNode): boolean =>
 
 export function childrenOf(node: AstroNode): AstroNode[] | null {
 	if (node.type === 'JSXElement' || node.type === 'JSXFragment') {
-		return node.children as AstroNode[];
+		return (node.astroChildren as AstroNode[] | undefined) ?? (node.children as AstroNode[]);
 	}
 	return null;
+}
+
+/** Prettier's JSX printer prints a lone template-literal child verbatim: the only seam for our own children doc. */
+export function takeOverChildren(node: AstroNode): void {
+	const children = node.children as AstroNode[];
+	if (children.length === 0) return;
+	node.astroChildren = children;
+	node.children = [
+		{
+			type: 'JSXExpressionContainer',
+			start: node.start,
+			end: node.end,
+			[ownChildren]: true,
+			expression: {
+				type: 'TemplateLiteral',
+				start: node.start,
+				end: node.end,
+				quasis: [],
+				expressions: [],
+			},
+		},
+	];
 }
 
 export function walk(node: unknown, visit: (node: AstroNode) => void): void {

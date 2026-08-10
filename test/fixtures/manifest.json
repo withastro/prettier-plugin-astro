@@ -141,6 +141,30 @@
       "status": "active"
     },
     {
+      "id": "options/option-astro-compress-html-html",
+      "name": "Option astro compress html html",
+      "group": "options",
+      "parser": "astro",
+      "input": "options/option-astro-compress-html-html/input.astro",
+      "output": "options/option-astro-compress-html-html/output.astro",
+      "options": {
+        "astroCompressHTML": "html"
+      },
+      "status": "active"
+    },
+    {
+      "id": "options/option-astro-compress-html-none",
+      "name": "Option astro compress html none",
+      "group": "options",
+      "parser": "astro",
+      "input": "options/option-astro-compress-html-none/input.astro",
+      "output": "options/option-astro-compress-html-none/output.astro",
+      "options": {
+        "astroCompressHTML": "none"
+      },
+      "status": "active"
+    },
+    {
       "id": "options/option-astro-skip-frontmatter-true",
       "name": "Option astro skip frontmatter true",
       "group": "options",

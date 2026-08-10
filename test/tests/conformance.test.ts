@@ -59,7 +59,7 @@ for (const [group, entries] of byGroup) {
 it('every fixture directory is listed in the manifest', () => {
 	const listed = new Set(manifest.cases.map((c) => c.id));
 	expect(manifest.cases.length).toBe(listed.size);
-	expect(listed.size).toBe(94);
+	expect(listed.size).toBe(96);
 });
 
 it('every known-failing case carries a reason', () => {
