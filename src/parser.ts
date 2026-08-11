@@ -157,7 +157,6 @@ function templateFragment(root: AstroNode, body: AstroNode[]): AstroNode {
 	};
 }
 
-// A self-closed non-void element is not self-closing to an HTML parser, so print both tags.
 function pairUp(node: AstroNode, tag: string): void {
 	(node.openingElement as AstroNode).selfClosing = false;
 	node.closingElement = {
@@ -192,8 +191,6 @@ function normalizeTagPairs(body: AstroNode[], source: string): void {
 		if (children.length === 0 && selfClosable && closing) {
 			(node.openingElement as AstroNode).selfClosing = true;
 			node.closingElement = null;
-		} else if (!closing && !selfClosable) {
-			pairUp(node, tag);
 		}
 	});
 }

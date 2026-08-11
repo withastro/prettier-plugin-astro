@@ -5,7 +5,7 @@
 {true && <div x-on:click.stop.prevent="console.log('yay');">blah</div>}
 
 {arr.map(() => (
-  <button {...object?.data}></button>
+  <button {...object?.data} />
 ))}
 
 {() => <button {object?.something}></button>}
