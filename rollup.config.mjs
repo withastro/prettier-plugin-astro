@@ -5,7 +5,6 @@ import { defineConfig } from 'rollup';
 export default defineConfig({
 	input: 'src/index.ts',
 	plugins: [commonjs(), typescript()],
-	// Bundling `prettier/plugins/estree` is what silently corrupted output in prettier-plugin-svelte#506.
 	external: [
 		'prettier',
 		'prettier/doc',
