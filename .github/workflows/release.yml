@@ -23,24 +23,11 @@ jobs:
       - name: Install Tools & Dependencies
         uses: ./.github/actions/install
 
-      - name: Check whether this push versioned the package
-        id: versioned
-        run: |
-          previous=$(git show HEAD^:package.json | jq -r .version)
-          current=$(jq -r .version package.json)
-          echo "Previous version: $previous — current version: $current"
-          if [ "$previous" = "$current" ]; then
-            echo "result=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "result=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
         with:
-          # Changesets otherwise publishes package.json's current version on any changeset-less push
-          publish: ${{ steps.versioned.outputs.result == 'true' && 'pnpm release' || '' }}
+          publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: '' # Empty so the action leaves npm auth to trusted publishing
