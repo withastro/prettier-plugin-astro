@@ -39,25 +39,28 @@
     "release": "pnpm build && changeset publish"
   },
   "dependencies": {
-    "@astrojs/compiler": "^2.9.1",
-    "prettier": "^3.5.3",
+    "@astrojs/compiler-rs": "^0.4.0",
     "sass-formatter": "^0.7.6"
+  },
+  "peerDependencies": {
+    "prettier": "^3.5.3"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.1",
+    "prettier": "3.5.3",
     "@changesets/cli": "^2.26.1",
     "@rollup/plugin-commonjs": "^25.0.0",
     "@rollup/plugin-typescript": "^11.1.1",
     "@types/node": "^20.2.5",
     "@vitest/ui": "^0.31.3",
     "eslint": "^9.8.0",
-    "eslint-plugin-regexp": "^2.6.0",
     "eslint-plugin-prettier-doc": "^1.1.0",
+    "eslint-plugin-regexp": "^2.6.0",
     "rollup": "^3.23.0",
     "tslib": "^2.5.2",
     "typescript": "^5.5.4",
-    "vite": "^4.4.3",
     "typescript-eslint": "^8.0.1",
+    "vite": "^4.4.3",
     "vitest": "^0.31.3"
   }
 }

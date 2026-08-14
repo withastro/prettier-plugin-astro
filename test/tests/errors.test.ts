@@ -29,3 +29,10 @@ it('Correctly errors when parsing faulty style tag', async () => {
 	const content = getFile(files, '/test/fixtures/errors/style.astro');
 	await expect(format(content, {})).rejects.toThrow('CssSyntaxError');
 });
+
+it('Correctly errors when a closing tag has no matching opening tag', async () => {
+	const content = getFile(files, '/test/fixtures/errors/unclosed-tag.astro');
+	await expect(format(content, {})).rejects.toThrow(
+		"Closing tag '</uL>' has no matching opening tag.",
+	);
+});

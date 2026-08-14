@@ -94,12 +94,23 @@ If you are using another tool to format your JavaScript code, like Biome for exa
 | ------- | --------------------------------- | ------------------------------ |
 | `false` | `--astro-skip-frontmatter <bool>` | `astroSkipFrontmatter: <bool>` |
 
+### Astro Compress HTML
+
+Mirror of [`compressHTML`](https://docs.astro.build/en/reference/configuration-reference/#compresshtml) in `astro.config.mjs`. It tells the formatter which whitespace the compiler will collapse, so that reformatting a file never changes what it renders.
+
+Astro's own default is `'jsx'` (since Astro 7.0.0), where a whitespace run containing a newline is dropped and a same-line space is content. Set this to match your project if you have changed `compressHTML`; `true` and `false` are accepted as aliases for `'html'` and `'none'` so the value can be copied across verbatim.
+
+| Default | CLI Override                       | API Override                                    |
+| ------- | ---------------------------------- | ----------------------------------------------- |
+| `'jsx'` | `--astro-compress-html <html\|jsx\|none>` | `astroCompressHTML: "html" \| "jsx" \| "none"` |
+
 ### Example `.prettierrc.cjs`
 
 ```js
 {
   astroAllowShorthand: false;
   astroSkipFrontmatter: false;
+  astroCompressHTML: 'jsx';
 }
 ```
 

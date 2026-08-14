@@ -1,6 +1,6 @@
 import * as astro from '../../../../dist/index.js';
 
-let original = astro.parsers.astroExpressionParser;
+const original = astro.parsers.astro;
 
 export const options = {
 	customPluginClass: {
@@ -12,47 +12,27 @@ export const options = {
 	},
 };
 
+function rewriteClasses(node, className) {
+	if (Array.isArray(node)) {
+		for (const item of node) rewriteClasses(item, className);
+		return;
+	}
+	if (typeof node !== 'object' || node === null) return;
+	if (node.type === 'JSXAttribute' && node.name?.name === 'class' && node.value) {
+		node.value.value = className;
+		node.value.raw = `"${className}"`;
+	}
+	for (const key of Object.keys(node)) {
+		if (key !== 'type') rewriteClasses(node[key], className);
+	}
+}
+
 export const parsers = {
-	astroExpressionParser: {
+	astro: {
 		...original,
 		parse(text, options) {
-			let ast = original.parse(text, options);
-
-			let nodes = [ast.program];
-			while (nodes.length) {
-				let node = nodes.shift();
-				switch (node.type) {
-					case 'Program':
-						nodes.push(...node.body);
-						break;
-					case 'ExpressionStatement':
-						nodes.push(node.expression);
-						break;
-					case 'JSXExpressionContainer':
-						nodes.push(node.expression);
-						break;
-					case 'JSXFragment':
-						nodes.push(...node.children);
-						break;
-					case 'JSXElement':
-						nodes.push(node.openingElement);
-						nodes.push(...node.children);
-						break;
-					case 'JSXOpeningElement':
-						nodes.push(...node.attributes);
-						break;
-					case 'JSXAttribute':
-						if (node.name && node.name.type === 'JSXIdentifier' && node.name.name === 'class') {
-							node.value.value = `${options.customPluginClass}`;
-							node.value.extra = {
-								rawValue: node.value.value,
-								raw: `"${node.value.value}"`,
-							};
-						}
-						break;
-				}
-			}
-
+			const ast = original.parse(text, options);
+			rewriteClasses(ast, options.customPluginClass);
 			return ast;
 		},
 	},

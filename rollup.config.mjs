@@ -8,9 +8,8 @@ export default defineConfig({
 	external: [
 		'prettier',
 		'prettier/doc',
-		'@astrojs/compiler',
-		'@astrojs/compiler/utils',
-		'@astrojs/compiler/sync',
+		'prettier/plugins/estree',
+		'@astrojs/compiler-rs',
 		'sass-formatter',
 		'node:module',
 		'node:buffer',

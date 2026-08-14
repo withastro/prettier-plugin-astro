@@ -173,11 +173,19 @@ test(
 	true,
 );
 
-// // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
-// test('Can format an Astro file with prettier "htmlWhitespaceSensitivity: css" option',  'option-html-whitespace-sensitivity-css');
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test(
+	'Can format an Astro file with prettier "htmlWhitespaceSensitivity: css" option',
+	files,
+	'options/option-html-whitespace-sensitivity-css',
+);
 
-// // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
-// test('Can format an Astro file with prettier "htmlWhitespaceSensitivity: strict" option',  'option-html-whitespace-sensitivity-strict');
+// https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
+test(
+	'Can format an Astro file with prettier "htmlWhitespaceSensitivity: strict" option',
+	files,
+	'options/option-html-whitespace-sensitivity-strict',
+);
 
 // https://prettier.io/docs/en/options.html#html-whitespace-sensitivity
 test(
@@ -213,14 +221,32 @@ test(
 	'options/option-bracket-same-line-html-true-whitespace-sensitivity-ignore',
 );
 
-// // astro option: astroSortOrder
-// test('Can format an Astro file with prettier "astroSortOrder: markup | styles" option',  'option-astro-sort-order-markup-styles');
+test(
+	'Can format an Astro file with prettier "astroAllowShorthand: true" option',
+	files,
+	'options/option-astro-allow-shorthand-true',
+);
 
-// // astro option: astroSortOrder
-// test('Can format an Astro file with prettier "astroSortOrder: styles | markup" option',  'option-astro-sort-order-styles-markup');
+test(
+	'Can format an Astro file with prettier "astroAllowShorthand: false" option',
+	files,
+	'options/option-astro-allow-shorthand-false',
+);
 
-// // astro option: astroAllowShorthand
-// test('Can format an Astro file with prettier "astroAllowShorthand: true" option',  'option-astro-allow-shorthand-true');
+test(
+	'Can format an Astro file with prettier "astroSkipFrontmatter: true" option',
+	files,
+	'options/option-astro-skip-frontmatter-true',
+);
 
-// // astro option: astroAllowShorthand
-// test('Can format an Astro file with prettier "astroAllowShorthand: false" option',  'option-astro-allow-shorthand-false');
+test(
+	'Can format an Astro file with prettier "astroCompressHTML: html" option',
+	files,
+	'options/option-astro-compress-html-html',
+);
+
+test(
+	'Can format an Astro file with prettier "astroCompressHTML: none" option',
+	files,
+	'options/option-astro-compress-html-none',
+);

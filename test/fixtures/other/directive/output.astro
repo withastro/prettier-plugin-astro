@@ -5,3 +5,10 @@ const content = "lorem";
 <h1 set:html={content} />
 
 <Component set:html={content} />
+
+<div set:html={content}>
+  <p>Fallback markup</p>
+  <span>is kept</span>
+</div>
+
+<div set:text={content}>fallback text</div>
