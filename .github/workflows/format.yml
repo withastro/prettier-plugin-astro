@@ -9,7 +9,7 @@ on:
 jobs:
   prettier:
     if: github.repository_owner == 'withastro'
-    uses: withastro/automation/.github/workflows/format.yml@main
+    uses: withastro/automation/.github/workflows/format.yml@39c495d03416085561ee8b93a4f8ecdf94290bb8 # main
     with:
-      command: "format"
+      command: 'format'
     secrets: inherit

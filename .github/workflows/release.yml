@@ -5,18 +5,21 @@ on:
     branches:
       - main
 
+permissions: {}
+
 jobs:
   release:
     name: Changelog
     if: github.repository_owner == 'withastro'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write
       pull-requests: write
       id-token: write # Required for npm trusted publishing
     steps:
       - name: Check out branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
 
@@ -25,12 +28,9 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@6a0a831ff30acef54f2c6aa1cbbc1096b066edaf # v1.7.0
+        uses: changesets/action@198f833dd7d863100ea6e28967bc9a9fdefadb0a # v2.1.0
         with:
-          publish: pnpm release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: '' # Empty so the action leaves npm auth to trusted publishing
+          publish-script: pnpm release
 
       - name: push main branch to latest branch
         if: steps.changesets.outputs.published == 'true'

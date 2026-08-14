@@ -7,28 +7,41 @@ on:
       - next
   pull_request:
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
-        node_version: [18, 20]
+        node_version: [22, 24, 26]
         include:
           - os: windows-latest
-            node_version: 18
+            node_version: 24
           - os: macos-latest
-            node_version: 18
+            node_version: 24
       fail-fast: false
     env:
       LANG: en-us
     name: 'Test: node-${{ matrix.node_version }}, ${{ matrix.os }}'
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
       - name: Check out code using Git
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install Tools & Dependencies
         uses: ./.github/actions/install
+        with:
+          node-version: ${{ matrix.node_version }}
 
       - name: Build prettier-plugin-astro
         run: pnpm build
@@ -38,15 +51,36 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    name: 'Lint: node-16, ubuntu-latest'
+    name: 'Lint'
+    timeout-minutes: 10
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out code using Git
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Install Tools & Dependencies
         uses: ./.github/actions/install
 
-      - name: Build prettier-plugin-astro
-        run: pnpm build
-
       - name: Lint
-        run: pnpm lint
+        run: pnpm run lint:ci
+
+  typecheck:
+    runs-on: ubuntu-latest
+    name: 'Typecheck'
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out code using Git
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Tools & Dependencies
+        uses: ./.github/actions/install
+
+      - name: Typecheck
+        run: pnpm run typecheck

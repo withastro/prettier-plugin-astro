@@ -2,7 +2,8 @@ import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/options/*/*', {
 	eager: true,
-	as: 'raw',
+	query: '?raw',
+	import: 'default',
 });
 
 // https://prettier.io/docs/en/options.html#print-width

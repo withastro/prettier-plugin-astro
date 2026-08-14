@@ -76,7 +76,6 @@ function sidesFor(boundary: PrinterBoundary): (AstroNode | null)[] | null {
 /** `<slot>` and custom elements get a slot iff they have content, so their blank content is content. */
 export function blankContentIsFree(
 	container: AstroNode,
-	run: string,
 	isRoot: boolean,
 	settings: Settings,
 ): boolean {
