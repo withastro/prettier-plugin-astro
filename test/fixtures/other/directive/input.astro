@@ -5,3 +5,10 @@
     <h1 set:html =  {content  }></h1>
 
 		<Component    set:html =  {content  }></Component>
+
+<div set:html={content}>
+  <p>Fallback markup</p>
+  <span>is kept</span>
+</div>
+
+<div set:text={content}>fallback text</div>

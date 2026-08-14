@@ -167,6 +167,12 @@ function pairUp(node: AstroNode, tag: string): void {
 	};
 }
 
+// Requiring the newline keeps the lone space `resolveBlankContainers` leaves behind, which is content.
+function printsNothing(child: AstroNode): boolean {
+	const raw = String(child.raw ?? '');
+	return child.type === 'JSXText' && raw.trim() === '' && /[\n\r]/.test(raw);
+}
+
 function normalizeTagPairs(body: AstroNode[], source: string): void {
 	walk(body, (node) => {
 		if (node.type !== 'JSXElement') return;
@@ -184,11 +190,10 @@ function normalizeTagPairs(body: AstroNode[], source: string): void {
 			return;
 		}
 
-		if (hasSetDirective(node)) children.length = 0;
 		const selfClosable =
 			component || voidElements.has(tag) || tag === 'slot' || hasSetDirective(node);
 
-		if (children.length === 0 && selfClosable && closing) {
+		if (children.every(printsNothing) && selfClosable && closing) {
 			(node.openingElement as AstroNode).selfClosing = true;
 			node.closingElement = null;
 		}
