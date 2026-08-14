@@ -104,8 +104,6 @@ Astro's own default is `'jsx'` (since Astro 7.0.0), where a whitespace run conta
 | ------- | ---------------------------------- | ----------------------------------------------- |
 | `'jsx'` | `--astro-compress-html <html\|jsx\|none>` | `astroCompressHTML: "html" \| "jsx" \| "none"` |
 
-This is independent of [`htmlWhitespaceSensitivity`](https://prettier.io/docs/options#html-whitespace-sensitivity), which stays as Prettier's default `css`. `astroCompressHTML` says what the compiler *will do*; `htmlWhitespaceSensitivity` says what you authorise the formatter to change.
-
 ### Example `.prettierrc.cjs`
 
 ```js
