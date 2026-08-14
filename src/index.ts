@@ -26,6 +26,7 @@ export const parsers: Record<string, Parser> = {
 
 // https://prettier.io/docs/en/plugins.html#printers
 export const printers: Record<string, Printer> = {
+	// Prettier types `print`'s callback as taking an `AstPath`, but it passes one taking a selector.
 	astro: printer as unknown as Printer,
 };
 
