@@ -4,5 +4,7 @@
   "initialVersions": {
     "prettier-plugin-astro": "0.14.2"
   },
-  "changesets": []
+  "changesets": [
+    "pink-donkeys-shave"
+  ]
 }

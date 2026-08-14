@@ -1,5 +1,13 @@
 # prettier-plugin-astro
 
+## 1.0.0-beta.0
+
+### Major Changes
+
+- 595d47f: The plugin has been fully rewritten on top of Astro 7's new Rust compiler.
+
+  Whitespace is now properly handled like Astro itself does, and a new `astroCompressHTML` option has been added to match Astro's `compressHTML` setting.
+
 ## 0.14.2
 
 ### Patch Changes
