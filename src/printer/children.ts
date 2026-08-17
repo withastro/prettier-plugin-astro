@@ -9,6 +9,7 @@ const { willBreak } = doc.utils;
 const leadingWhitespace = /^[\t\n\f\r ]+/;
 const trailingWhitespace = /[\t\n\f\r ]+$/;
 const whitespaceRun = /[\t\n\f\r ]+/;
+const newline = /[\n\r]/;
 
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
 type ChildIterator = (callback: (child: AstPath<AstroNode>) => void, key: string) => void;
@@ -123,8 +124,12 @@ export function printChildren(
 
 	const body = fill(parts);
 	if (isRoot) return body;
+	// A sole element the author gave its own line keeps it, however narrow it is.
+	const soleElementOnItsOwnLine =
+		items.length === 1 && items[0].words === null && runs.every((run) => newline.test(run));
 	// Our children are their own group, so a multi-line opening tag would otherwise leave them hugging it.
 	const shouldBreak =
+		soleElementOnItsOwnLine ||
 		forcesBreak(container) ||
 		(container.openingElement !== undefined && willBreak(print('openingElement')));
 	return group(

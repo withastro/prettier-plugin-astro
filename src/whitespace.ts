@@ -52,6 +52,12 @@ function displayOf(node: AstroNode): string {
 const isBlockBox = (node: AstroNode | null): boolean =>
 	node !== null && node.type !== 'JSXText' && !isInlineDisplay(displayOf(node));
 
+// An inline-block sits inline but lays its content out separately, so its own edges never render whitespace.
+const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
+	const display = displayOf(node);
+	return display === 'inline-block' || !isInlineDisplay(display);
+};
+
 const breaksOwnChildren = new Set(['html', 'head', 'body', 'ul', 'ol', 'select']);
 
 /** Mirrors prettier's HTML printer: these lay their children out one per line however they were written. */
@@ -69,7 +75,7 @@ const hasElementChild = (node: AstroNode): boolean =>
 // Inline containers are left out: breaking one adds a rendered space unless the tag brackets dangle.
 export function forcesBreak(node: AstroNode): boolean {
 	if (breaksChildren(node)) return true;
-	if (!isBlockBox(node)) return false;
+	if (!swallowsEdgeWhitespace(node)) return false;
 	return childrenOf(node)?.some(hasElementChild) ?? false;
 }
 
@@ -140,9 +146,6 @@ export function separatorFor(
 	if (isSlotFallback(internal)) return run === '' ? 'none' : 'space';
 	const free = isFree(internal) || (sides !== null && mayAlterRenderedWhitespace(internal));
 	if (boundary.edge) {
-		// Text reflows to fit, but a break beside an element is the author's layout: prettier's HTML printer keeps it.
-		const besideElement = !isText(boundary.prev ?? boundary.next);
-		if (hasNewline(run) && besideElement) return 'break';
 		if (free) return 'soft';
 		return run === '' ? 'none' : 'space';
 	}
@@ -296,7 +299,9 @@ function mayAlterRenderedWhitespace(boundary: Boundary): boolean {
 	if (sensitivity === 'ignore') return true;
 	if (sensitivity === 'strict') return false;
 	// One block box is enough: it swallows the whitespace on its side whatever the other neighbour is.
-	return boundary.sides.some((side) => !isInlineDisplay(displayOf(side ?? boundary.container)));
+	return boundary.sides.some((side) =>
+		side === null ? swallowsEdgeWhitespace(boundary.container) : isBlockBox(side),
+	);
 }
 
 /** Any content at all, whitespace included, gives a `<slot>` a fallback body; nothing gives none. */
