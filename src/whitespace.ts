@@ -116,7 +116,9 @@ export function separatorFor(
 	if (isSlotFallback(internal)) return run === '' ? 'none' : 'space';
 	const free = isFree(internal) || (sides !== null && mayAlterRenderedWhitespace(internal));
 	if (boundary.edge) {
-		if (free) return 'soft';
+		// Text reflows to fit, but a break beside an element is the author's layout: prettier's HTML printer keeps it.
+		const besideElement = !isText(boundary.prev ?? boundary.next);
+		if (free) return hasNewline(run) && besideElement ? 'break' : 'soft';
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
