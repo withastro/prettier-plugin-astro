@@ -36,7 +36,7 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 	const failure = diagnostics.find((diagnostic) => diagnostic.severity === 'error');
 	if (failure) throw syntaxError(failure);
 
-	stripParenthesizedExpressions(ast);
+	stripParentheses(ast);
 	repairSpans(ast);
 	markAttributes(ast, source);
 	applyPrettierIgnore(ast);
@@ -69,7 +69,7 @@ function syntaxError(diagnostic: Diagnostic): Error {
 }
 
 // oxc emits explicit nodes; prettier re-derives parens itself and the two compound on every pass.
-function stripParenthesizedExpressions(root: AstroNode): void {
+function stripParentheses(root: AstroNode): void {
 	walk(root, (node) => {
 		for (const key of Object.keys(node)) {
 			const value = node[key];
@@ -86,8 +86,10 @@ function stripParenthesizedExpressions(root: AstroNode): void {
 
 function unwrapParens(node: unknown): unknown {
 	let current = node;
-	while (isNode(current) && current.type === 'ParenthesizedExpression') {
-		current = current.expression;
+	while (isNode(current)) {
+		if (current.type === 'ParenthesizedExpression') current = current.expression;
+		else if (current.type === 'TSParenthesizedType') current = current.typeAnnotation;
+		else break;
 	}
 	return current;
 }

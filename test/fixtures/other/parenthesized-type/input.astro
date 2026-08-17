@@ -1,0 +1,11 @@
+---
+const people = [{ name: "Ada" }];
+---
+
+<ul>
+	{
+		(person: (typeof people)[number]) => <li>{person.name}</li>
+	}
+	{(values: (string | number)[]) => values.length}
+	{(callback: (() => void) | null) => callback}
+</ul>
