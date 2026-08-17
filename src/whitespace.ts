@@ -73,24 +73,31 @@ export function breaksChildren(node: AstroNode): boolean {
 const hasElementChild = (node: AstroNode): boolean =>
 	childrenOf(node)?.some((child) => child.type === 'JSXElement') ?? false;
 
-// A sole element the author gave its own line keeps it, however narrow it is.
-function isSoleElementOnItsOwnLine(children: AstroNode[]): boolean {
-	const content = children.filter((child) => !isWhitespaceOnly(child));
-	if (content.length !== 1 || content[0].type === 'JSXText') return false;
-	const [before, after] = [children[0], children.at(-1)!];
+const runBefore = (node: AstroNode | undefined) =>
+	node && isText(node) ? (trailingWhitespace.exec(rawTextOf(node))?.[0] ?? '') : '';
+
+const runAfter = (node: AstroNode | undefined) =>
+	node && isText(node) ? (leadingWhitespace.exec(rawTextOf(node))?.[0] ?? '') : '';
+
+// An element the author gave a line of its own keeps it, however narrow it is. Text always reflows.
+export function sitsOnItsOwnLine(container: AstroNode, child: AstroNode | null): boolean {
+	if (child === null || isText(child)) return false;
+	const children = childrenOf(container);
+	const index = children?.indexOf(child) ?? -1;
+	if (index === -1) return false;
 	return (
-		before !== content[0] &&
-		after !== content[0] &&
-		hasNewline(rawTextOf(before)) &&
-		hasNewline(rawTextOf(after))
+		hasNewline(runBefore(children![index - 1])) && hasNewline(runAfter(children![index + 1]))
 	);
 }
+
+const hasChildOnItsOwnLine = (node: AstroNode): boolean =>
+	childrenOf(node)?.some((child) => sitsOnItsOwnLine(node, child)) ?? false;
 
 export function forcesBreak(node: AstroNode): boolean {
 	if (breaksChildren(node)) return true;
 	const children = childrenOf(node);
 	if (children === null) return false;
-	return children.some(hasElementChild) || isSoleElementOnItsOwnLine(children);
+	return children.some(hasElementChild) || hasChildOnItsOwnLine(node);
 }
 
 export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
@@ -164,7 +171,15 @@ export function separatorFor(
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
-	if (hasNewline(run)) return 'break';
+	// Between inline neighbours a newline and a space render alike, so it is free to reflow.
+	if (
+		hasNewline(run) &&
+		(settings.sensitivity === 'strict' ||
+			sitsOnItsOwnLine(boundary.container, boundary.prev) ||
+			sitsOnItsOwnLine(boundary.container, boundary.next))
+	) {
+		return 'break';
+	}
 	// Whitespace beside a comment is spent on a line break, so the comment reads as its own remark.
 	if (run !== '' && (isComment(boundary.prev) || isComment(boundary.next))) return 'break';
 	// A block box swallows the whitespace beside it, so prettier's HTML printer spends it on a line of its own.
