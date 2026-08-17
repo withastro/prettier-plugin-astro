@@ -49,6 +49,20 @@ function displayOf(node: AstroNode): string {
 	return displayOfTag(tag);
 }
 
+const isBlockBox = (node: AstroNode | null): boolean =>
+	node !== null && node.type !== 'JSXText' && !isInlineDisplay(displayOf(node));
+
+const breaksOwnChildren = new Set(['html', 'head', 'body', 'ul', 'ol', 'select']);
+
+/** Mirrors prettier's HTML printer: these lay their children out one per line however they were written. */
+export function breaksChildren(node: AstroNode): boolean {
+	const tag = node.type === 'JSXElement' ? tagNameOf(node) : null;
+	if (tag === null || isComponentName(tag)) return false;
+	if (breaksOwnChildren.has(tag)) return true;
+	const display = displayOfTag(tag);
+	return display.startsWith('table') && display !== 'table-cell';
+}
+
 export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
 
 export interface PrinterBoundary {
@@ -123,7 +137,8 @@ export function separatorFor(
 	}
 	if (isBlankRun(run)) return 'blank';
 	if (hasNewline(run)) return 'break';
-	if (free) return 'soft';
+	// A block box swallows the whitespace beside it, so prettier's HTML printer spends it on a line of its own.
+	if (free) return isBlockBox(boundary.prev) || isBlockBox(boundary.next) ? 'break' : 'soft';
 	return run === '' ? 'none' : 'space';
 }
 
@@ -255,10 +270,10 @@ function isFree(boundary: Boundary): boolean {
 
 	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
 	if (loneChild && tag !== null && isComponentName(tag)) return true;
+	if (breaksChildren(container)) return true;
 
 	if (mode === 'html') {
 		if (loneChild) return true;
-		if (tag === 'head') return true;
 	}
 
 	return false;
@@ -269,7 +284,8 @@ function mayAlterRenderedWhitespace(boundary: Boundary): boolean {
 	const { sensitivity } = boundary.context;
 	if (sensitivity === 'ignore') return true;
 	if (sensitivity === 'strict') return false;
-	return boundary.sides.every((side) => !isInlineDisplay(displayOf(side ?? boundary.container)));
+	// One block box is enough: it swallows the whitespace on its side whatever the other neighbour is.
+	return boundary.sides.some((side) => !isInlineDisplay(displayOf(side ?? boundary.container)));
 }
 
 /** Any content at all, whitespace included, gives a `<slot>` a fallback body; nothing gives none. */
