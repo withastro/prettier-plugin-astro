@@ -1,0 +1,22 @@
+<script>
+	const greeting: string = "hello"
+	function double(value: number): number {
+	  return value * 2
+	}
+	console.log(greeting, double(2))
+</script>
+
+<script src="./setup.ts">
+	  const point = { x: 0, y: 0 } satisfies Record<string, number>
+	console.log(point)
+</script>
+
+<script type="module">
+	  const el = document.querySelector("#app")
+	el.textContent = "hi"
+</script>
+
+<script is:inline>
+	const total = 1 + 2
+	  console.log(total)
+</script>
