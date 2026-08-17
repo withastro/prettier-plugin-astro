@@ -47,6 +47,7 @@ function displayOf(node: AstroNode): string {
 	if (node.type !== 'JSXElement') return 'inline';
 	const tag = tagNameOf(node);
 	if (tag === null || isComponentName(tag) || tag.includes('-')) return 'inline';
+	if (node.astroSvg) return tag === 'svg' ? 'inline-block' : 'block';
 	return displayOfTag(tag);
 }
 

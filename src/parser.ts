@@ -39,6 +39,7 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 	stripParentheses(ast);
 	repairSpans(ast);
 	markAttributes(ast, source);
+	markSvgNamespace(ast);
 	applyPrettierIgnore(ast);
 
 	const body = ast.body as AstroNode[];
@@ -137,6 +138,20 @@ function applyPrettierIgnore(root: AstroNode): void {
 			const target = children.slice(index + 1).find((sibling) => sibling.type !== 'JSXText');
 			if (target) target.astroIgnored = true;
 		}
+	});
+}
+
+// SVG lays its own children out, so their whitespace never renders. `foreignObject` restores HTML rules.
+function markSvgNamespace(root: AstroNode): void {
+	const mark = (node: AstroNode) => {
+		node.astroSvg = true;
+		for (const child of childrenOf(node) ?? []) {
+			if (child.type !== 'JSXElement' || tagNameOf(child) === 'foreignObject') continue;
+			mark(child);
+		}
+	};
+	walk(root, (node) => {
+		if (node.type === 'JSXElement' && tagNameOf(node) === 'svg') mark(node);
 	});
 }
 
