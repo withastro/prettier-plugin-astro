@@ -6,7 +6,7 @@ import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitesp
 import { printChildren } from './children';
 import { embed } from './embed';
 
-const { group, hardline, indent, softline } = doc.builders;
+const { group, hardline, indent, line, softline } = doc.builders;
 const { replaceEndOfLine } = doc.utils;
 
 type PrintFn = (selector?: string | number | (string | number)[], args?: unknown) => Doc;
@@ -80,6 +80,27 @@ function printAttribute(
 	return null;
 }
 
+// Prettier hugs a lone string attribute with a plain space, leaving its tag no line to wrap at.
+function printBreakableOpeningTag(
+	path: AstPath<AstroNode>,
+	options: ParserOptions,
+	print: PrintFn,
+): Doc | null {
+	const node = path.node;
+	const attributes = node.attributes as AstroNode[];
+	if (attributes.length !== 1) return null;
+	const value = attributes[0].value as AstroNode | null;
+	if (value?.type !== 'Literal' || typeof value.value !== 'string') return null;
+	if (value.value.includes('\n')) return null;
+
+	const end: Doc[] = node.selfClosing
+		? [line, '/>']
+		: options.bracketSameLine
+			? ['>']
+			: [softline, '>'];
+	return group(['<', print('name'), indent([line, print(['attributes', 0])]), ...end]);
+}
+
 // Breaking an inline element beside its content renders as an added space; moving the brackets does not.
 function printWithDanglingBrackets(
 	path: AstPath<AstroNode>,
@@ -101,7 +122,7 @@ function printWithDanglingBrackets(
 	return group(
 		[
 			{ ...opening, contents: contents.slice(0, -1) } as Doc,
-			indent([softline, '>', print(['children', 0], true), '</', tag.name as string]),
+			indent([softline, '>', print(['children', 0], 'fill'), '</', tag.name as string]),
 			softline,
 			'>',
 		],
@@ -139,7 +160,7 @@ export const printer = {
 	print(path: AstPath<AstroNode>, options: ParserOptions, print: PrintFn, args?: unknown): Doc {
 		const node = path.node;
 		if (node[ownChildren]) {
-			return path.callParent(() => printChildren(path, options, print, args === true));
+			return path.callParent(() => printChildren(path, options, print, args as 'fill' | 'loose' | undefined));
 		}
 		if (node[synthetic]) return '';
 		if (node.astroIgnored) {
@@ -150,9 +171,17 @@ export const printer = {
 			const attribute = printAttribute(path, options, print);
 			if (attribute) return attribute;
 		}
-		if (node.type === 'JSXElement' && options.astroCompressHTML !== 'jsx') {
+		if (node.type === 'JSXOpeningElement' && options.astroCompressHTML !== 'jsx') {
+			const opening = printBreakableOpeningTag(path, options, print);
+			if (opening) return opening;
+		}
+		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
 			const dangling = printWithDanglingBrackets(path, options, print);
 			if (dangling) return dangling;
+			return group(
+				[print('openingElement'), print(['children', 0], 'loose'), print('closingElement')],
+				{ shouldBreak: forcesBreak(node) },
+			);
 		}
 		// Reached when `embeddedLanguageFormatting` is off; reflowing raw content would corrupt it.
 		if (

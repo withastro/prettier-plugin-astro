@@ -4,12 +4,10 @@ import type { AstroNode } from '../ast';
 import { type Separator, forcesBreak, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
-const { willBreak } = doc.utils;
 
 const leadingWhitespace = /^[\t\n\f\r ]+/;
 const trailingWhitespace = /[\t\n\f\r ]+$/;
 const whitespaceRun = /[\t\n\f\r ]+/;
-const newline = /[\n\r]/;
 
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
 type ChildIterator = (callback: (child: AstPath<AstroNode>) => void, key: string) => void;
@@ -72,7 +70,7 @@ export function printChildren(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
-	bare = false,
+	mode?: 'fill' | 'loose',
 ): Doc {
 	const container = path.node;
 	const docs: Doc[] = [];
@@ -124,17 +122,13 @@ export function printChildren(
 	}
 
 	const body = fill(parts);
-	if (isRoot || bare) return body;
-	// A sole element the author gave its own line keeps it, however narrow it is.
-	const soleElementOnItsOwnLine =
-		items.length === 1 && items[0].words === null && runs.every((run) => newline.test(run));
-	// Our children are their own group, so a multi-line opening tag would otherwise leave them hugging it.
-	const shouldBreak =
-		soleElementOnItsOwnLine ||
-		forcesBreak(container) ||
-		(container.openingElement !== undefined && willBreak(print('openingElement')));
-	return group(
-		[indent([separatorAt(0, true) ?? '', body]), separatorAt(items.length, true) ?? ''],
-		{ shouldBreak },
-	);
+	if (isRoot || mode === 'fill') return body;
+
+	const content: Doc = [
+		indent([separatorAt(0, true) ?? '', body]),
+		separatorAt(items.length, true) ?? '',
+	];
+	// The element groups this itself, so a wrapping opening tag takes its children with it.
+	if (mode === 'loose') return content;
+	return group(content, { shouldBreak: forcesBreak(container) });
 }

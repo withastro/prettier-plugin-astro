@@ -72,9 +72,24 @@ export function breaksChildren(node: AstroNode): boolean {
 const hasElementChild = (node: AstroNode): boolean =>
 	childrenOf(node)?.some((child) => child.type === 'JSXElement') ?? false;
 
+// A sole element the author gave its own line keeps it, however narrow it is.
+function isSoleElementOnItsOwnLine(children: AstroNode[]): boolean {
+	const content = children.filter((child) => !isWhitespaceOnly(child));
+	if (content.length !== 1 || content[0].type === 'JSXText') return false;
+	const [before, after] = [children[0], children.at(-1)!];
+	return (
+		before !== content[0] &&
+		after !== content[0] &&
+		hasNewline(rawTextOf(before)) &&
+		hasNewline(rawTextOf(after))
+	);
+}
+
 export function forcesBreak(node: AstroNode): boolean {
 	if (breaksChildren(node)) return true;
-	return childrenOf(node)?.some(hasElementChild) ?? false;
+	const children = childrenOf(node);
+	if (children === null) return false;
+	return children.some(hasElementChild) || isSoleElementOnItsOwnLine(children);
 }
 
 export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
