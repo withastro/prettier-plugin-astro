@@ -111,7 +111,7 @@ function printWithDanglingBrackets(
 	const children = node.astroChildren as AstroNode[] | undefined;
 	if (!children?.length || !node.closingElement) return null;
 	if (swallowsEdgeWhitespace(node)) return null;
-	if (touchesWhitespace(children[0]) || touchesWhitespace(children.at(-1)!)) return null;
+	if (startsWithSpace(children[0]) || endsWithSpace(children.at(-1)!)) return null;
 
 	const opening = print('openingElement') as { type?: string; contents?: Doc[] };
 	if (opening.type !== 'group' || !Array.isArray(opening.contents)) return null;
@@ -130,8 +130,11 @@ function printWithDanglingBrackets(
 	);
 }
 
-const touchesWhitespace = (child: AstroNode): boolean =>
-	child.type === 'JSXText' && /^[\t\n\f\r ]|[\t\n\f\r ]$/.test(String(child.raw ?? ''));
+const startsWithSpace = (child: AstroNode): boolean =>
+	child.type === 'JSXText' && /^[\t\n\f\r ]/.test(String(child.raw ?? ''));
+
+const endsWithSpace = (child: AstroNode): boolean =>
+	child.type === 'JSXText' && /[\t\n\f\r ]$/.test(String(child.raw ?? ''));
 
 // No doc builder can cancel an indent nested inside a doc, so the root fragment's must be cut out.
 function unwrapFragmentIndent(printed: Doc): Doc {

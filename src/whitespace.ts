@@ -28,6 +28,7 @@ const trailingWhitespace = /[\t\n\f\r ]+$/;
 const hasNewline = (run: string) => /[\n\r]/.test(run);
 
 const isText = (node: AstroNode | null) => node?.type === 'JSXText';
+const isComment = (node: AstroNode | null) => node?.type === 'AstroComment';
 const rawTextOf = (node: AstroNode) => (node.raw as string | undefined) ?? '';
 const isWhitespaceOnly = (node: AstroNode) => isText(node) && rawTextOf(node).trim().length === 0;
 
@@ -164,6 +165,8 @@ export function separatorFor(
 	}
 	if (isBlankRun(run)) return 'blank';
 	if (hasNewline(run)) return 'break';
+	// Whitespace beside a comment is spent on a line break, so the comment reads as its own remark.
+	if (run !== '' && (isComment(boundary.prev) || isComment(boundary.next))) return 'break';
 	// A block box swallows the whitespace beside it, so prettier's HTML printer spends it on a line of its own.
 	if (free) return isBlockBox(boundary.prev) || isBlockBox(boundary.next) ? 'break' : 'soft';
 	return run === '' ? 'none' : 'space';
