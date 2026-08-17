@@ -2,14 +2,14 @@ import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
 import { type AstroNode, astroVisitorKeys, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
-import { opensRawSubtree } from '../whitespace';
+import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
 import { printChildren } from './children';
 import { embed } from './embed';
 
-const { hardline } = doc.builders;
+const { group, hardline, indent, softline } = doc.builders;
 const { replaceEndOfLine } = doc.utils;
 
-type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
+type PrintFn = (selector?: string | number | (string | number)[], args?: unknown) => Doc;
 
 function printDoctype(value: string): string {
 	const trimmed = value.trim();
@@ -80,15 +80,47 @@ function printAttribute(
 	return null;
 }
 
+// Breaking an inline element beside its content renders as an added space; moving the brackets does not.
+function printWithDanglingBrackets(
+	path: AstPath<AstroNode>,
+	options: ParserOptions,
+	print: PrintFn,
+): Doc | null {
+	const node = path.node;
+	const children = node.astroChildren as AstroNode[] | undefined;
+	if (!children?.length || !node.closingElement) return null;
+	if (swallowsEdgeWhitespace(node)) return null;
+	if (touchesWhitespace(children[0]) || touchesWhitespace(children.at(-1)!)) return null;
+
+	const opening = print('openingElement') as { type?: string; contents?: Doc[] };
+	if (opening.type !== 'group' || !Array.isArray(opening.contents)) return null;
+	const contents = opening.contents.filter((part) => part !== '');
+	if (contents.at(-1) !== '>') return null;
+
+	const tag = (node.closingElement as AstroNode).name as AstroNode;
+	return group(
+		[
+			{ ...opening, contents: contents.slice(0, -1) } as Doc,
+			indent([softline, '>', print(['children', 0], true), '</', tag.name as string]),
+			softline,
+			'>',
+		],
+		{ shouldBreak: forcesBreak(node) },
+	);
+}
+
+const touchesWhitespace = (child: AstroNode): boolean =>
+	child.type === 'JSXText' && /^[\t\n\f\r ]|[\t\n\f\r ]$/.test(String(child.raw ?? ''));
+
 // No doc builder can cancel an indent nested inside a doc, so the root fragment's must be cut out.
 function unwrapFragmentIndent(printed: Doc): Doc {
-	const group = printed as { type?: string; contents?: Doc; expandedStates?: Doc[] };
-	if (group.type !== 'group') return printed;
-	if (group.expandedStates) {
-		const states = group.expandedStates.map(unwrapFragmentIndent);
-		return { ...group, contents: states[0], expandedStates: states } as Doc;
+	const fragment = printed as { type?: string; contents?: Doc; expandedStates?: Doc[] };
+	if (fragment.type !== 'group') return printed;
+	if (fragment.expandedStates) {
+		const states = fragment.expandedStates.map(unwrapFragmentIndent);
+		return { ...fragment, contents: states[0], expandedStates: states } as Doc;
 	}
-	const parts = group.contents as Doc[];
+	const parts = fragment.contents as Doc[];
 	if (!Array.isArray(parts) || parts.length !== 4) return printed;
 	const indented = parts[1] as { type?: string; contents?: Doc[] };
 	if (indented.type !== 'indent' || !indented.contents) return printed;
@@ -106,7 +138,9 @@ export const printer = {
 	},
 	print(path: AstPath<AstroNode>, options: ParserOptions, print: PrintFn, args?: unknown): Doc {
 		const node = path.node;
-		if (node[ownChildren]) return path.callParent(() => printChildren(path, options, print));
+		if (node[ownChildren]) {
+			return path.callParent(() => printChildren(path, options, print, args === true));
+		}
 		if (node[synthetic]) return '';
 		if (node.astroIgnored) {
 			return replaceEndOfLine(options.originalText.slice(node.start, node.end));
@@ -115,6 +149,10 @@ export const printer = {
 		if (node.type === 'JSXAttribute') {
 			const attribute = printAttribute(path, options, print);
 			if (attribute) return attribute;
+		}
+		if (node.type === 'JSXElement' && options.astroCompressHTML !== 'jsx') {
+			const dangling = printWithDanglingBrackets(path, options, print);
+			if (dangling) return dangling;
 		}
 		// Reached when `embeddedLanguageFormatting` is off; reflowing raw content would corrupt it.
 		if (

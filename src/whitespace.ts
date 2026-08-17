@@ -53,7 +53,7 @@ const isBlockBox = (node: AstroNode | null): boolean =>
 	node !== null && node.type !== 'JSXText' && !isInlineDisplay(displayOf(node));
 
 // An inline-block sits inline but lays its content out separately, so its own edges never render whitespace.
-const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
+export const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
 	const display = displayOf(node);
 	return display === 'inline-block' || !isInlineDisplay(display);
 };
@@ -72,10 +72,8 @@ export function breaksChildren(node: AstroNode): boolean {
 const hasElementChild = (node: AstroNode): boolean =>
 	childrenOf(node)?.some((child) => child.type === 'JSXElement') ?? false;
 
-// Inline containers are left out: breaking one adds a rendered space unless the tag brackets dangle.
 export function forcesBreak(node: AstroNode): boolean {
 	if (breaksChildren(node)) return true;
-	if (!swallowsEdgeWhitespace(node)) return false;
 	return childrenOf(node)?.some(hasElementChild) ?? false;
 }
 

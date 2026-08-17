@@ -72,6 +72,7 @@ export function printChildren(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
+	bare = false,
 ): Doc {
 	const container = path.node;
 	const docs: Doc[] = [];
@@ -123,7 +124,7 @@ export function printChildren(
 	}
 
 	const body = fill(parts);
-	if (isRoot) return body;
+	if (isRoot || bare) return body;
 	// A sole element the author gave its own line keeps it, however narrow it is.
 	const soleElementOnItsOwnLine =
 		items.length === 1 && items[0].words === null && runs.every((run) => newline.test(run));
