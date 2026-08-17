@@ -3,7 +3,7 @@ import { doc } from 'prettier';
 import { type AstroNode, astroVisitorKeys, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
-import { printChildren } from './children';
+import { lends, printChildren } from './children';
 import { embed } from './embed';
 
 const { group, hardline, indent, line, softline } = doc.builders;
@@ -106,6 +106,7 @@ function printWithDanglingBrackets(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
+	lending: boolean,
 ): Doc | null {
 	const node = path.node;
 	const children = node.astroChildren as AstroNode[] | undefined;
@@ -124,7 +125,7 @@ function printWithDanglingBrackets(
 			{ ...opening, contents: contents.slice(0, -1) } as Doc,
 			indent([softline, '>', print(['children', 0], 'fill'), '</', tag.name as string]),
 			softline,
-			'>',
+			lending ? '' : '>',
 		],
 		{ shouldBreak: forcesBreak(node) },
 	);
@@ -179,10 +180,15 @@ export const printer = {
 			if (opening) return opening;
 		}
 		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
-			const dangling = printWithDanglingBrackets(path, options, print);
+			const dangling = printWithDanglingBrackets(path, options, print, args === lends);
 			if (dangling) return dangling;
+			const tag = ((node.closingElement as AstroNode).name as AstroNode).name as string;
 			return group(
-				[print('openingElement'), print(['children', 0], 'loose'), print('closingElement')],
+				[
+					print('openingElement'),
+					print(['children', 0], 'loose'),
+					args === lends ? ['</', tag] : print('closingElement'),
+				],
 				{ shouldBreak: forcesBreak(node) },
 			);
 		}

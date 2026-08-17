@@ -1,7 +1,7 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
 import type { AstroNode } from '../ast';
-import { type Separator, forcesBreak, separatorFor } from '../whitespace';
+import { type Separator, forcesBreak, opensRawSubtree, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
 
@@ -9,14 +9,18 @@ const leadingWhitespace = /^[\t\n\f\r ]+/;
 const trailingWhitespace = /[\t\n\f\r ]+$/;
 const whitespaceRun = /[\t\n\f\r ]+/;
 
-type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
-type ChildIterator = (callback: (child: AstPath<AstroNode>) => void, key: string) => void;
+type PrintFn = (selector?: string | number | (string | number)[], args?: unknown) => Doc;
+type ChildIterator = (callback: (child: AstPath<AstroNode>, index: number) => void, key: string) => void;
 
 interface Item {
 	node: AstroNode;
+	index: number;
 	words: string[] | null;
 	doc: Doc;
 }
+
+/** Passed to a child so it withholds its closing `>` for the next sibling to carry onto its line. */
+export const lends = 'lends-closing-bracket';
 
 function docFor(separator: Separator): Doc | null {
 	switch (separator) {
@@ -42,7 +46,7 @@ function collect(children: AstroNode[], docs: Doc[]): { items: Item[]; runs: str
 	for (const [index, child] of children.entries()) {
 		if (child.type !== 'JSXText') {
 			runs.push(pending);
-			items.push({ node: child, words: null, doc: docs[index] });
+			items.push({ node: child, index, words: null, doc: docs[index] });
 			pending = '';
 			continue;
 		}
@@ -56,6 +60,7 @@ function collect(children: AstroNode[], docs: Doc[]): { items: Item[]; runs: str
 		runs.push(pending + lead);
 		items.push({
 			node: child,
+			index,
 			words: raw.slice(lead.length, raw.length - trail.length).split(whitespaceRun),
 			doc: '',
 		});
@@ -73,12 +78,11 @@ export function printChildren(
 	mode?: 'fill' | 'loose',
 ): Doc {
 	const container = path.node;
-	const docs: Doc[] = [];
-	(path as AstPath<AstroNode> & { each: ChildIterator }).each((child) => {
-		docs.push(child.node.type === 'JSXText' ? '' : print());
-	}, 'astroChildren');
-
-	const { items, runs } = collect(container.astroChildren as AstroNode[], docs);
+	const children = container.astroChildren as AstroNode[];
+	const { items, runs } = collect(
+		children,
+		children.map(() => ''),
+	);
 	// `resolveBlankContainers` already decided whether whitespace-only content survives.
 	if (items.length === 0) return runs[0] === '' ? '' : ' ';
 
@@ -103,6 +107,26 @@ export function printChildren(
 			),
 		);
 
+	// A gap with no whitespace to spend can still break, by carrying the previous tag's `>` down with it.
+	const lenders = new Set<number>();
+	for (let position = 1; position < items.length; position++) {
+		const previous = items[position - 1].node;
+		if (separatorAt(position, false) !== null) continue;
+		if (previous.type !== 'JSXElement' || !previous.closingElement) continue;
+		if (opensRawSubtree(previous)) continue;
+		lenders.add(position);
+	}
+
+	const lending = new Set([...lenders].map((position) => items[position - 1].index));
+	const printed = new Map<number, Doc>();
+	(path as AstPath<AstroNode> & { each: ChildIterator }).each((child, index) => {
+		if (child.node.type === 'JSXText') return;
+		printed.set(index, print(undefined, lending.has(index) ? lends : undefined));
+	}, 'astroChildren');
+	for (const item of items) {
+		if (item.words === null) item.doc = printed.get(item.index) ?? '';
+	}
+
 	const parts: Doc[] = [''];
 	const append = (content: Doc) => parts.push([parts.pop()!, content]);
 	const separate = (separator: Doc | null) => {
@@ -110,7 +134,12 @@ export function printChildren(
 	};
 
 	for (const [position, item] of items.entries()) {
-		if (position > 0) separate(separatorAt(position, false));
+		if (position > 0) {
+			if (lenders.has(position)) {
+				parts.push(softline, '');
+				append('>');
+			} else separate(separatorAt(position, false));
+		}
 		if (item.words === null) {
 			append(item.doc);
 			continue;
