@@ -132,7 +132,8 @@ export function separatorFor(
 	if (boundary.edge) {
 		// Text reflows to fit, but a break beside an element is the author's layout: prettier's HTML printer keeps it.
 		const besideElement = !isText(boundary.prev ?? boundary.next);
-		if (free) return hasNewline(run) && besideElement ? 'break' : 'soft';
+		if (hasNewline(run) && besideElement) return 'break';
+		if (free) return 'soft';
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
