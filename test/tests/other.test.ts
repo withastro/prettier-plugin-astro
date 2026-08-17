@@ -148,3 +148,5 @@ test(
 	files,
 	'other/frontmatter-leading-whitespace',
 );
+
+test('Can format expressions with parenthesized types', files, 'other/parenthesized-type');
