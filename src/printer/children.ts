@@ -4,6 +4,7 @@ import type { AstroNode } from '../ast';
 import { type Separator, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
+const { willBreak } = doc.utils;
 
 const leadingWhitespace = /^[\t\n\f\r ]+/;
 const trailingWhitespace = /[\t\n\f\r ]+$/;
@@ -122,5 +123,10 @@ export function printChildren(
 
 	const body = fill(parts);
 	if (isRoot) return body;
-	return group([indent([separatorAt(0, true) ?? '', body]), separatorAt(items.length, true) ?? '']);
+	// Our children are their own group, so a multi-line opening tag would otherwise leave them hugging it.
+	const shouldBreak = container.openingElement !== undefined && willBreak(print('openingElement'));
+	return group(
+		[indent([separatorAt(0, true) ?? '', body]), separatorAt(items.length, true) ?? ''],
+		{ shouldBreak },
+	);
 }
