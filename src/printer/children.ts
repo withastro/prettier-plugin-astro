@@ -75,7 +75,7 @@ export function printChildren(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
-	mode?: 'fill' | 'loose',
+	mode?: 'fill' | 'fill-lending' | 'loose',
 ): Doc {
 	const container = path.node;
 	const children = container.astroChildren as AstroNode[];
@@ -118,6 +118,7 @@ export function printChildren(
 	}
 
 	const lending = new Set([...lenders].map((position) => items[position - 1].index));
+	if (mode === 'fill-lending') lending.add(items.at(-1)!.index);
 	const printed = new Map<number, Doc>();
 	(path as AstPath<AstroNode> & { each: ChildIterator }).each((child, index) => {
 		if (child.node.type === 'JSXText') return;
@@ -151,7 +152,7 @@ export function printChildren(
 	}
 
 	const body = fill(parts);
-	if (isRoot || mode === 'fill') return body;
+	if (isRoot || mode === 'fill' || mode === 'fill-lending') return body;
 
 	const content: Doc = [
 		indent([separatorAt(0, true) ?? '', body]),

@@ -120,15 +120,35 @@ function printWithDanglingBrackets(
 	if (contents.at(-1) !== '>') return null;
 
 	const tag = (node.closingElement as AstroNode).name as AstroNode;
+	const head = { ...opening, contents: contents.slice(0, -1) } as Doc;
+	const body = print(['children', 0], 'fill');
+	const shouldBreak = forcesBreak(node);
+
+	// A self-closing last child lends its own `/>` instead, keeping our closing tag whole.
+	if (isSelfClosing(children.at(-1)!)) {
+		const lentBody = print(['children', 0], 'fill-lending');
+		return group([head, indent([softline, '>', lentBody]), line, '/>', `</${tag.name}>`], {
+			shouldBreak,
+		});
+	}
 	return group(
-		[
-			{ ...opening, contents: contents.slice(0, -1) } as Doc,
-			indent([softline, '>', print(['children', 0], 'fill'), '</', tag.name as string]),
-			softline,
-			lending ? '' : '>',
-		],
-		{ shouldBreak: forcesBreak(node) },
+		[head, indent([softline, '>', body, '</', tag.name as string]), softline, lending ? '' : '>'],
+		{ shouldBreak },
 	);
+}
+
+const isSelfClosing = (node: AstroNode): boolean =>
+	node.type === 'JSXElement' && !node.closingElement;
+
+// The lender drops the space or line before its `/>` too: the borrower supplies its own.
+function withoutSelfClosingMarker(printed: Doc): Doc {
+	if (Array.isArray(printed)) {
+		return printed.at(-1) === ' />' ? printed.slice(0, -1) : printed;
+	}
+	const tag = printed as { type?: string; contents?: Doc[] };
+	if (tag.type !== 'group' || !Array.isArray(tag.contents)) return printed;
+	if (tag.contents.at(-1) !== '/>') return printed;
+	return { ...tag, contents: tag.contents.slice(0, -2) } as Doc;
 }
 
 const startsWithSpace = (child: AstroNode): boolean =>
@@ -178,6 +198,9 @@ export const printer = {
 		if (node.type === 'JSXOpeningElement' && options.astroCompressHTML !== 'jsx') {
 			const opening = printBreakableOpeningTag(path, options, print);
 			if (opening) return opening;
+		}
+		if (node.type === 'JSXElement' && args === lends && isSelfClosing(node)) {
+			return withoutSelfClosingMarker(print('openingElement'));
 		}
 		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
 			const dangling = printWithDanglingBrackets(path, options, print, args === lends);
