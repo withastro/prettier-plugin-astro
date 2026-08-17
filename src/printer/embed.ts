@@ -1,7 +1,7 @@
 import type { AstPath, BuiltInParserName, Doc, Options, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
 import { SassFormatter, type SassFormatterConfig } from 'sass-formatter';
-import { type AstroNode, attributeStringValue, tagNameOf } from '../ast';
+import { type AstroNode, attributeStringValue, attributesOf, tagNameOf } from '../ast';
 import { estree } from '../estree';
 import { opensRawSubtree } from '../whitespace';
 import { manualDedent } from './utils';
@@ -51,6 +51,16 @@ function inferParserByTypeAttribute(type: string | null): BuiltInParserName {
 			}
 			return 'babel-ts';
 	}
+}
+
+function inferScriptParser(node: AstroNode): BuiltInParserName {
+	// Astro only processes scripts carrying no attribute other than `src`, and those are TypeScript.
+	const processed = attributesOf(node).every(
+		(attribute) =>
+			attribute.type === 'JSXAttribute' && (attribute.name as AstroNode).name === 'src',
+	);
+	if (processed) return 'babel-ts';
+	return inferParserByTypeAttribute(attributeStringValue(node, 'type'));
 }
 
 function contentOf(node: AstroNode, options: ParserOptions): string {
@@ -106,7 +116,7 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 
 	if (tag === 'script') {
 		if (isEmpty) return estree.embed(path, options);
-		const parser = inferParserByTypeAttribute(attributeStringValue(node, 'type'));
+		const parser = inferScriptParser(node);
 		return async (textToDoc: TextToDoc, print: PrintFn) =>
 			wrapContent(print, await surfacingErrors(textToDoc, source, { ...options, parser }), false);
 	}
