@@ -1,7 +1,7 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
 import type { AstroNode } from '../ast';
-import { type Separator, breaksChildren, separatorFor } from '../whitespace';
+import { type Separator, forcesBreak, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
 const { willBreak } = doc.utils;
@@ -125,7 +125,7 @@ export function printChildren(
 	if (isRoot) return body;
 	// Our children are their own group, so a multi-line opening tag would otherwise leave them hugging it.
 	const shouldBreak =
-		breaksChildren(container) ||
+		forcesBreak(container) ||
 		(container.openingElement !== undefined && willBreak(print('openingElement')));
 	return group(
 		[indent([separatorAt(0, true) ?? '', body]), separatorAt(items.length, true) ?? ''],

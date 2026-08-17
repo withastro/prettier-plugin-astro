@@ -63,6 +63,16 @@ export function breaksChildren(node: AstroNode): boolean {
 	return display.startsWith('table') && display !== 'table-cell';
 }
 
+const hasElementChild = (node: AstroNode): boolean =>
+	childrenOf(node)?.some((child) => child.type === 'JSXElement') ?? false;
+
+// Inline containers are left out: breaking one adds a rendered space unless the tag brackets dangle.
+export function forcesBreak(node: AstroNode): boolean {
+	if (breaksChildren(node)) return true;
+	if (!isBlockBox(node)) return false;
+	return childrenOf(node)?.some(hasElementChild) ?? false;
+}
+
 export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
 
 export interface PrinterBoundary {
