@@ -1,5 +1,16 @@
 # prettier-plugin-astro
 
+## 1.0.0-beta.1
+
+### Major Changes
+
+- a8bf1a3: Raises the minimum supported Node version to 22.12.0.
+
+### Patch Changes
+
+- b0ec799: Fixes `<script>` tags being formatted as JavaScript instead of TypeScript
+- 04ecfe2: Fixes a crash on parenthesized types in template expressions
+
 ## 1.0.0-beta.0
 
 ### Major Changes
