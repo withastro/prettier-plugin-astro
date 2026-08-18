@@ -13,7 +13,7 @@ import {
 	walk,
 } from './ast';
 import { rawTextElements, voidElements } from './elements';
-import { printClassNames } from './printer/utils';
+import { normalizeSrcset, printClassNames } from './printer/utils';
 import {
 	blankContentIsFree,
 	normalizeWhitespace,
@@ -38,7 +38,7 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 
 	stripParentheses(ast);
 	repairSpans(ast);
-	markAttributes(ast, source, options.astroCompressHTML !== 'jsx');
+	markAttributes(ast, source);
 	markSvgNamespace(ast);
 	applyPrettierIgnore(ast);
 
@@ -106,7 +106,7 @@ function repairSpans(root: AstroNode): void {
 	});
 }
 
-function markAttributes(root: AstroNode, source: string, listAttributes: boolean): void {
+function markAttributes(root: AstroNode, source: string): void {
 	walk(root, (node) => {
 		if (node.type !== 'JSXAttribute') return;
 		const value = node.value as AstroNode | null;
@@ -118,8 +118,8 @@ function markAttributes(root: AstroNode, source: string, listAttributes: boolean
 			const text =
 				name === 'class'
 					? printClassNames(value.value)
-					: listAttributes && (name === 'srcset' || name === 'sizes')
-						? value.value.replace(/\s+/g, ' ').trim()
+					: name === 'srcset' || name === 'sizes'
+						? normalizeSrcset(value.value)
 						: value.value;
 			if (value.raw === null || text !== value.value) {
 				value.value = text;

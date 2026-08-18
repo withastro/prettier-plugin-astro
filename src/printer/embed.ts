@@ -7,7 +7,7 @@ import { opensRawSubtree } from '../whitespace';
 import { manualDedent } from './utils';
 
 const { group, hardline, indent, join, softline } = doc.builders;
-const { replaceEndOfLine } = doc.utils;
+const { removeLines, replaceEndOfLine } = doc.utils;
 
 type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
@@ -114,7 +114,7 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 		];
 	}
 
-	if (node.type === 'JSXAttribute' && options.astroCompressHTML !== 'jsx') {
+	if (node.type === 'JSXAttribute') {
 		const style = styleAttributeValue(node);
 		if (style !== null) {
 			return async (textToDoc: TextToDoc) => {
@@ -124,6 +124,8 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 					parser: 'css',
 					__isHTMLStyleAttribute: true,
 				} as Options);
+				// Normalising the value is safe anywhere; spreading it over lines is a layout call.
+				if (options.astroCompressHTML === 'jsx') return ['style="', removeLines(declarations), '"'];
 				return ['style="', group([indent([softline, declarations]), softline]), '"'];
 			};
 		}

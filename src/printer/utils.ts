@@ -42,13 +42,23 @@ export function manualDedent(input: string): {
 	};
 }
 
-/** Mirrors prettier's HTML printer, which columns the descriptors up once the list is spread out. */
-export function printSrcset(value: string): Doc {
-	const entries = value
+const srcsetEntries = (value: string) =>
+	value
 		.split(',')
 		.map((entry) => entry.trim().split(/\s+/))
-		.filter(([url]) => url !== '')
-		.map(([url, ...rest]) => ({ url, descriptor: rest.join(' ') }));
+		.filter(([url]) => url !== '');
+
+export const normalizeSrcset = (value: string): string =>
+	srcsetEntries(value)
+		.map((parts) => parts.join(' '))
+		.join(', ');
+
+/** Mirrors prettier's HTML printer, which columns the descriptors up once the list is spread out. */
+export function printSrcset(value: string): Doc {
+	const entries = srcsetEntries(value).map(([url, ...rest]) => ({
+		url,
+		descriptor: rest.join(' '),
+	}));
 	if (entries.length === 0) return value;
 
 	const widest = Math.max(...entries.map((entry) => entry.url.length));

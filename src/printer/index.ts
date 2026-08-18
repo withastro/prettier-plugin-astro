@@ -68,6 +68,7 @@ function printAttribute(
 
 	if (node.astroBacktick) return [name, '=', print(['value', 'expression'])];
 
+	// The value is already normalised by the parser; only spreading it over lines is a layout call.
 	if (
 		options.astroCompressHTML !== 'jsx' &&
 		(name === 'srcset' || name === 'sizes') &&
