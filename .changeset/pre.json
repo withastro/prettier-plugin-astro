@@ -1,10 +1,4 @@
 {
   "mode": "pre",
-  "tag": "beta",
-  "initialVersions": {
-    "prettier-plugin-astro": "0.14.2"
-  },
-  "changesets": [
-    "pink-donkeys-shave"
-  ]
+  "tag": "beta"
 }

@@ -1,5 +1,4 @@
 import type { Printer } from 'prettier';
-// @ts-expect-error prettier does not ship types for its bundled printers
 import { printers } from 'prettier/plugins/estree';
 
 export const estree = (printers as Record<string, Printer>).estree as Printer & {

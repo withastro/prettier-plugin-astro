@@ -2,7 +2,8 @@ import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/return/*/*', {
 	eager: true,
-	as: 'raw',
+	query: '?raw',
+	import: 'default',
 });
 
 test('Can format an Astro file with top-level return', files, 'return/return-basic');

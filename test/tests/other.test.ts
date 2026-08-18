@@ -3,7 +3,8 @@ import { test } from '../test-utils';
 const files = {
 	...import.meta.glob('/test/fixtures/other/*/*', {
 		eager: true,
-		as: 'raw',
+		query: '?raw',
+		import: 'default',
 	}),
 	...import.meta.glob('/test/fixtures/other/*/*.js', {
 		eager: true,

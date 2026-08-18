@@ -1,66 +1,71 @@
 {
   "name": "prettier-plugin-astro",
   "version": "1.0.0-beta.0",
-  "type": "module",
   "description": "A Prettier Plugin for formatting Astro files",
-  "main": "dist/index.js",
-  "files": [
-    "dist/**",
-    "workers/*"
-  ],
-  "engines": {
-    "node": "^14.15.0 || >=16.0.0"
-  },
-  "packageManager": "pnpm@8.6.2",
-  "homepage": "https://github.com/withastro/prettier-plugin-astro/",
-  "issues": {
-    "url": "https://github.com/withastro/prettier-plugin-astro/issues"
-  },
-  "license": "MIT",
   "keywords": [
     "prettier-plugin",
     "prettier",
     "astro",
     "formatter"
   ],
+  "homepage": "https://github.com/withastro/prettier-plugin-astro/",
+  "bugs": {
+    "url": "https://github.com/withastro/prettier-plugin-astro/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/withastro/prettier-plugin-astro.git"
+    "url": "git+https://github.com/withastro/prettier-plugin-astro.git"
   },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
+    "format": "pnpm run format:code && pnpm run format:imports",
+    "format:ci": "pnpm run format:code:ci && pnpm run format:imports:ci",
+    "format:code": "biome format --write",
+    "format:code:ci": "biome format",
+    "format:imports": "biome check --formatter-enabled=false --write",
+    "format:imports:ci": "biome ci --formatter-enabled=false",
+    "lint": "biome lint && eslint --cache",
+    "lint:ci": "biome ci --formatter-enabled=false --enforce-assist=false --reporter=github && eslint --cache",
+    "lint:fix": "biome lint --write --unsafe && eslint --cache --fix",
+    "release": "pnpm build && changeset publish",
     "test": "vitest run",
-    "test:watch": "vitest -w",
     "test:ui": "vitest --ui",
-    "lint": "eslint .",
-    "lint:fix": "pnpm lint --fix",
-    "format": "biome format --write",
-    "release": "pnpm build && changeset publish"
+    "test:watch": "vitest -w",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/compiler-rs": "^0.4.0",
-    "sass-formatter": "^0.7.6"
+    "sass-formatter": "^0.8.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.8",
+    "@changesets/cli": "^3.0.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/node": "^26.2.0",
+    "@vitest/ui": "^4.1.10",
+    "eslint": "^10.8.1",
+    "eslint-plugin-regexp": "^3.2.0",
+    "prettier": "3.9.6",
+    "rollup": "^4.62.4",
+    "tslib": "^2.8.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vite": "^8.2.1",
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "prettier": "^3.5.3"
   },
-  "devDependencies": {
-    "@biomejs/biome": "1.8.1",
-    "prettier": "3.5.3",
-    "@changesets/cli": "^2.26.1",
-    "@rollup/plugin-commonjs": "^25.0.0",
-    "@rollup/plugin-typescript": "^11.1.1",
-    "@types/node": "^20.2.5",
-    "@vitest/ui": "^0.31.3",
-    "eslint": "^9.8.0",
-    "eslint-plugin-prettier-doc": "^1.1.0",
-    "eslint-plugin-regexp": "^2.6.0",
-    "rollup": "^3.23.0",
-    "tslib": "^2.5.2",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.1",
-    "vite": "^4.4.3",
-    "vitest": "^0.31.3"
+  "packageManager": "pnpm@11.21.0",
+  "engines": {
+    "node": ">=22.12.0"
   }
 }

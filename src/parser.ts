@@ -2,11 +2,11 @@ import { parse as parseAstro } from '@astrojs/compiler-rs';
 import type { ParserOptions } from 'prettier';
 import {
 	type AstroNode,
-	type JsComment,
 	childrenOf,
 	hasSetDirective,
 	isComponentName,
 	isNode,
+	type JsComment,
 	synthetic,
 	tagNameOf,
 	takeOverChildren,
@@ -15,10 +15,10 @@ import {
 import { rawTextElements, voidElements } from './elements';
 import { printClassNames } from './printer/utils';
 import {
-	type Settings,
 	blankContentIsFree,
 	normalizeWhitespace,
 	opensRawSubtree,
+	type Settings,
 } from './whitespace';
 
 interface Diagnostic {
@@ -214,8 +214,7 @@ function resolveBlankContainers(template: AstroNode, settings: Settings): void {
 		);
 		if (!blank) return;
 
-		const run = children.map((child) => String(child.raw ?? '')).join('');
-		const free = blankContentIsFree(node, run, node.astroRoot === true, settings);
+		const free = blankContentIsFree(node, node.astroRoot === true, settings);
 		children.length = 0;
 		if (!free) {
 			children.push({ type: 'JSXText', start: node.start, end: node.start, raw: ' ', value: ' ' });

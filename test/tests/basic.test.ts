@@ -2,7 +2,8 @@ import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/basic/*/*', {
 	eager: true,
-	as: 'raw',
+	query: '?raw',
+	import: 'default',
 });
 
 test('Can format a basic astro file', files, 'basic/basic-html');

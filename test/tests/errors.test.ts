@@ -3,7 +3,8 @@ import { format } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/errors/**/*', {
 	eager: true,
-	as: 'raw',
+	query: '?raw',
+	import: 'default',
 });
 
 function getFile(allFiles: any, path: string): string {

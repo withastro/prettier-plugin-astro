@@ -2,7 +2,8 @@ import { test } from '../test-utils';
 
 const files = import.meta.glob('/test/fixtures/markdown/*/*', {
 	eager: true,
-	as: 'raw',
+	query: '?raw',
+	import: 'default',
 });
 
 test(
