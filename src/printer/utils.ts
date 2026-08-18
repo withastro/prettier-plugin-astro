@@ -1,3 +1,8 @@
+import type { Doc } from 'prettier';
+import { doc } from 'prettier';
+
+const { group, ifBreak, indent, join, line, softline } = doc.builders;
+
 /** dedent string & return tabSize (the last part is what we need) */
 export function manualDedent(input: string): {
 	tabSize: number;
@@ -11,14 +16,14 @@ export function manualDedent(input: string): {
 
 	// 2. count tabSize
 	let char = '';
-	for (const line of result.split('\n')) {
-		if (!line) continue;
+	for (const row of result.split('\n')) {
+		if (!row) continue;
 		// if any line begins with a non-whitespace char, minTabSize is 0
-		if (line[0] && /^\S/.test(line[0])) {
+		if (row[0] && /^\S/.test(row[0])) {
 			minTabSize = 0;
 			break;
 		}
-		const match = /^(\s+)\S+/.exec(line); // \S ensures we don’t count lines of pure whitespace
+		const match = /^(\s+)\S+/.exec(row); // \S ensures we don’t count lines of pure whitespace
 		if (match) {
 			if (match[1] && !char) char = match[1][0];
 			if (match[1].length < minTabSize) minTabSize = match[1].length;
@@ -37,11 +42,30 @@ export function manualDedent(input: string): {
 	};
 }
 
+/** Mirrors prettier's HTML printer, which columns the descriptors up once the list is spread out. */
+export function printSrcset(value: string): Doc {
+	const entries = value
+		.split(',')
+		.map((entry) => entry.trim().split(/\s+/))
+		.filter(([url]) => url !== '')
+		.map(([url, ...rest]) => ({ url, descriptor: rest.join(' ') }));
+	if (entries.length === 0) return value;
+
+	const widest = Math.max(...entries.map((entry) => entry.url.length));
+	const widestDescriptor = Math.max(...entries.map((entry) => entry.descriptor.length));
+	const printed = entries.map(({ url, descriptor }) => {
+		if (descriptor === '') return url;
+		const padding = widest - url.length + 1 + (widestDescriptor - descriptor.length);
+		return [url, ifBreak(' '.repeat(padding), ' '), descriptor];
+	});
+	return group([indent([softline, join([',', line], printed)]), softline]);
+}
+
 export function printClassNames(value: string): string {
 	const lines = value.trim().split(/[\r\n]+/);
-	const formattedLines = lines.map((line) => {
-		const spaces = /^\s+/.exec(line);
-		return (spaces ? spaces[0] : '') + line.trim().split(/\s+/).join(' ');
+	const formattedLines = lines.map((row) => {
+		const spaces = /^\s+/.exec(row);
+		return (spaces ? spaces[0] : '') + row.trim().split(/\s+/).join(' ');
 	});
 	return formattedLines.join('\n');
 }

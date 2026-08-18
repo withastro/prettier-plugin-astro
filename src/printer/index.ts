@@ -5,6 +5,7 @@ import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
 import { lends, printChildren } from './children';
 import { embed } from './embed';
+import { printSrcset } from './utils';
 
 const { group, hardline, indent, line, softline } = doc.builders;
 const { replaceEndOfLine } = doc.utils;
@@ -66,6 +67,16 @@ function printAttribute(
 	if (node.astroShorthand) return ['{', print(['value', 'expression']), '}'];
 
 	if (node.astroBacktick) return [name, '=', print(['value', 'expression'])];
+
+	if (
+		options.astroCompressHTML !== 'jsx' &&
+		(name === 'srcset' || name === 'sizes') &&
+		value?.type === 'Literal' &&
+		typeof value.value === 'string' &&
+		value.value.trim() !== ''
+	) {
+		return [name, '="', printSrcset(value.value), '"'];
+	}
 
 	const expression =
 		value?.type === 'JSXExpressionContainer' ? (value.expression as AstroNode) : null;

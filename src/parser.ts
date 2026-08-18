@@ -38,7 +38,7 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 
 	stripParentheses(ast);
 	repairSpans(ast);
-	markAttributes(ast, source);
+	markAttributes(ast, source, options.astroCompressHTML !== 'jsx');
 	markSvgNamespace(ast);
 	applyPrettierIgnore(ast);
 
@@ -106,7 +106,7 @@ function repairSpans(root: AstroNode): void {
 	});
 }
 
-function markAttributes(root: AstroNode, source: string): void {
+function markAttributes(root: AstroNode, source: string, listAttributes: boolean): void {
 	walk(root, (node) => {
 		if (node.type !== 'JSXAttribute') return;
 		const value = node.value as AstroNode | null;
@@ -114,7 +114,13 @@ function markAttributes(root: AstroNode, source: string): void {
 
 		if (value.type === 'Literal' && typeof value.value === 'string') {
 			const name = (node.name as AstroNode).name;
-			const text = name === 'class' ? printClassNames(value.value) : value.value;
+			// A newline left in the value makes prettier expand the whole tag, so spend it before printing.
+			const text =
+				name === 'class'
+					? printClassNames(value.value)
+					: listAttributes && (name === 'srcset' || name === 'sizes')
+						? value.value.replace(/\s+/g, ' ').trim()
+						: value.value;
 			if (value.raw === null || text !== value.value) {
 				value.value = text;
 				value.raw = `"${text.replaceAll('"', '&quot;')}"`;
