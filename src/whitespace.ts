@@ -86,9 +86,7 @@ export function sitsOnItsOwnLine(container: AstroNode, child: AstroNode | null):
 	const children = childrenOf(container);
 	const index = children?.indexOf(child) ?? -1;
 	if (index === -1) return false;
-	return (
-		hasNewline(runBefore(children![index - 1])) && hasNewline(runAfter(children![index + 1]))
-	);
+	return hasNewline(runBefore(children![index - 1])) && hasNewline(runAfter(children![index + 1]));
 }
 
 const hasChildOnItsOwnLine = (node: AstroNode): boolean =>

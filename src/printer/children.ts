@@ -1,7 +1,7 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
 import type { AstroNode } from '../ast';
-import { type Separator, forcesBreak, opensRawSubtree, separatorFor } from '../whitespace';
+import { forcesBreak, opensRawSubtree, type Separator, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
 
@@ -10,7 +10,10 @@ const trailingWhitespace = /[\t\n\f\r ]+$/;
 const whitespaceRun = /[\t\n\f\r ]+/;
 
 type PrintFn = (selector?: string | number | (string | number)[], args?: unknown) => Doc;
-type ChildIterator = (callback: (child: AstPath<AstroNode>, index: number) => void, key: string) => void;
+type ChildIterator = (
+	callback: (child: AstPath<AstroNode>, index: number) => void,
+	key: string,
+) => void;
 
 interface Item {
 	node: AstroNode;

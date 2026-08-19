@@ -116,7 +116,6 @@ function printBreakableOpeningTag(
 // Breaking an inline element beside its content renders as an added space; moving the brackets does not.
 function printWithDanglingBrackets(
 	path: AstPath<AstroNode>,
-	options: ParserOptions,
 	print: PrintFn,
 	lending: boolean,
 ): Doc | null {
@@ -196,7 +195,9 @@ export const printer = {
 	print(path: AstPath<AstroNode>, options: ParserOptions, print: PrintFn, args?: unknown): Doc {
 		const node = path.node;
 		if (node[ownChildren]) {
-			return path.callParent(() => printChildren(path, options, print, args as 'fill' | 'loose' | undefined));
+			return path.callParent(() =>
+				printChildren(path, options, print, args as 'fill' | 'loose' | undefined),
+			);
 		}
 		if (node[synthetic]) return '';
 		if (node.astroIgnored) {
@@ -215,7 +216,7 @@ export const printer = {
 			return withoutSelfClosingMarker(print('openingElement'));
 		}
 		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
-			const dangling = printWithDanglingBrackets(path, options, print, args === lends);
+			const dangling = printWithDanglingBrackets(path, print, args === lends);
 			if (dangling) return dangling;
 			const tag = ((node.closingElement as AstroNode).name as AstroNode).name as string;
 			return group(
