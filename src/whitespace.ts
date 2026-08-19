@@ -28,6 +28,7 @@ const trailingWhitespace = /[\t\n\f\r ]+$/;
 const hasNewline = (run: string) => /[\n\r]/.test(run);
 
 const isText = (node: AstroNode | null) => node?.type === 'JSXText';
+const isComment = (node: AstroNode | null) => node?.type === 'AstroComment';
 const rawTextOf = (node: AstroNode) => (node.raw as string | undefined) ?? '';
 const isWhitespaceOnly = (node: AstroNode) => isText(node) && rawTextOf(node).trim().length === 0;
 
@@ -46,7 +47,56 @@ function displayOf(node: AstroNode): string {
 	if (node.type !== 'JSXElement') return 'inline';
 	const tag = tagNameOf(node);
 	if (tag === null || isComponentName(tag) || tag.includes('-')) return 'inline';
+	if (node.astroSvg) return tag === 'svg' ? 'inline-block' : 'block';
 	return displayOfTag(tag);
+}
+
+const isBlockBox = (node: AstroNode | null): boolean =>
+	node !== null && node.type !== 'JSXText' && !isInlineDisplay(displayOf(node));
+
+// An inline-block sits inline but lays its content out separately, so its own edges never render whitespace.
+export const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
+	const display = displayOf(node);
+	return display === 'inline-block' || !isInlineDisplay(display);
+};
+
+const breaksOwnChildren = new Set(['html', 'head', 'body', 'ul', 'ol', 'select']);
+
+/** Mirrors prettier's HTML printer: these lay their children out one per line however they were written. */
+export function breaksChildren(node: AstroNode): boolean {
+	const tag = node.type === 'JSXElement' ? tagNameOf(node) : null;
+	if (tag === null || isComponentName(tag)) return false;
+	if (breaksOwnChildren.has(tag)) return true;
+	const display = displayOfTag(tag);
+	return display.startsWith('table') && display !== 'table-cell';
+}
+
+const hasElementChild = (node: AstroNode): boolean =>
+	childrenOf(node)?.some((child) => child.type === 'JSXElement') ?? false;
+
+const runBefore = (node: AstroNode | undefined) =>
+	node && isText(node) ? (trailingWhitespace.exec(rawTextOf(node))?.[0] ?? '') : '';
+
+const runAfter = (node: AstroNode | undefined) =>
+	node && isText(node) ? (leadingWhitespace.exec(rawTextOf(node))?.[0] ?? '') : '';
+
+// An element the author gave a line of its own keeps it, however narrow it is. Text always reflows.
+export function sitsOnItsOwnLine(container: AstroNode, child: AstroNode | null): boolean {
+	if (child === null || isText(child)) return false;
+	const children = childrenOf(container);
+	const index = children?.indexOf(child) ?? -1;
+	if (index === -1) return false;
+	return hasNewline(runBefore(children![index - 1])) && hasNewline(runAfter(children![index + 1]));
+}
+
+const hasChildOnItsOwnLine = (node: AstroNode): boolean =>
+	childrenOf(node)?.some((child) => sitsOnItsOwnLine(node, child)) ?? false;
+
+export function forcesBreak(node: AstroNode): boolean {
+	if (breaksChildren(node)) return true;
+	const children = childrenOf(node);
+	if (children === null) return false;
+	return children.some(hasElementChild) || hasChildOnItsOwnLine(node);
 }
 
 export type Separator = 'none' | 'soft' | 'space' | 'break' | 'blank';
@@ -120,8 +170,19 @@ export function separatorFor(
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
-	if (hasNewline(run)) return 'break';
-	if (free) return 'soft';
+	// Between inline neighbours a newline and a space render alike, so it is free to reflow.
+	if (
+		hasNewline(run) &&
+		(settings.sensitivity === 'strict' ||
+			sitsOnItsOwnLine(boundary.container, boundary.prev) ||
+			sitsOnItsOwnLine(boundary.container, boundary.next))
+	) {
+		return 'break';
+	}
+	// Whitespace beside a comment is spent on a line break, so the comment reads as its own remark.
+	if (run !== '' && (isComment(boundary.prev) || isComment(boundary.next))) return 'break';
+	// A block box swallows the whitespace beside it, so prettier's HTML printer spends it on a line of its own.
+	if (free) return isBlockBox(boundary.prev) || isBlockBox(boundary.next) ? 'break' : 'soft';
 	return run === '' ? 'none' : 'space';
 }
 
@@ -253,10 +314,10 @@ function isFree(boundary: Boundary): boolean {
 
 	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
 	if (loneChild && tag !== null && isComponentName(tag)) return true;
+	if (breaksChildren(container)) return true;
 
 	if (mode === 'html') {
 		if (loneChild) return true;
-		if (tag === 'head') return true;
 	}
 
 	return false;
@@ -267,7 +328,10 @@ function mayAlterRenderedWhitespace(boundary: Boundary): boolean {
 	const { sensitivity } = boundary.context;
 	if (sensitivity === 'ignore') return true;
 	if (sensitivity === 'strict') return false;
-	return boundary.sides.every((side) => !isInlineDisplay(displayOf(side ?? boundary.container)));
+	// One block box is enough: it swallows the whitespace on its side whatever the other neighbour is.
+	return boundary.sides.some((side) =>
+		side === null ? swallowsEdgeWhitespace(boundary.container) : isBlockBox(side),
+	);
 }
 
 /** Any content at all, whitespace included, gives a `<slot>` a fallback body; nothing gives none. */

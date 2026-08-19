@@ -6,8 +6,8 @@ import { estree } from '../estree';
 import { opensRawSubtree } from '../whitespace';
 import { manualDedent } from './utils';
 
-const { group, hardline, indent, join } = doc.builders;
-const { replaceEndOfLine } = doc.utils;
+const { group, hardline, indent, join, softline } = doc.builders;
+const { removeLines, replaceEndOfLine } = doc.utils;
 
 type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
@@ -63,6 +63,13 @@ function inferScriptParser(node: AstroNode): BuiltInParserName {
 	return inferParserByTypeAttribute(attributeStringValue(node, 'type'));
 }
 
+function styleAttributeValue(node: AstroNode): string | null {
+	if ((node.name as AstroNode).name !== 'style') return null;
+	const value = node.value as AstroNode | null;
+	if (value?.type !== 'Literal' || typeof value.value !== 'string') return null;
+	return value.value.trim() === '' ? null : value.value;
+}
+
 function contentOf(node: AstroNode, options: ParserOptions): string {
 	const start = (node.openingElement as AstroNode).end;
 	const end = (node.closingElement as AstroNode | null)?.start ?? node.end;
@@ -105,6 +112,23 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 			hardline,
 			'---',
 		];
+	}
+
+	if (node.type === 'JSXAttribute') {
+		const style = styleAttributeValue(node);
+		if (style !== null) {
+			return async (textToDoc: TextToDoc) => {
+				// The flag makes prettier's CSS printer emit a declaration list rather than a stylesheet.
+				const declarations = await textToDoc(style, {
+					...options,
+					parser: 'css',
+					__isHTMLStyleAttribute: true,
+				} as Options);
+				// Normalising the value is safe anywhere; spreading it over lines is a layout call.
+				if (options.astroCompressHTML === 'jsx') return ['style="', removeLines(declarations), '"'];
+				return ['style="', group([indent([softline, declarations]), softline]), '"'];
+			};
+		}
 	}
 
 	if (node.type !== 'JSXElement') return estree.embed(path, options);

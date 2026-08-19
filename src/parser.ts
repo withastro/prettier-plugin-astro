@@ -13,7 +13,7 @@ import {
 	walk,
 } from './ast';
 import { rawTextElements, voidElements } from './elements';
-import { printClassNames } from './printer/utils';
+import { normalizeSrcset, printClassNames } from './printer/utils';
 import {
 	blankContentIsFree,
 	normalizeWhitespace,
@@ -39,6 +39,7 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 	stripParentheses(ast);
 	repairSpans(ast);
 	markAttributes(ast, source);
+	markSvgNamespace(ast);
 	applyPrettierIgnore(ast);
 
 	const body = ast.body as AstroNode[];
@@ -113,7 +114,13 @@ function markAttributes(root: AstroNode, source: string): void {
 
 		if (value.type === 'Literal' && typeof value.value === 'string') {
 			const name = (node.name as AstroNode).name;
-			const text = name === 'class' ? printClassNames(value.value) : value.value;
+			// A newline left in the value makes prettier expand the whole tag, so spend it before printing.
+			const text =
+				name === 'class'
+					? printClassNames(value.value)
+					: name === 'srcset' || name === 'sizes'
+						? normalizeSrcset(value.value)
+						: value.value;
 			if (value.raw === null || text !== value.value) {
 				value.value = text;
 				value.raw = `"${text.replaceAll('"', '&quot;')}"`;
@@ -137,6 +144,20 @@ function applyPrettierIgnore(root: AstroNode): void {
 			const target = children.slice(index + 1).find((sibling) => sibling.type !== 'JSXText');
 			if (target) target.astroIgnored = true;
 		}
+	});
+}
+
+// SVG lays its own children out, so their whitespace never renders. `foreignObject` restores HTML rules.
+function markSvgNamespace(root: AstroNode): void {
+	const mark = (node: AstroNode) => {
+		node.astroSvg = true;
+		for (const child of childrenOf(node) ?? []) {
+			if (child.type !== 'JSXElement' || tagNameOf(child) === 'foreignObject') continue;
+			mark(child);
+		}
+	};
+	walk(root, (node) => {
+		if (node.type === 'JSXElement' && tagNameOf(node) === 'svg') mark(node);
 	});
 }
 

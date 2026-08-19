@@ -17,3 +17,38 @@
 </custom-element>
 <div><slot>   </slot></div>
 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt<span>tail</span></p>
+<div>
+  <p>lone element child keeps its break</p>
+</div>
+<ul><li>a</li><li>b</li></ul>
+<table><tr><td>a</td><td>b</td></tr></table>
+<select><option>a</option><option>b</option></select>
+<div><p>a</p><p>b</p></div>
+<div><span>a</span><span>b</span></div>
+<div><section><span>deep</span></section></div>
+<span>
+  <em>inline element keeps its break</em>
+</span>
+<span><em><b>dangles</b></em></span>
+<a href="/x"><span><b>x</b></span></a>
+<span>A fairly long run of inline text that has to wrap somewhere past the print width</span>
+<button><span><b>x</b></span></button>
+<div class="aaaaaaaaaaaaaaaaaaaaaaaaaaaaa" id="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" data-x="cc">x</div>
+<div data-note="this is an extremely long attribute value that goes past the print width limit">hello</div>
+<p>before <!-- note --> after</p>
+<span>a <!-- c --> b</span>
+<p><span>a</span>
+<span>b</span></p>
+<p>
+  <span>a</span>
+  <span>b</span>
+</p>
+<p><span>a</span><span>a</span><span>a</span><span>a</span><span>a</span><span>a</span></p>
+<picture><source srcset="a.webp" /><img src="a.png" /></picture>
+<span><br /></span>
+<svg viewBox="0 0 24 24"><path d="M12 2L2 7" /><circle cx="12" cy="12" r="3" /></svg>
+<p>icon <svg><circle /></svg> here</p>
+<img srcset="a-480.png 480w, a-800.png 800w, a-1200.png 1200w, a-1600.png 1600w, a-2000.png 2000w" />
+<img srcset="a.png 1x,b.png 2x" />
+<div style="color:red;;background:blue">x</div>
+<div style="color: red; background: blue; border: 1px solid black; padding: 4px 8px">x</div>
