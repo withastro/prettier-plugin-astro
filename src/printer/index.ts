@@ -3,7 +3,7 @@ import { doc } from 'prettier';
 import { type AstroNode, astroVisitorKeys, jsxNameOf, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
-import { lends, printChildren } from './children';
+import { type ChildrenMode, lends, printChildren } from './children';
 import { embed } from './embed';
 import { printSrcset } from './utils';
 
@@ -68,7 +68,6 @@ function printAttribute(
 
 	if (node.astroBacktick) return [name, '=', print(['value', 'expression'])];
 
-	// The value is already normalised by the parser; only spreading it over lines is a layout call.
 	if (
 		options.astroCompressHTML !== 'jsx' &&
 		(name === 'srcset' || name === 'sizes') &&
@@ -137,7 +136,6 @@ function printWithDanglingBrackets(
 	const tag = jsxNameOf((node.closingElement as AstroNode).name as AstroNode);
 	if (tag === null) return null;
 	const head = { ...opening, contents: withoutBracket } as Doc;
-	const body = print(['children', 0], 'fill');
 	const shouldBreak = forcesBreak(node);
 
 	// A self-closing last child lends its own `/>` instead, keeping our closing tag whole.
@@ -148,6 +146,7 @@ function printWithDanglingBrackets(
 			{ shouldBreak },
 		);
 	}
+	const body = print(['children', 0], 'fill');
 	return group([head, indent([softline, '>', body, '</', tag]), softline, lending ? '' : '>'], {
 		shouldBreak,
 	});
@@ -201,7 +200,7 @@ export const printer = {
 		const node = path.node;
 		if (node[ownChildren]) {
 			return path.callParent(() =>
-				printChildren(path, options, print, args as 'fill' | 'loose' | undefined),
+				printChildren(path, options, print, args as ChildrenMode | undefined),
 			);
 		}
 		if (node[synthetic]) return '';

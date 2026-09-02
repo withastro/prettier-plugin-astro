@@ -49,7 +49,7 @@ function docFor(separator: Separator): Doc | null {
 }
 
 /** Runs alternate with items: `runs[i]` is the whitespace before `items[i]`, `runs[n]` the trailing. */
-function collect(children: AstroNode[], docs: Doc[]): { items: Item[]; runs: string[] } {
+function collect(children: AstroNode[]): { items: Item[]; runs: string[] } {
 	const items: Item[] = [];
 	const runs: string[] = [];
 	let pending = '';
@@ -57,7 +57,7 @@ function collect(children: AstroNode[], docs: Doc[]): { items: Item[]; runs: str
 	for (const [index, child] of children.entries()) {
 		if (child.type !== 'JSXText') {
 			runs.push(pending);
-			items.push({ node: child, index, words: null, doc: docs[index] });
+			items.push({ node: child, index, words: null, doc: '' });
 			pending = '';
 			continue;
 		}
@@ -82,18 +82,17 @@ function collect(children: AstroNode[], docs: Doc[]): { items: Item[]; runs: str
 	return { items, runs };
 }
 
+export type ChildrenMode = 'fill' | 'fill-lending' | 'loose';
+
 export function printChildren(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
-	mode?: 'fill' | 'fill-lending' | 'loose',
+	mode?: ChildrenMode,
 ): Doc {
 	const container = path.node;
 	const children = container.astroChildren as AstroNode[];
-	const { items, runs } = collect(
-		children,
-		children.map(() => ''),
-	);
+	const { items, runs } = collect(children);
 	// `resolveBlankContainers` already decided whether whitespace-only content survives.
 	if (items.length === 0) return runs[0] === '' ? '' : ' ';
 

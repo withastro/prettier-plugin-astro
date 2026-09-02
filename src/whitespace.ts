@@ -98,7 +98,7 @@ export function forcesBreak(node: AstroNode): boolean {
 	const children = childrenOf(node);
 	if (children === null) return false;
 	const tag = node.type === 'JSXElement' ? tagNameOf(node) : null;
-	if (tag !== null && !isComponentName(tag) && breaksOwnContent.has(tag)) return true;
+	if (tag !== null && breaksOwnContent.has(tag)) return true;
 	return children.some(hasElementChild) || hasChildOnItsOwnLine(node);
 }
 
