@@ -189,3 +189,9 @@ test(
 	files,
 	'other/dangling-bracket-attributes',
 );
+
+test(
+	'Leaves every run to the author under strict whitespace sensitivity',
+	files,
+	'other/strict-sensitivity-none',
+);

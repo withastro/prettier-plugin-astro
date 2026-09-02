@@ -193,8 +193,7 @@ export function separatorFor(
 	// Between inline neighbours a newline and a space render alike, so it is free to reflow.
 	if (
 		hasNewline(run) &&
-		(settings.sensitivity === 'strict' ||
-			sitsOnItsOwnLine(boundary.container, boundary.prev) ||
+		(sitsOnItsOwnLine(boundary.container, boundary.prev) ||
 			sitsOnItsOwnLine(boundary.container, boundary.next))
 	) {
 		return 'break';
@@ -337,7 +336,8 @@ function isFree(boundary: Boundary): boolean {
 
 	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
 	if (loneChild && tag !== null && isComponentName(tag)) return true;
-	if (breaksChildren(container)) return true;
+	// These lay children out themselves, but under `strict` the author still owns every run.
+	if (context.sensitivity !== 'strict' && breaksChildren(container)) return true;
 
 	if (mode === 'html') {
 		if (loneChild) return true;
