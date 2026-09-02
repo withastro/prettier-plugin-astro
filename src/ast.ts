@@ -34,6 +34,15 @@ export function tagNameOf(node: AstroNode): string | null {
 	return name?.type === 'JSXIdentifier' ? (name.name as string) : null;
 }
 
+/** A dotted name like `Astro.self` has no single identifier, so it is rebuilt from its parts. */
+export function jsxNameOf(name: AstroNode): string | null {
+	if (name.type === 'JSXIdentifier') return name.name as string;
+	if (name.type !== 'JSXMemberExpression') return null;
+	const object = jsxNameOf(name.object as AstroNode);
+	const property = jsxNameOf(name.property as AstroNode);
+	return object !== null && property !== null ? `${object}.${property}` : null;
+}
+
 export const isComponentName = (name: string | null): boolean =>
 	name === null || /^[A-Z]/.test(name) || name.includes('.');
 

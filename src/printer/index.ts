@@ -1,6 +1,6 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
-import { type AstroNode, astroVisitorKeys, ownChildren, synthetic } from '../ast';
+import { type AstroNode, astroVisitorKeys, jsxNameOf, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
 import { lends, printChildren } from './children';
@@ -130,7 +130,8 @@ function printWithDanglingBrackets(
 	const contents = opening.contents.filter((part) => part !== '');
 	if (contents.at(-1) !== '>') return null;
 
-	const tag = (node.closingElement as AstroNode).name as AstroNode;
+	const tag = jsxNameOf((node.closingElement as AstroNode).name as AstroNode);
+	if (tag === null) return null;
 	const head = { ...opening, contents: contents.slice(0, -1) } as Doc;
 	const body = print(['children', 0], 'fill');
 	const shouldBreak = forcesBreak(node);
@@ -138,14 +139,13 @@ function printWithDanglingBrackets(
 	// A self-closing last child lends its own `/>` instead, keeping our closing tag whole.
 	if (isSelfClosing(children.at(-1)!)) {
 		const lentBody = print(['children', 0], 'fill-lending');
-		return group([head, indent([softline, '>', lentBody]), line, '/>', `</${tag.name}>`], {
+		return group([head, indent([softline, '>', lentBody]), line, '/>', `</${tag}>`], {
 			shouldBreak,
 		});
 	}
-	return group(
-		[head, indent([softline, '>', body, '</', tag.name as string]), softline, lending ? '' : '>'],
-		{ shouldBreak },
-	);
+	return group([head, indent([softline, '>', body, '</', tag]), softline, lending ? '' : '>'], {
+		shouldBreak,
+	});
 }
 
 const isSelfClosing = (node: AstroNode): boolean =>
@@ -218,12 +218,12 @@ export const printer = {
 		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
 			const dangling = printWithDanglingBrackets(path, print, args === lends);
 			if (dangling) return dangling;
-			const tag = ((node.closingElement as AstroNode).name as AstroNode).name as string;
+			const tag = jsxNameOf((node.closingElement as AstroNode).name as AstroNode);
 			return group(
 				[
 					print('openingElement'),
 					print(['children', 0], 'loose'),
-					args === lends ? ['</', tag] : print('closingElement'),
+					args === lends && tag !== null ? ['</', tag] : print('closingElement'),
 				],
 				{ shouldBreak: forcesBreak(node) },
 			);
