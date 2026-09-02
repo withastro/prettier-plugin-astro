@@ -183,3 +183,9 @@ test(
 );
 
 test('Keeps commas that belong to a srcset URL', files, 'other/srcset-commas');
+
+test(
+	'Dangles the closing bracket without a blank line when attributes break',
+	files,
+	'other/dangling-bracket-attributes',
+);

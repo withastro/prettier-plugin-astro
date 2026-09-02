@@ -129,10 +129,14 @@ function printWithDanglingBrackets(
 	if (opening.type !== 'group' || !Array.isArray(opening.contents)) return null;
 	const contents = opening.contents.filter((part) => part !== '');
 	if (contents.at(-1) !== '>') return null;
+	// The dropped `>` is preceded by the tag's own line, which would print blank once we add ours.
+	const withoutBracket = contents.slice(0, -1);
+	if ((withoutBracket.at(-1) as { type?: string } | undefined)?.type === 'line')
+		withoutBracket.pop();
 
 	const tag = jsxNameOf((node.closingElement as AstroNode).name as AstroNode);
 	if (tag === null) return null;
-	const head = { ...opening, contents: contents.slice(0, -1) } as Doc;
+	const head = { ...opening, contents: withoutBracket } as Doc;
 	const body = print(['children', 0], 'fill');
 	const shouldBreak = forcesBreak(node);
 
