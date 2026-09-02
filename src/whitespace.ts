@@ -60,7 +60,8 @@ export const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
 	return display === 'inline-block' || !isInlineDisplay(display);
 };
 
-const breaksOwnChildren = new Set(['html', 'head', 'body', 'ul', 'ol', 'select']);
+const breaksOwnChildren = new Set(['html', 'head', 'ul', 'ol', 'select']);
+const breaksOwnContent = new Set(['body', 'script', 'style']);
 
 /** Mirrors prettier's HTML printer: these lay their children out one per line however they were written. */
 export function breaksChildren(node: AstroNode): boolean {
@@ -96,6 +97,8 @@ export function forcesBreak(node: AstroNode): boolean {
 	if (breaksChildren(node)) return true;
 	const children = childrenOf(node);
 	if (children === null) return false;
+	const tag = node.type === 'JSXElement' ? tagNameOf(node) : null;
+	if (tag !== null && !isComponentName(tag) && breaksOwnContent.has(tag)) return true;
 	return children.some(hasElementChild) || hasChildOnItsOwnLine(node);
 }
 

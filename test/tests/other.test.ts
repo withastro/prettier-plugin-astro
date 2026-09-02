@@ -163,3 +163,5 @@ test(
 	files,
 	'other/slot-empty-container-html',
 );
+
+test('Keeps the spaces in text directly inside body', files, 'other/body-content-whitespace');
