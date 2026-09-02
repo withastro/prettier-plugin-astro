@@ -175,3 +175,9 @@ test(
 	files,
 	'other/lending-closing-bracket',
 );
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace in jsx mode',
+	files,
+	'other/slot-empty-container-jsx',
+);

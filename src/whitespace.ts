@@ -315,6 +315,9 @@ function decide(run: string, boundary: Boundary): Decision {
 	const { mode } = boundary.context;
 
 	if (isSlotFallback(boundary)) return 'space';
+	// Dropping whitespace here would let a `:empty` rule start matching the emptied container.
+	if (boundary.context.sensitivity !== 'ignore' && canRenderEmpty(boundary.container))
+		return 'keep';
 	if (isFree(boundary)) return 'drop';
 	if (mayAlterRenderedWhitespace(boundary)) return 'drop';
 
