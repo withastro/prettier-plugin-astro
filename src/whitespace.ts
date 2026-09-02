@@ -123,7 +123,9 @@ function canRenderEmpty(container: AstroNode): boolean {
 	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
 	if (tag === null || isComponentName(tag)) return false;
 	const children = childrenOf(container);
-	return children !== null && children.length > 0 && children.every(isEmptySlot);
+	if (children === null) return false;
+	const content = children.filter((child) => !isWhitespaceOnly(child));
+	return content.length > 0 && content.every(isEmptySlot);
 }
 
 /** A text neighbour never decides significance; at a container edge only the container does. */
@@ -180,9 +182,9 @@ export function separatorFor(
 	if (isSlotFallback(internal)) return run === '' ? 'none' : 'space';
 	const free = isFree(internal) || (sides !== null && mayAlterRenderedWhitespace(internal));
 	if (boundary.edge) {
-		// Whitespace the author never wrote would stop a `:empty` rule matching the emptied container.
-		if (run === '' && settings.sensitivity !== 'ignore' && canRenderEmpty(boundary.container)) {
-			return 'none';
+		// Adding or dropping whitespace here flips whether a `:empty` rule matches the emptied container.
+		if (settings.sensitivity !== 'ignore' && canRenderEmpty(boundary.container)) {
+			return run === '' ? 'none' : 'space';
 		}
 		if (free) return 'soft';
 		return run === '' ? 'none' : 'space';
