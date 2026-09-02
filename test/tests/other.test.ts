@@ -169,3 +169,9 @@ test('Keeps the spaces in text directly inside body', files, 'other/body-content
 test('Can format components with a dotted name', files, 'other/dotted-component-name');
 
 test('Escapes quotes in style attribute values', files, 'other/style-attribute-quotes');
+
+test(
+	'Only lends a closing bracket to a sibling that withholds it',
+	files,
+	'other/lending-closing-bracket',
+);

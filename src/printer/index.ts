@@ -137,11 +137,12 @@ function printWithDanglingBrackets(
 	const shouldBreak = forcesBreak(node);
 
 	// A self-closing last child lends its own `/>` instead, keeping our closing tag whole.
-	if (isSelfClosing(children.at(-1)!)) {
+	if (isSelfClosing(children.at(-1)!) && !children.at(-1)!.astroIgnored) {
 		const lentBody = print(['children', 0], 'fill-lending');
-		return group([head, indent([softline, '>', lentBody]), line, '/>', `</${tag}>`], {
-			shouldBreak,
-		});
+		return group(
+			[head, indent([softline, '>', lentBody]), line, '/>', '</', tag, lending ? '' : '>'],
+			{ shouldBreak },
+		);
 	}
 	return group([head, indent([softline, '>', body, '</', tag]), softline, lending ? '' : '>'], {
 		shouldBreak,

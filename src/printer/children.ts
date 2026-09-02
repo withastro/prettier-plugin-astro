@@ -25,6 +25,14 @@ interface Item {
 /** Passed to a child so it withholds its closing `>` for the next sibling to carry onto its line. */
 export const lends = 'lends-closing-bracket';
 
+/** Any child this printer does not lay out itself prints a `>` of its own, which the borrower would double. */
+const withholdsClosingBracket = (node: AstroNode): boolean =>
+	node.type === 'JSXElement' &&
+	!node.astroIgnored &&
+	Boolean(node.closingElement) &&
+	Boolean(node.astroChildren) &&
+	!opensRawSubtree(node);
+
 function docFor(separator: Separator): Doc | null {
 	switch (separator) {
 		case 'none':
@@ -113,10 +121,8 @@ export function printChildren(
 	// A gap with no whitespace to spend can still break, by carrying the previous tag's `>` down with it.
 	const lenders = new Set<number>();
 	for (let position = 1; position < items.length; position++) {
-		const previous = items[position - 1].node;
 		if (separatorAt(position, false) !== null) continue;
-		if (previous.type !== 'JSXElement' || !previous.closingElement) continue;
-		if (opensRawSubtree(previous)) continue;
+		if (!withholdsClosingBracket(items[position - 1].node)) continue;
 		lenders.add(position);
 	}
 
