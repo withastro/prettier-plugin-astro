@@ -151,3 +151,15 @@ test(
 );
 
 test('Can format expressions with parenthesized types', files, 'other/parenthesized-type');
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace',
+	files,
+	'other/slot-empty-container',
+);
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace in html mode',
+	files,
+	'other/slot-empty-container-html',
+);

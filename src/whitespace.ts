@@ -112,6 +112,17 @@ export interface PrinterBoundary {
 
 const isBlankRun = (run: string) => /[\n\r][^\S\n\r]*[\n\r]/.test(run);
 
+const isEmptySlot = (node: AstroNode): boolean =>
+	node.type === 'JSXElement' && tagNameOf(node) === 'slot' && (childrenOf(node)?.length ?? 0) === 0;
+
+/** A slot with no fallback renders nothing, so its container renders empty when given no content. */
+function canRenderEmpty(container: AstroNode): boolean {
+	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
+	if (tag === null || isComponentName(tag)) return false;
+	const children = childrenOf(container);
+	return children !== null && children.length > 0 && children.every(isEmptySlot);
+}
+
 /** A text neighbour never decides significance; at a container edge only the container does. */
 function sidesFor(boundary: PrinterBoundary): (AstroNode | null)[] | null {
 	if (boundary.edge) return [null];
@@ -166,6 +177,10 @@ export function separatorFor(
 	if (isSlotFallback(internal)) return run === '' ? 'none' : 'space';
 	const free = isFree(internal) || (sides !== null && mayAlterRenderedWhitespace(internal));
 	if (boundary.edge) {
+		// Whitespace the author never wrote would stop a `:empty` rule matching the emptied container.
+		if (run === '' && settings.sensitivity !== 'ignore' && canRenderEmpty(boundary.container)) {
+			return 'none';
+		}
 		if (free) return 'soft';
 		return run === '' ? 'none' : 'space';
 	}
