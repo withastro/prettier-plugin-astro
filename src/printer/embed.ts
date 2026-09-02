@@ -7,7 +7,15 @@ import { opensRawSubtree } from '../whitespace';
 import { manualDedent } from './utils';
 
 const { group, hardline, indent, join, softline } = doc.builders;
-const { removeLines, replaceEndOfLine } = doc.utils;
+const { mapDoc, removeLines, replaceEndOfLine } = doc.utils;
+
+/** The value is printed inside a double-quoted attribute, which a quote from the CSS printer would end. */
+const escapeQuotes = (value: Doc): Doc =>
+	mapDoc(value, (part) => (typeof part === 'string' ? part.replaceAll('"', '&quot;') : part));
+
+/** The parser leaves quote entities encoded, and CSS has no grammar for them. */
+const decodeQuoteEntities = (text: string): string =>
+	text.replaceAll('&apos;', "'").replaceAll('&quot;', '"');
 
 type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
@@ -119,14 +127,15 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 		if (style !== null) {
 			return async (textToDoc: TextToDoc) => {
 				// The flag makes prettier's CSS printer emit a declaration list rather than a stylesheet.
-				const declarations = await textToDoc(style, {
+				const declarations = await textToDoc(decodeQuoteEntities(style), {
 					...options,
 					parser: 'css',
 					__isHTMLStyleAttribute: true,
 				} as Options);
+				const value = escapeQuotes(declarations);
 				// Normalising the value is safe anywhere; spreading it over lines is a layout call.
-				if (options.astroCompressHTML === 'jsx') return ['style="', removeLines(declarations), '"'];
-				return ['style="', group([indent([softline, declarations]), softline]), '"'];
+				if (options.astroCompressHTML === 'jsx') return ['style="', removeLines(value), '"'];
+				return ['style="', group([indent([softline, value]), softline]), '"'];
 			};
 		}
 	}

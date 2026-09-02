@@ -167,3 +167,5 @@ test(
 test('Keeps the spaces in text directly inside body', files, 'other/body-content-whitespace');
 
 test('Can format components with a dotted name', files, 'other/dotted-component-name');
+
+test('Escapes quotes in style attribute values', files, 'other/style-attribute-quotes');
