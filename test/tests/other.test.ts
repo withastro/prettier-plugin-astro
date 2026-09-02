@@ -181,3 +181,5 @@ test(
 	files,
 	'other/slot-empty-container-jsx',
 );
+
+test('Keeps commas that belong to a srcset URL', files, 'other/srcset-commas');

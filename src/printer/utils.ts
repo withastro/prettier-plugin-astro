@@ -42,11 +42,34 @@ export function manualDedent(input: string): {
 	};
 }
 
-const srcsetEntries = (value: string) =>
-	value
-		.split(',')
-		.map((entry) => entry.trim().split(/\s+/))
-		.filter(([url]) => url !== '');
+// A srcset URL runs to whitespace, so a comma inside one is part of it and never separates candidates.
+function srcsetEntries(value: string): string[][] {
+	const entries: string[][] = [];
+	let index = 0;
+	const skip = (pattern: RegExp) => {
+		while (index < value.length && pattern.test(value.charAt(index))) index++;
+	};
+
+	while (index < value.length) {
+		skip(/[\s,]/);
+		const urlStart = index;
+		skip(/\S/);
+		const url = value.slice(urlStart, index);
+		if (url === '') break;
+
+		const trimmed = url.replace(/,+$/, '');
+		if (trimmed !== url) {
+			entries.push([trimmed]);
+			continue;
+		}
+		skip(/\s/);
+		const descriptorStart = index;
+		while (index < value.length && value.charAt(index) !== ',') index++;
+		const descriptor = value.slice(descriptorStart, index).trim();
+		entries.push(descriptor === '' ? [url] : [url, ...descriptor.split(/\s+/)]);
+	}
+	return entries;
+}
 
 export const normalizeSrcset = (value: string): string =>
 	srcsetEntries(value)
