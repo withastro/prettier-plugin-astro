@@ -34,6 +34,7 @@ const isWhitespaceOnly = (node: AstroNode) => isText(node) && rawTextOf(node).tr
 
 export function opensRawSubtree(node: AstroNode): boolean {
 	if (node.type !== 'JSXElement') return false;
+	if (node.astroPreserveWhitespace) return true;
 	if (hasAttribute(node, 'is:raw')) return true;
 	const tag = tagNameOf(node);
 	return tag !== null && !isComponentName(tag) && rawTextElements.has(tag);
@@ -47,7 +48,7 @@ function displayOf(node: AstroNode): string {
 	if (node.type !== 'JSXElement') return 'inline';
 	const tag = tagNameOf(node);
 	if (tag === null || isComponentName(tag) || tag.includes('-')) return 'inline';
-	if (node.astroSvg) return tag === 'svg' ? 'inline-block' : 'block';
+	if (node.astroSvg) return tag === 'svg' ? 'inline-block' : node.astroSvgText ? 'inline' : 'block';
 	return displayOfTag(tag);
 }
 
@@ -124,8 +125,10 @@ function canRenderEmpty(container: AstroNode): boolean {
 	if (tag === null || isComponentName(tag)) return false;
 	const children = childrenOf(container);
 	if (children === null) return false;
-	const content = children.filter((child) => !isWhitespaceOnly(child));
-	return content.length > 0 && content.every(isEmptySlot);
+	const content = children.filter((child) => !isWhitespaceOnly(child) && !isComment(child));
+	return (
+		children.some((child) => isComment(child) || isEmptySlot(child)) && content.every(isEmptySlot)
+	);
 }
 
 /** A text neighbour never decides significance; at a container edge only the container does. */
@@ -190,6 +193,7 @@ export function separatorFor(
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
+	if (settings.sensitivity === 'ignore') return 'break';
 	// Between inline neighbours a newline and a space render alike, so it is free to reflow.
 	if (
 		hasNewline(run) &&

@@ -84,12 +84,18 @@ function collect(children: AstroNode[]): { items: Item[]; runs: string[] } {
 
 export type ChildrenMode = 'fill' | 'fill-lending' | 'loose';
 
+export interface ChildrenOptions {
+	mode?: ChildrenMode;
+	suffix?: Doc;
+}
+
 export function printChildren(
 	path: AstPath<AstroNode>,
 	options: ParserOptions,
 	print: PrintFn,
-	mode?: ChildrenMode,
+	childrenOptions: ChildrenOptions = {},
 ): Doc {
+	const { mode, suffix } = childrenOptions;
 	const container = path.node;
 	const children = container.astroChildren as AstroNode[];
 	const { items, runs } = collect(children);
@@ -119,13 +125,14 @@ export function printChildren(
 
 	// A gap with no whitespace to spend can still break, by carrying the previous tag's `>` down with it.
 	const lenders = new Set<number>();
+	const lending = new Set<number>();
 	for (let position = 1; position < items.length; position++) {
 		if (separatorAt(position, false) !== null) continue;
 		if (!withholdsClosingBracket(items[position - 1].node)) continue;
 		lenders.add(position);
+		lending.add(items[position - 1].index);
 	}
 
-	const lending = new Set([...lenders].map((position) => items[position - 1].index));
 	if (mode === 'fill-lending') lending.add(items.at(-1)!.index);
 	const printed = new Map<number, Doc>();
 	(path as AstPath<AstroNode> & { each: ChildIterator }).each((child, index) => {
@@ -158,6 +165,7 @@ export function printChildren(
 			append(word);
 		}
 	}
+	if (suffix) append(suffix);
 
 	const body = fill(parts);
 	if (isRoot || mode === 'fill' || mode === 'fill-lending') return body;

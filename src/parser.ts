@@ -2,6 +2,8 @@ import { parse as parseAstro } from '@astrojs/compiler-rs';
 import type { ParserOptions } from 'prettier';
 import {
 	type AstroNode,
+	attributeStringValue,
+	attributesOf,
 	childrenOf,
 	hasSetDirective,
 	isComponentName,
@@ -13,7 +15,7 @@ import {
 	walk,
 } from './ast';
 import { rawTextElements, voidElements } from './elements';
-import { normalizeSrcset, printClassNames } from './printer/utils';
+import { printClassNames } from './printer/utils';
 import {
 	blankContentIsFree,
 	normalizeWhitespace,
@@ -108,30 +110,38 @@ function repairSpans(root: AstroNode): void {
 
 function markAttributes(root: AstroNode, source: string): void {
 	walk(root, (node) => {
-		if (node.type !== 'JSXAttribute') return;
-		const value = node.value as AstroNode | null;
-		if (!value) return;
-
-		if (value.type === 'Literal' && typeof value.value === 'string') {
-			const name = (node.name as AstroNode).name;
-			// A newline left in the value makes prettier expand the whole tag, so spend it before printing.
-			const text =
-				name === 'class'
-					? printClassNames(value.value)
-					: name === 'srcset' || name === 'sizes'
-						? normalizeSrcset(value.value)
-						: value.value;
-			if (value.raw === null || text !== value.value) {
-				value.value = text;
-				value.raw = `"${text.replaceAll('"', '&quot;')}"`;
+		if (node.type !== 'JSXElement') return;
+		const tag = tagNameOf(node);
+		const htmlElement = tag !== null && !isComponentName(tag);
+		for (const attribute of attributesOf(node)) {
+			if (attribute.type !== 'JSXAttribute') continue;
+			const name = String((attribute.name as AstroNode).name).toLowerCase();
+			if (htmlElement && name === 'style') attribute.astroStyleAttribute = true;
+			if ((tag === 'img' || tag === 'source') && name === 'srcset') {
+				attribute.astroSrcsetAttribute = true;
 			}
-			return;
+			markAttribute(attribute, source);
 		}
-		if (value.type !== 'JSXExpressionContainer') return;
-
-		if (source[node.start] === '{') node.astroShorthand = true;
-		if (source[value.start] === '`') node.astroBacktick = true;
 	});
+}
+
+function markAttribute(node: AstroNode, source: string): void {
+	const value = node.value as AstroNode | null;
+	if (!value) return;
+
+	if (value.type === 'Literal' && typeof value.value === 'string') {
+		const name = (node.name as AstroNode).name;
+		const text = name === 'class' ? printClassNames(value.value) : value.value;
+		if (value.raw === null || text !== value.value) {
+			value.value = text;
+			value.raw = `"${text.replaceAll('"', '&quot;')}"`;
+		}
+		return;
+	}
+	if (value.type !== 'JSXExpressionContainer') return;
+
+	if (source[node.start] === '{') node.astroShorthand = true;
+	if (source[value.start] === '`') node.astroBacktick = true;
 }
 
 function applyPrettierIgnore(root: AstroNode): void {
@@ -147,13 +157,19 @@ function applyPrettierIgnore(root: AstroNode): void {
 	});
 }
 
-// SVG lays its own children out, so their whitespace never renders. `foreignObject` restores HTML rules.
+const svgTextElements = new Set(['text', 'textPath', 'tspan']);
+
 function markSvgNamespace(root: AstroNode): void {
-	const mark = (node: AstroNode) => {
+	const mark = (node: AstroNode, inText = false, inheritedPreserve = false) => {
 		node.astroSvg = true;
+		const textContent = inText || svgTextElements.has(tagNameOf(node) ?? '');
+		const whitespace = attributeStringValue(node, 'xml:space');
+		const preserve = whitespace === 'preserve' || (inheritedPreserve && whitespace !== 'default');
+		if (textContent) node.astroSvgText = true;
+		if (textContent && preserve) node.astroPreserveWhitespace = true;
 		for (const child of childrenOf(node) ?? []) {
 			if (child.type !== 'JSXElement' || tagNameOf(child) === 'foreignObject') continue;
-			mark(child);
+			mark(child, textContent, preserve);
 		}
 	};
 	walk(root, (node) => {

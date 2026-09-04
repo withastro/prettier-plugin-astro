@@ -4,18 +4,14 @@ import { SassFormatter, type SassFormatterConfig } from 'sass-formatter';
 import { type AstroNode, attributeStringValue, attributesOf, tagNameOf } from '../ast';
 import { estree } from '../estree';
 import { opensRawSubtree } from '../whitespace';
-import { manualDedent } from './utils';
+import { decodeQuoteEntities, manualDedent } from './utils';
 
 const { group, hardline, indent, join, softline } = doc.builders;
-const { mapDoc, removeLines, replaceEndOfLine } = doc.utils;
+const { mapDoc, replaceEndOfLine } = doc.utils;
 
 /** The value is printed inside a double-quoted attribute, which a quote from the CSS printer would end. */
 const escapeQuotes = (value: Doc): Doc =>
 	mapDoc(value, (part) => (typeof part === 'string' ? part.replaceAll('"', '&quot;') : part));
-
-/** The parser leaves quote entities encoded, and CSS has no grammar for them. */
-const decodeQuoteEntities = (text: string): string =>
-	text.replaceAll('&apos;', "'").replaceAll('&quot;', '"');
 
 type TextToDoc = (text: string, options: Options) => Promise<Doc>;
 type PrintFn = (selector?: string | number | (string | number)[]) => Doc;
@@ -72,7 +68,7 @@ function inferScriptParser(node: AstroNode): BuiltInParserName {
 }
 
 function styleAttributeValue(node: AstroNode): string | null {
-	if ((node.name as AstroNode).name !== 'style') return null;
+	if (!node.astroStyleAttribute) return null;
 	const value = node.value as AstroNode | null;
 	if (value?.type !== 'Literal' || typeof value.value !== 'string') return null;
 	return value.value.trim() === '' ? null : value.value;
@@ -122,7 +118,7 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 		];
 	}
 
-	if (node.type === 'JSXAttribute') {
+	if (node.type === 'JSXAttribute' && options.astroCompressHTML !== 'jsx') {
 		const style = styleAttributeValue(node);
 		if (style !== null) {
 			return async (textToDoc: TextToDoc) => {
@@ -133,8 +129,6 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 					__isHTMLStyleAttribute: true,
 				} as Options);
 				const value = escapeQuotes(declarations);
-				// Normalising the value is safe anywhere; spreading it over lines is a layout call.
-				if (options.astroCompressHTML === 'jsx') return ['style="', removeLines(value), '"'];
 				return ['style="', group([indent([softline, value]), softline]), '"'];
 			};
 		}

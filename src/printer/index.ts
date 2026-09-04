@@ -3,7 +3,7 @@ import { doc } from 'prettier';
 import { type AstroNode, astroVisitorKeys, jsxNameOf, ownChildren, synthetic } from '../ast';
 import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
-import { type ChildrenMode, lends, printChildren } from './children';
+import { type ChildrenOptions, lends, printChildren } from './children';
 import { embed } from './embed';
 import { printSrcset } from './utils';
 
@@ -70,12 +70,16 @@ function printAttribute(
 
 	if (
 		options.astroCompressHTML !== 'jsx' &&
-		(name === 'srcset' || name === 'sizes') &&
+		node.astroSrcsetAttribute &&
 		value?.type === 'Literal' &&
 		typeof value.value === 'string' &&
 		value.value.trim() !== ''
 	) {
-		return [name, '="', printSrcset(value.value), '"'];
+		try {
+			return ['srcset="', printSrcset(value.value), '"'];
+		} catch {
+			return ['srcset="', value.value.replaceAll('"', '&quot;'), '"'];
+		}
 	}
 
 	const expression =
@@ -105,7 +109,9 @@ function printBreakableOpeningTag(
 	if (value.value.includes('\n')) return null;
 
 	const end: Doc[] = node.selfClosing
-		? [line, '/>']
+		? options.bracketSameLine
+			? [' />']
+			: [line, '/>']
 		: options.bracketSameLine
 			? ['>']
 			: [softline, '>'];
@@ -140,14 +146,14 @@ function printWithDanglingBrackets(
 
 	// A self-closing last child lends its own `/>` instead, keeping our closing tag whole.
 	if (isSelfClosing(children.at(-1)!) && !children.at(-1)!.astroIgnored) {
-		const lentBody = print(['children', 0], 'fill-lending');
+		const lentBody = print(['children', 0], { mode: 'fill-lending' });
 		return group(
 			[head, indent([softline, '>', lentBody]), line, '/>', '</', tag, lending ? '' : '>'],
 			{ shouldBreak },
 		);
 	}
-	const body = print(['children', 0], 'fill');
-	return group([head, indent([softline, '>', body, '</', tag]), softline, lending ? '' : '>'], {
+	const body = print(['children', 0], { mode: 'fill', suffix: ['</', tag] });
+	return group([head, indent([softline, '>', body]), lending ? '' : [softline, '>']], {
 		shouldBreak,
 	});
 }
@@ -162,6 +168,7 @@ function withoutSelfClosingMarker(printed: Doc): Doc {
 	}
 	const tag = printed as { type?: string; contents?: Doc[] };
 	if (tag.type !== 'group' || !Array.isArray(tag.contents)) return printed;
+	if (tag.contents.at(-1) === ' />') return { ...tag, contents: tag.contents.slice(0, -1) } as Doc;
 	if (tag.contents.at(-1) !== '/>') return printed;
 	return { ...tag, contents: tag.contents.slice(0, -2) } as Doc;
 }
@@ -200,7 +207,7 @@ export const printer = {
 		const node = path.node;
 		if (node[ownChildren]) {
 			return path.callParent(() =>
-				printChildren(path, options, print, args as ChildrenMode | undefined),
+				printChildren(path, options, print, (args as ChildrenOptions | undefined) ?? {}),
 			);
 		}
 		if (node[synthetic]) return '';
@@ -226,7 +233,7 @@ export const printer = {
 			return group(
 				[
 					print('openingElement'),
-					print(['children', 0], 'loose'),
+					print(['children', 0], { mode: 'loose' }),
 					args === lends && tag !== null ? ['</', tag] : print('closingElement'),
 				],
 				{ shouldBreak: forcesBreak(node) },

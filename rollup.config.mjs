@@ -9,6 +9,7 @@ export default defineConfig({
 		'prettier',
 		'prettier/doc',
 		'prettier/plugins/estree',
+		'@prettier/parse-srcset',
 		'@astrojs/compiler-rs',
 		'sass-formatter',
 		'node:module',

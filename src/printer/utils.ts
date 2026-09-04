@@ -1,3 +1,4 @@
+import parseSrcset from '@prettier/parse-srcset';
 import type { Doc } from 'prettier';
 import { doc } from 'prettier';
 
@@ -42,57 +43,41 @@ export function manualDedent(input: string): {
 	};
 }
 
-// A srcset URL runs to whitespace, so a comma inside one is part of it and never separates candidates.
-function srcsetEntries(value: string): string[][] {
-	const entries: string[][] = [];
-	let index = 0;
-	const skip = (pattern: RegExp) => {
-		while (index < value.length && pattern.test(value.charAt(index))) index++;
-	};
-
-	while (index < value.length) {
-		skip(/[\s,]/);
-		const urlStart = index;
-		skip(/\S/);
-		const url = value.slice(urlStart, index);
-		if (url === '') break;
-
-		const trimmed = url.replace(/,+$/, '');
-		if (trimmed !== url) {
-			entries.push([trimmed]);
-			continue;
-		}
-		skip(/\s/);
-		const descriptorStart = index;
-		while (index < value.length && value.charAt(index) !== ',') index++;
-		const descriptor = value.slice(descriptorStart, index).trim();
-		entries.push(descriptor === '' ? [url] : [url, ...descriptor.split(/\s+/)]);
-	}
-	return entries;
-}
-
-export const normalizeSrcset = (value: string): string =>
-	srcsetEntries(value)
-		.map((parts) => parts.join(' '))
-		.join(', ');
-
-/** Mirrors prettier's HTML printer, which columns the descriptors up once the list is spread out. */
 export function printSrcset(value: string): Doc {
-	const entries = srcsetEntries(value).map(([url, ...rest]) => ({
-		url,
-		descriptor: rest.join(' '),
-	}));
-	if (entries.length === 0) return value;
+	const candidates = parseSrcset(decodeQuoteEntities(value));
+	const descriptorUnits = { width: 'w', height: 'h', density: 'x' } as const;
+	const descriptorTypes = (Object.keys(descriptorUnits) as (keyof typeof descriptorUnits)[]).filter(
+		(type) => candidates.some((candidate) => candidate[type]),
+	);
+	if (descriptorTypes.length > 1) throw new Error('Mixed descriptor in srcset is not supported');
 
-	const widest = Math.max(...entries.map((entry) => entry.url.length));
-	const widestDescriptor = Math.max(...entries.map((entry) => entry.descriptor.length));
-	const printed = entries.map(({ url, descriptor }) => {
-		if (descriptor === '') return url;
-		const padding = widest - url.length + 1 + (widestDescriptor - descriptor.length);
-		return [url, ifBreak(' '.repeat(padding), ' '), descriptor];
+	const descriptorType = descriptorTypes[0];
+	const unit = descriptorType ? descriptorUnits[descriptorType] : '';
+	const urls = candidates.map((candidate) => candidate.source.value);
+	const widestUrl = Math.max(...urls.map((url) => url.length));
+	const descriptors = candidates.map((candidate) =>
+		descriptorType && candidate[descriptorType] ? String(candidate[descriptorType].value) : '',
+	);
+	const descriptorLeftLengths = descriptors.map((descriptor) => {
+		const decimal = descriptor.indexOf('.');
+		return decimal === -1 ? descriptor.length : decimal;
+	});
+	const widestDescriptorLeft = Math.max(...descriptorLeftLengths);
+	const printed = urls.map((url, index) => {
+		const parts: Doc[] = [url.replaceAll('"', '&quot;')];
+		const descriptor = descriptors[index];
+		if (descriptor) {
+			const padding =
+				widestUrl - url.length + 1 + widestDescriptorLeft - descriptorLeftLengths[index];
+			parts.push(ifBreak(' '.repeat(padding), ' '), descriptor + unit);
+		}
+		return parts;
 	});
 	return group([indent([softline, join([',', line], printed)]), softline]);
 }
+
+export const decodeQuoteEntities = (text: string): string =>
+	text.replaceAll('&apos;', "'").replaceAll('&quot;', '"');
 
 export function printClassNames(value: string): string {
 	const lines = value.trim().split(/[\r\n]+/);
