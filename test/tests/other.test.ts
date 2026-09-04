@@ -151,3 +151,47 @@ test(
 );
 
 test('Can format expressions with parenthesized types', files, 'other/parenthesized-type');
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace',
+	files,
+	'other/slot-empty-container',
+);
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace in html mode',
+	files,
+	'other/slot-empty-container-html',
+);
+
+test('Keeps the spaces in text directly inside body', files, 'other/body-content-whitespace');
+
+test('Can format components with a dotted name', files, 'other/dotted-component-name');
+
+test('Escapes quotes in style attribute values', files, 'other/style-attribute-quotes');
+
+test(
+	'Only lends a closing bracket to a sibling that withholds it',
+	files,
+	'other/lending-closing-bracket',
+);
+
+test(
+	'Keeps a container whose only content is a slot free of whitespace in jsx mode',
+	files,
+	'other/slot-empty-container-jsx',
+);
+
+test('Keeps commas that belong to a srcset URL', files, 'other/srcset-commas');
+
+test(
+	'Dangles the closing bracket without a blank line when attributes break',
+	files,
+	'other/dangling-bracket-attributes',
+);
+
+test(
+	'Leaves every run to the author under strict whitespace sensitivity',
+	files,
+	'other/strict-sensitivity-none',
+);

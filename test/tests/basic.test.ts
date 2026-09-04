@@ -24,6 +24,10 @@ test(
 	'basic/html-class-attribute-with-line-breaks',
 );
 
+test('Can properly format the style attribute', files, 'basic/html-style-attribute');
+
+test('Can properly format the srcset and sizes attributes', files, 'basic/html-srcset-attribute');
+
 test('Can format long self-closing tags with multiple attributes', files, 'basic/self-closing');
 
 test('Can properly format inline tags and respect whitespace', files, 'basic/inline-whitespace');
