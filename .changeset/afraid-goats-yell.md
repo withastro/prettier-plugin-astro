@@ -2,4 +2,26 @@
 'prettier-plugin-astro': patch
 ---
 
-Fixes a stray `>` being added after an empty or ignored element that is followed by a sibling, with `astroCompressHTML: 'html'` or `'none'`
+- Fixes a stray `>` being added after an empty or ignored element that is followed by a sibling with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes closing tags being split from trailing void elements like `<img>` with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes whitespace being added inside tables, lists, and captions under `htmlWhitespaceSensitivity: 'strict'`.
+- Fixes line breaks around inline elements being replaced by spaces with `astroCompressHTML: 'html'` or `'none'`.
+- Allows inline elements to wrap at the print width with `astroCompressHTML: 'html'` or `'none'` without adding rendered whitespace.
+- Keeps inline elements written on one line on that line with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes components with dotted names like `<Astro.self>` losing their closing tags or failing to format with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes whitespace around `inline-block` elements and reflowing markup written on one line with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes quotes in `style` attribute values being written unescaped, corrupting the attribute and breaking the next format.
+- Fixes children hugging the closing bracket when an element's attributes span multiple lines.
+- Fixes whitespace being added around a lone `<slot />`, which stopped `:empty` from matching the container, with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes `srcset` values being mangled when a URL contains a comma, such as a `data:` URI or query string.
+- Lays out block-level elements like HTML with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes whitespace being removed around a lone `<slot />`, which allowed `:empty` to start matching the container.
+- Fixes children hugging the closing bracket when an element's attributes wrap and allows a lone long attribute to wrap with `astroCompressHTML: 'html'` or `'none'`.
+- Formats `style` and `srcset` attributes with `astroCompressHTML: 'html'` or `'none'`.
+- Allows runs of adjacent inline elements to wrap at the print width with `astroCompressHTML: 'html'` or `'none'` without adding rendered whitespace.
+- Lays out SVG contents one element per line with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes nested markup being kept on one line with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes spaces being removed from text directly inside `<body>` with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes nested elements being collapsed onto a single line with `astroCompressHTML: 'html'` or `'none'`.
+- Fixes a blank line being left inside an opening tag whose attributes break with `astroCompressHTML: 'html'` or `'none'`.
+- Tidies `style`, `srcset`, and `sizes` attribute values in every mode, as already done for `class`.
