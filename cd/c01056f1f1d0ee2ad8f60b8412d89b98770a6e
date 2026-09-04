@@ -1,0 +1,27 @@
+package.json
+  s_11aa4419a09642::t_2f910c407bb319 45
+pnpm-lock.yaml
+  s_11aa4419a09642::t_62ce11870f0d99 14-16,358-360,1693-1694
+rollup.config.mjs
+  s_11aa4419a09642::t_7bd6de0a7db07e 12
+src/printer/children.ts
+  s_11aa4419a09642::t_5fa90c88a0c738 87-91,96,98,128,133,168
+test/fixtures/basic/html-srcset-attribute/output.astro
+  s_11aa4419a09642::t_2dd2c8a29dff1e 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cdc01056f1f1d0ee2ad8f60b8412d89b98770a6e",
+  "prompts": {},
+  "sessions": {
+    "s_11aa4419a09642": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9318f51dffe6NTgXPXL4UNZql",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Princesseuh <3019731+Princesseuh@users.noreply.github.com>"
+    }
+  }
+}
