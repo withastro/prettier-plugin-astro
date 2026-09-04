@@ -61,6 +61,7 @@ export const swallowsEdgeWhitespace = (node: AstroNode): boolean => {
 	return display === 'inline-block' || !isInlineDisplay(display);
 };
 
+// Prettier always breaks these elements between children or around their entire content, respectively.
 const breaksOwnChildren = new Set(['html', 'head', 'ul', 'ol', 'select']);
 const breaksOwnContent = new Set(['body', 'script', 'style']);
 
