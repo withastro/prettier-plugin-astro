@@ -1,6 +1,6 @@
 {
   "name": "prettier-plugin-astro",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "A Prettier Plugin for formatting Astro files",
   "keywords": [
     "prettier-plugin",
