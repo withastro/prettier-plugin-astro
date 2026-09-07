@@ -1,0 +1,19 @@
+.changeset/pre.json
+  s_13cd4fb208e0bb::t_33c6374c458fa8 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "a18d42ad446ebe84428ae04cd0371d13bd451aa3",
+  "prompts": {},
+  "sessions": {
+    "s_13cd4fb208e0bb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f83da40d7ffeot0RmGTgHntZDb",
+        "model": "@cf/moonshotai/kimi-k3"
+      },
+      "human_author": "Princesseuh <3019731+Princesseuh@users.noreply.github.com>"
+    }
+  }
+}
