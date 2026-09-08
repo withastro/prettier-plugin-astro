@@ -167,9 +167,7 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 			const content = await surfacingErrors(textToDoc, source, { ...options, parser });
 			return wrapContent(
 				print,
-				options.astroCompressHTML === 'jsx'
-					? content
-					: await renderEmbeddedDoc(content, options),
+				options.astroCompressHTML === 'jsx' ? content : await renderEmbeddedDoc(content, options),
 				false,
 			);
 		};
