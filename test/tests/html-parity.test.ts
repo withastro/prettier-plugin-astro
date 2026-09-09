@@ -25,6 +25,47 @@ it('escapes quotes in formatted srcset attributes', async () => {
 	await expect(formatAstro(output, { astroCompressHTML: 'html' })).resolves.toBe(output);
 });
 
+it('keeps embedded CSS stable and free of trailing whitespace in non-JSX modes', async () => {
+	const input = `<style>
+  .a {
+    color: red;
+  }
+
+  /* first line of a CSS comment
+     second line */
+  .b {
+    color: blue;
+  }
+</style>`;
+
+	for (const astroCompressHTML of ['html', 'none'] as const) {
+		const firstPass = await formatAstro(input, { astroCompressHTML });
+		expect(firstPass).not.toMatch(/[\t ]+\n/);
+		expect(firstPass).toContain('  /* first line of a CSS comment\n     second line */');
+		expect(await formatAstro(firstPass, { astroCompressHTML })).toBe(firstPass);
+	}
+});
+
+it('formats style blocks nested in expressions in every compression mode', async () => {
+	const input = `{show ? <style define:vars={{ color }}>
+.a { color: var(--color); }
+</style> : null}`;
+	const output = `{show ? (
+  <style define:vars={{ color }}>
+    .a {
+      color: var(--color);
+    }
+  </style>
+) : null}
+`;
+
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		const firstPass = await formatAstro(input, { astroCompressHTML });
+		expect(firstPass).toBe(output);
+		expect(await formatAstro(firstPass, { astroCompressHTML })).toBe(firstPass);
+	}
+});
+
 it('preserves opaque component props in every compression mode', async () => {
 	const input = '<Widget style="color:red" sizes="alpha   beta" srcset="opaque   value" />';
 
