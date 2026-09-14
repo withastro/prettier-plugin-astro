@@ -1,6 +1,13 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
-import { type AstroNode, astroVisitorKeys, jsxNameOf, ownChildren, synthetic } from '../ast';
+import {
+	type AstroNode,
+	astroVisitorKeys,
+	jsxNameOf,
+	ownChildren,
+	synthetic,
+	tagNameOf,
+} from '../ast';
 import { estree } from '../estree';
 import { forcesBreak, opensRawSubtree, swallowsEdgeWhitespace } from '../whitespace';
 import { type ChildrenOptions, lends, printChildren } from './children';
@@ -194,9 +201,33 @@ function unwrapFragmentIndent(printed: Doc): Doc {
 	return indented.contents[1];
 }
 
+function delegatesJsxCommentsToPrettier(node: AstroNode, options: ParserOptions): boolean {
+	if (node.type !== 'JSXElement') return true;
+	if (node.astroIgnored) return false;
+
+	const raw = opensRawSubtree(node);
+	if (node.astroChildren && !raw) return false;
+	if (!raw) return true;
+
+	// Embedded and verbatim raw elements bypass Prettier's JSX element printer. Empty
+	// script/style pairs are the exception: they fall through to that printer.
+	const tag = tagNameOf(node);
+	const closing = node.closingElement as AstroNode | null;
+	const source = closing
+		? options.originalText.slice((node.openingElement as AstroNode).end, closing.start)
+		: '';
+	const children = node.children as AstroNode[];
+	return (tag === 'script' || tag === 'style') && source.trim() === '' && children.length === 0;
+}
+
 export const printer = {
 	...estree,
 	embed,
+	willPrintOwnComments(path: AstPath<AstroNode>, options: ParserOptions): boolean {
+		return delegatesJsxCommentsToPrettier(path.node, options)
+			? (estree.willPrintOwnComments?.(path) ?? false)
+			: false;
+	},
 	getVisitorKeys(node: AstroNode, nonTraversableKeys: Set<string>): string[] {
 		const keys = astroVisitorKeys[node.type] ?? estree.getVisitorKeys(node, nonTraversableKeys);
 		return node.astroChildren

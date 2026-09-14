@@ -1,0 +1,25 @@
+---
+const condition = true;
+const consentFallback = "activate()";
+---
+
+{condition ? (<A />) : (
+  /* No built-in banner (Cookiebot `{ id }` or no banner): no consent core
+     ships, so activate any `data-consent-*` gated embeds. */
+  <script is:inline set:html={consentFallback} />
+)}
+
+{condition ? (<A />) : (
+  /* Before an embedded script. */
+  <script>const value={enabled:true}</script>
+)}
+
+{condition ? (<A />) : (
+  /* Before another raw element. */
+  <pre />
+)}
+
+{condition ? (<A />) : (
+  /* Empty script pairs still use Prettier's JSX printer. */
+  <script></script>
+)}
