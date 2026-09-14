@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 1.0.1
+
+### Patch Changes
+
+- 6154471: Fixes an error when a JavaScript comment appears before a raw or custom-printed element, such as a `<script>` in the alternate branch of a conditional expression.
+
 ## 1.0.0
 
 ### Major Changes
