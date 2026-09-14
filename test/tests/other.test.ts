@@ -102,6 +102,18 @@ test(
 	'other/expression-with-inline-comments',
 );
 
+test(
+	'Prints comments before raw elements in conditional branches',
+	files,
+	'other/comment-before-raw-element',
+);
+
+test(
+	'Prints comments before elements handled by the custom children printer',
+	files,
+	'other/comment-before-custom-element',
+);
+
 test('Can format JSX comments properly', files, 'other/jsx-comments');
 
 test(
