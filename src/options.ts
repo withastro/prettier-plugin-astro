@@ -1,16 +1,11 @@
 import type { SupportOption } from 'prettier';
+import type { PluginOptions } from '../index';
 
-export type CompressHTML = 'jsx' | 'html' | 'none';
-
-interface PluginOptions {
-	astroAllowShorthand: boolean;
-	astroSkipFrontmatter: boolean;
-	astroCompressHTML: CompressHTML;
-}
+export type { CompressHTML, PluginOptions } from '../index';
 
 declare module 'prettier' {
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-	interface RequiredOptions extends PluginOptions {}
+	interface RequiredOptions extends Required<PluginOptions> {}
 }
 
 // https://prettier.io/docs/en/plugins.html#options
