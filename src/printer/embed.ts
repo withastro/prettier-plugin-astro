@@ -89,12 +89,6 @@ function wrapContent(print: PrintFn, content: Doc, isEmpty: boolean): Doc {
 	];
 }
 
-async function renderEmbeddedDoc(content: Doc, options: ParserOptions): Promise<Doc> {
-	const { formatted } = await doc.printer.printDocToString(content, options);
-	const indentation = options.useTabs ? '\t' : ' '.repeat(options.tabWidth);
-	return replaceEndOfLine(formatted.trimEnd().replace(/\r?\n/g, (line) => line + indentation));
-}
-
 function embedSass(source: string, options: ParserOptions): Doc {
 	const sassOptions: Partial<SassFormatterConfig> = {
 		tabSize: options.tabWidth,
@@ -164,10 +158,13 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 		const parser = styleParsers[lang];
 		if (!parser) return printVerbatim(source);
 		return async (textToDoc: TextToDoc, print: PrintFn) => {
-			const content = await surfacingErrors(textToDoc, source, { ...options, parser });
+			const content = await surfacingErrors(textToDoc, manualDedent(source).result, {
+				...options,
+				parser,
+			});
 			return wrapContent(
 				print,
-				options.astroCompressHTML === 'jsx' ? content : await renderEmbeddedDoc(content, options),
+				group(replaceEndOfLine(content, hardline), { shouldBreak: true }),
 				false,
 			);
 		};
