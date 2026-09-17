@@ -34,4 +34,5 @@ const defaultOptions = {
 	tabWidth: 2,
 };
 
+export type { CompressHTML, PluginOptions } from '../index';
 export { defaultOptions, options };
