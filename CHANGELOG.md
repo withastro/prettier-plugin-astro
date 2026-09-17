@@ -1,5 +1,13 @@
 # prettier-plugin-astro
 
+## 1.0.1
+
+### Patch Changes
+
+- 5b5a735: Publish TypeScript declarations for Astro plugin options.
+- 6154471: Fixes an error when a JavaScript comment appears before a raw or custom-printed element, such as a `<script>` in the alternate branch of a conditional expression.
+- fabb28f: Fix non-idempotent CSS `<style>` block formatting with `astroCompressHTML` set to `'html'` or `'none'`.
+
 ## 1.0.0
 
 ### Major Changes
