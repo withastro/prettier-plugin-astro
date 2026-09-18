@@ -6,7 +6,7 @@ import { estree } from '../estree';
 import { opensRawSubtree } from '../whitespace';
 import { decodeQuoteEntities, manualDedent } from './utils';
 
-const { group, hardline, indent, join, softline } = doc.builders;
+const { dedentToRoot, group, hardline, indent, join, markAsRoot, softline } = doc.builders;
 const { mapDoc, replaceEndOfLine } = doc.utils;
 
 /** The value is printed inside a double-quoted attribute, which a quote from the CSS printer would end. */
@@ -164,7 +164,7 @@ export function embed(path: AstPath<AstroNode>, options: ParserOptions) {
 			});
 			return wrapContent(
 				print,
-				group(replaceEndOfLine(content, hardline), { shouldBreak: true }),
+				markAsRoot(group(replaceEndOfLine(content, dedentToRoot(hardline)), { shouldBreak: true })),
 				false,
 			);
 		};

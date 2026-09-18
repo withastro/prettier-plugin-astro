@@ -46,13 +46,43 @@ it('keeps embedded CSS stable and free of trailing whitespace in non-JSX modes',
 	}
 });
 
+it('keeps multiline CSS comments nested in rules stable in every compression mode', async () => {
+	const input = `<style>
+  .box {
+    display: flex;
+    /* First line of the comment.
+       Second line, indented to align with the first.
+       Third line. */
+    min-height: 0;
+  }
+
+  .control {
+    /* Single-line comment: stays put across runs. */
+    color: red;
+  }
+</style>`;
+	const output = `${input}\n`;
+
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		const firstPass = await formatAstro(input, { astroCompressHTML });
+		expect(firstPass).toBe(output);
+		expect(await formatAstro(firstPass, { astroCompressHTML })).toBe(firstPass);
+	}
+});
+
 it('formats style blocks nested in expressions in every compression mode', async () => {
 	const input = `{show ? <style define:vars={{ color }}>
-.a { color: var(--color); }
+.a {
+  /* first
+     second */
+  color: var(--color);
+}
 </style> : null}`;
 	const output = `{show ? (
   <style define:vars={{ color }}>
     .a {
+      /* first
+         second */
       color: var(--color);
     }
   </style>
@@ -67,11 +97,12 @@ it('formats style blocks nested in expressions in every compression mode', async
 });
 
 it('formats CRLF style content in every compression mode', async () => {
-	const input = '<style>\r\n  /* first\r\n     second */\r\n  .a { color: red; }\r\n</style>';
+	const input =
+		'<style>\r\n  .a {\r\n    /* first\r\n       second */\r\n    color:red;\r\n  }\r\n</style>';
 	const output = `<style>
-  /* first
-     second */
   .a {
+    /* first
+       second */
     color: red;
   }
 </style>
@@ -90,16 +121,18 @@ it('formats CRLF style content in every compression mode', async () => {
 it('indents embedded CSS with tabs and a custom tab width in every compression mode', async () => {
 	const input = `<div>
 <style>
-/* first line
-   second line */
-.a { color: red; }
+.a {
+  /* first line
+     second line */
+  color: red;
+}
 </style>
 </div>`;
 	const output = `<div>
 \t<style>
-\t\t/* first line
-\t\t   second line */
 \t\t.a {
+\t\t\t/* first line
+\t\t     second line */
 \t\t\tcolor: red;
 \t\t}
 \t</style>
@@ -125,26 +158,42 @@ it('indents embedded CSS with tabs and a custom tab width in every compression m
 
 it('formats SCSS and Less in every compression mode', async () => {
 	const input = `<style lang="scss">
-$a:red;.a{color:$a;&:hover{color:blue}}
+$a:red;
+.a{
+  &:hover{
+    /* first
+       second */
+    color:$a;
+  }
+}
 </style>
 <style lang="less">
-@a:red;.a{color:@a;&:hover{color:blue}}
+@a:red;
+.a{
+  &:hover{
+    /* first
+       second */
+    color:@a;
+  }
+}
 </style>`;
 	const output = `<style lang="scss">
   $a: red;
   .a {
-    color: $a;
     &:hover {
-      color: blue;
+      /* first
+         second */
+      color: $a;
     }
   }
 </style>
 <style lang="less">
   @a: red;
   .a {
-    color: @a;
     &:hover {
-      color: blue;
+      /* first
+         second */
+      color: @a;
     }
   }
 </style>
