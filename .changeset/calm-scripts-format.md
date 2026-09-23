@@ -2,4 +2,4 @@
 'prettier-plugin-astro': patch
 ---
 
-Fix non-idempotent formatting of self-closing scripts inside logical expressions.
+Fix non-idempotent formatting of self-closing scripts inside expressions.
