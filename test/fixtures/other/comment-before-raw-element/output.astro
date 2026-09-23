@@ -8,7 +8,7 @@ const consentFallback = "activate()";
 ) : (
   /* No built-in banner (Cookiebot `{ id }` or no banner): no consent core
      ships, so activate any `data-consent-*` gated embeds. */
-  <script is:inline set:html={consentFallback}></script>
+  <script is:inline set:html={consentFallback} />
 )}
 
 {condition ? (
@@ -24,7 +24,7 @@ const consentFallback = "activate()";
   <A />
 ) : (
   /* Before another raw element. */
-  <pre></pre>
+  <pre />
 )}
 
 {condition ? (

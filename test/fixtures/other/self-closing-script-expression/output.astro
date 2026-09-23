@@ -1,0 +1,14 @@
+---
+const show = true;
+---
+
+<head>
+  {show && (
+    <script
+      is:inline
+      defer
+      src="https://example.com/script.js"
+      data-website-id="00000000-0000-0000-0000-000000000000"
+    />
+  )}
+</head>

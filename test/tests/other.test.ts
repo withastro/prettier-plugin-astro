@@ -1,4 +1,5 @@
-import { test } from '../test-utils';
+import { expect, it } from 'vitest';
+import { format, test } from '../test-utils';
 
 const files = {
 	...import.meta.glob('/test/fixtures/other/*/*', {
@@ -85,6 +86,24 @@ test('Can format nested comment', files, 'other/nested-comment');
 test('Format binary expressions', files, 'other/binary-expression');
 
 test('Format self-closing tags without additional content', files, 'other/clean-self-closing');
+
+test(
+	'Formats self-closing scripts in logical expressions idempotently',
+	files,
+	'other/self-closing-script-expression',
+);
+
+for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+	it(`keeps self-closing scripts idempotent in ${astroCompressHTML} mode`, async () => {
+		const input = files[
+			'/test/fixtures/other/self-closing-script-expression/input.astro'
+		] as string;
+		const options = { astroCompressHTML, printWidth: 100 };
+		const firstPass = await format(input, options);
+		const secondPass = await format(firstPass.formatted, options);
+		expect(secondPass.formatted).toBe(firstPass.formatted);
+	});
+}
 
 test('Format directives', files, 'other/directive');
 

@@ -222,8 +222,17 @@ function normalizeTagPairs(body: AstroNode[], source: string): void {
 		const component = isComponentName(tag);
 
 		if (rawTextElements.has(tag) && !component) {
-			if (!closing) pairUp(node, tag);
-			else if (source.slice((node.openingElement as AstroNode).end, closing.start).trim() === '') {
+			if (!closing) {
+				const opening = node.openingElement as AstroNode;
+				if (opening.selfClosing) {
+					// The compiler gives a self-closing script an empty AstroScript child.
+					children.length = 0;
+				} else {
+					pairUp(node, tag);
+				}
+			} else if (
+				source.slice((node.openingElement as AstroNode).end, closing.start).trim() === ''
+			) {
 				children.length = 0;
 			}
 			return;

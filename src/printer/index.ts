@@ -209,10 +209,13 @@ function delegatesJsxCommentsToPrettier(node: AstroNode, options: ParserOptions)
 	if (node.astroChildren && !raw) return false;
 	if (!raw) return true;
 
+	// Self-closing raw elements fall through to Prettier's JSX element printer.
+	const closing = node.closingElement as AstroNode | null;
+	if (!closing) return true;
+
 	// Embedded and verbatim raw elements bypass Prettier's JSX element printer. Empty
 	// script/style pairs are the exception: they fall through to that printer.
 	const tag = tagNameOf(node);
-	const closing = node.closingElement as AstroNode | null;
 	const source = closing
 		? options.originalText.slice((node.openingElement as AstroNode).end, closing.start)
 		: '';
