@@ -16,7 +16,7 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
 		category: 'Astro',
 		type: 'boolean',
 		description:
-			'Choose whether matching identifier attributes are normalized to shorthand or explicit form, when unset the from that was written stay as-is.',
+			'Choose whether matching identifier attributes are normalized to shorthand or explicit form, when unset the form that was written stay as-is.',
 	},
 	astroSkipFrontmatter: {
 		category: 'Astro',
