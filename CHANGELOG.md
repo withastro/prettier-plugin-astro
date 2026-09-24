@@ -1,5 +1,20 @@
 # prettier-plugin-astro
 
+## 1.1.0
+
+### Minor Changes
+
+- bfbb6c5: Adds support for three `astroAllowShorthand` formatting modes:
+
+  - When unset / `undefined`, the attributes stay as written, i.e `<Comp value={value} />` and `<Comp {value} />` can co-exist in the same file.
+  - When set to `true`, attributes that can be written in the shorthand form will automatically be transformed. `<Comp value={value} />` will become `<Comp {value} />`
+  - When set to `false`, attributes will always be expanded to their full form.
+
+### Patch Changes
+
+- 4b3547e: Fix non-idempotent indentation of multiline comments nested inside CSS rules.
+- edfb35f: Fixes raw elements being forcefully paired up when self-closed.
+
 ## 1.0.1
 
 ### Patch Changes
