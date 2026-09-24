@@ -1,5 +1,5 @@
 ---
-'prettier-plugin-astro': patch
+'prettier-plugin-astro': minor
 ---
 
 Adds support for three `astroAllowShorthand` formatting modes:
