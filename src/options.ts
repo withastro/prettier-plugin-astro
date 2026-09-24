@@ -5,7 +5,9 @@ export type { CompressHTML, PluginOptions } from '../index';
 
 declare module 'prettier' {
 	// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-	interface RequiredOptions extends Required<PluginOptions> {}
+	interface RequiredOptions extends Omit<Required<PluginOptions>, 'astroAllowShorthand'> {
+		astroAllowShorthand?: boolean;
+	}
 }
 
 // https://prettier.io/docs/en/plugins.html#options
@@ -13,8 +15,8 @@ export const options: Record<keyof PluginOptions, SupportOption> = {
 	astroAllowShorthand: {
 		category: 'Astro',
 		type: 'boolean',
-		default: false,
-		description: 'Enable/disable attribute shorthand if attribute name and expression are the same',
+		description:
+			'Choose whether matching identifier attributes are normalized to shorthand or explicit form, when unset the form that was written stay as-is.',
 	},
 	astroSkipFrontmatter: {
 		category: 'Astro',
