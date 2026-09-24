@@ -71,7 +71,18 @@ function printAttribute(
 	const name = (node.name as AstroNode).name as string;
 	const value = node.value as AstroNode | null;
 
-	if (node.astroShorthand) return ['{', print(['value', 'expression']), '}'];
+	if (node.astroShorthand) {
+		const expression =
+			value?.type === 'JSXExpressionContainer' ? (value.expression as AstroNode) : null;
+		if (
+			options.astroAllowShorthand !== false ||
+			expression?.type !== 'Identifier' ||
+			expression.name !== name
+		) {
+			return ['{', print(['value', 'expression']), '}'];
+		}
+		return [name, '={', print(['value', 'expression']), '}'];
+	}
 
 	if (node.astroBacktick) return [name, '=', print(['value', 'expression'])];
 

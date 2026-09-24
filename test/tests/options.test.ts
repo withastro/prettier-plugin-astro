@@ -223,6 +223,12 @@ test(
 );
 
 test(
+	'Preserves attribute form when "astroAllowShorthand" is unset',
+	files,
+	'options/option-astro-allow-shorthand-unset',
+);
+
+test(
 	'Can format an Astro file with prettier "astroAllowShorthand: true" option',
 	files,
 	'options/option-astro-allow-shorthand-true',

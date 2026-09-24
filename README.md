@@ -80,11 +80,11 @@ Most [options from Prettier](https://prettier.io/docs/en/options.html) will work
 
 ### Astro Allow Shorthand
 
-Set if attributes with the same name as their expression should be formatted to the short form automatically (for example, if enabled `<element name={name} />` will become simply `<element {name} />`)
+Controls formatting of matching identifier attributes (for example, `<element name={name} />` and `<element {name} />`). When unset, the formatter preserves the input form. When `true`, it uses shorthand; when `false`, it uses the explicit form where possible.
 
 | Default | CLI Override                     | API Override                  |
 | ------- | -------------------------------- | ----------------------------- |
-| `false` | `--astro-allow-shorthand <bool>` | `astroAllowShorthand: <bool>` |
+| unset   | `--astro-allow-shorthand <bool>` | `astroAllowShorthand: <bool>` |
 
 ### Astro Skip Frontmatter
 
