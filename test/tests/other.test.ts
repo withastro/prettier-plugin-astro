@@ -133,6 +133,12 @@ test(
 	'other/comment-before-custom-element',
 );
 
+test(
+	'Prints comments before expression statements inside expressions',
+	files,
+	'other/comment-before-expression-statement',
+);
+
 test('Can format JSX comments properly', files, 'other/jsx-comments');
 
 test(
