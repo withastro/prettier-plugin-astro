@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 1.1.1
+
+### Patch Changes
+
+- ee01a5d: Fixes a `TypeError` ("Cannot read properties of undefined (reading 'semi')") when a comment appears before a statement inside a template expression.
+
 ## 1.1.0
 
 ### Minor Changes
