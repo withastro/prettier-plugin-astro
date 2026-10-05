@@ -239,7 +239,7 @@ export const printer = {
 	embed,
 	willPrintOwnComments(path: AstPath<AstroNode>, options: ParserOptions): boolean {
 		return delegatesJsxCommentsToPrettier(path.node, options)
-			? (estree.willPrintOwnComments?.(path) ?? false)
+			? (estree.willPrintOwnComments?.(path, options) ?? false)
 			: false;
 	},
 	getVisitorKeys(node: AstroNode, nonTraversableKeys: Set<string>): string[] {
