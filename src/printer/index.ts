@@ -3,6 +3,7 @@ import { doc } from 'prettier';
 import {
 	type AstroNode,
 	astroVisitorKeys,
+	isComponentName,
 	jsxNameOf,
 	ownChildren,
 	synthetic,
@@ -128,11 +129,19 @@ function printBreakableOpeningTag(
 // Breaking an inline element beside its content renders as an added space; moving the brackets does not.
 function printWithDanglingBrackets(
 	path: AstPath<AstroNode>,
+	options: ParserOptions,
 	print: PrintFn,
 	lending: boolean,
 ): Doc | null {
 	const node = path.node;
 	const children = node.astroChildren as AstroNode[] | undefined;
+	if (
+		options.astroCompressHTML === 'jsx' &&
+		node.type === 'JSXElement' &&
+		isComponentName(tagNameOf(node))
+	) {
+		return null;
+	}
 	if (!children?.length || !node.closingElement) return null;
 	if (swallowsEdgeWhitespace(node)) return null;
 	if (startsWithSpace(children[0]) || endsWithSpace(children.at(-1)!)) return null;
@@ -261,7 +270,7 @@ export const printer = {
 			return withoutSelfClosingMarker(print('openingElement'));
 		}
 		if (node.type === 'JSXElement' && node.astroChildren && !opensRawSubtree(node)) {
-			const dangling = printWithDanglingBrackets(path, print, args === lends);
+			const dangling = printWithDanglingBrackets(path, options, print, args === lends);
 			if (dangling) return dangling;
 			const tag = jsxNameOf((node.closingElement as AstroNode).name as AstroNode);
 			return group(
