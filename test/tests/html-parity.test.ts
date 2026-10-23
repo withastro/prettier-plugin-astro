@@ -248,6 +248,17 @@ it('preserves literal attributes in JSX mode', async () => {
 	expect(output).toContain('srcset="a.png 1x,b.png 2x"');
 });
 
+it('does not add line breaks to component slot text in JSX mode', async () => {
+	const input =
+		'<Link href="/a-very-long-path/to-make-the-line-wrap">Some link text that is long enough to wrap</Link>';
+	const expectedText = '>Some link text that is long enough to wrap</Link>';
+
+	const output = await formatAstro(input, { printWidth: 40 });
+
+	expect(output).toContain(expectedText);
+	expect(await formatAstro(output, { printWidth: 40 })).toBe(output);
+});
+
 it('matches HTML attribute formatting scope', async () => {
 	await expectHtmlParity(
 		'<div srcset="a.png 1x,b.png 2x">x</div><img sizes="(max-width: 600px) 480px, 1200px" srcset="a.png 1x,b.png 2x">',

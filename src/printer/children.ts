@@ -1,6 +1,6 @@
 import type { AstPath, Doc, ParserOptions } from 'prettier';
 import { doc } from 'prettier';
-import type { AstroNode } from '../ast';
+import { type AstroNode, isComponentName, tagNameOf } from '../ast';
 import { forcesBreak, opensRawSubtree, type Separator, separatorFor } from '../whitespace';
 
 const { fill, group, hardline, indent, line, softline } = doc.builders;
@@ -49,7 +49,7 @@ function docFor(separator: Separator): Doc | null {
 }
 
 /** Runs alternate with items: `runs[i]` is the whitespace before `items[i]`, `runs[n]` the trailing. */
-function collect(children: AstroNode[]): { items: Item[]; runs: string[] } {
+function collect(children: AstroNode[], preserveText: boolean): { items: Item[]; runs: string[] } {
 	const items: Item[] = [];
 	const runs: string[] = [];
 	let pending = '';
@@ -72,7 +72,9 @@ function collect(children: AstroNode[]): { items: Item[]; runs: string[] } {
 		items.push({
 			node: child,
 			index,
-			words: raw.slice(lead.length, raw.length - trail.length).split(whitespaceRun),
+			words: preserveText
+				? [raw.slice(lead.length, raw.length - trail.length)]
+				: raw.slice(lead.length, raw.length - trail.length).split(whitespaceRun),
 			doc: '',
 		});
 		pending = trail;
@@ -98,30 +100,37 @@ export function printChildren(
 	const { mode, suffix } = childrenOptions;
 	const container = path.node;
 	const children = container.astroChildren as AstroNode[];
-	const { items, runs } = collect(children);
-	// `resolveBlankContainers` already decided whether whitespace-only content survives.
-	if (items.length === 0) return runs[0] === '' ? '' : ' ';
-
 	const isRoot = container.astroRoot === true;
 	const settings = {
 		mode: options.astroCompressHTML,
 		sensitivity: options.htmlWhitespaceSensitivity,
 	};
+	const preserveComponentText =
+		!isRoot &&
+		settings.mode === 'jsx' &&
+		container.type === 'JSXElement' &&
+		isComponentName(tagNameOf(container));
+	const { items, runs } = collect(children, preserveComponentText);
+	// `resolveBlankContainers` already decided whether whitespace-only content survives.
+	if (items.length === 0) return runs[0] === '' ? '' : ' ';
+
 	const separatorAt = (index: number, edge: boolean) =>
-		docFor(
-			separatorFor(
-				runs[index],
-				{
-					container,
-					prev: items[index - 1]?.node ?? null,
-					next: items[index]?.node ?? null,
-					isRoot,
-					loneChild: false,
-					edge,
-				},
-				settings,
-			),
-		);
+		preserveComponentText
+			? runs[index]
+			: docFor(
+					separatorFor(
+						runs[index],
+						{
+							container,
+							prev: items[index - 1]?.node ?? null,
+							next: items[index]?.node ?? null,
+							isRoot,
+							loneChild: false,
+							edge,
+						},
+						settings,
+					),
+				);
 
 	// A gap with no whitespace to spend can still break, by carrying the previous tag's `>` down with it.
 	const lenders = new Set<number>();

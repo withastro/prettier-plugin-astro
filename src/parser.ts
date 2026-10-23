@@ -54,7 +54,8 @@ export function parse(source: string, options: ParserOptions): AstroNode {
 	if (settings.mode === 'jsx') normalizeWhitespace(template.node as AstroNode, settings);
 	else resolveBlankContainers(template.node as AstroNode, settings);
 	normalizeTagPairs(body, source);
-	if (settings.mode !== 'jsx') claimChildren(template.node as AstroNode);
+	if (settings.mode === 'jsx') claimComponentChildren(template.node as AstroNode);
+	else claimChildren(template.node as AstroNode);
 
 	ast.template = template;
 	delete ast.body;
@@ -272,6 +273,20 @@ function claimChildren(template: AstroNode): void {
 	walk(template, (node) => {
 		if (node.type !== 'JSXElement' && node.type !== 'JSXFragment') return;
 		if (node.type === 'JSXElement' && opensRawSubtree(node)) return;
+		takeOverChildren(node);
+	});
+}
+
+function claimComponentChildren(template: AstroNode): void {
+	walk(template, (node) => {
+		if (node.type !== 'JSXElement' || !isComponentName(tagNameOf(node))) return;
+		if (opensRawSubtree(node)) return;
+		const children = node.children as AstroNode[];
+		if (!children.every((child) => child.type === 'JSXText')) return;
+		if (
+			!children.some((child) => child.type === 'JSXText' && String(child.raw ?? '').trim() !== '')
+		)
+			return;
 		takeOverChildren(node);
 	});
 }
