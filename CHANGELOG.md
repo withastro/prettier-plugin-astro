@@ -1,5 +1,11 @@
 # prettier-plugin-astro
 
+## 1.1.2
+
+### Patch Changes
+
+- 98d4164: Updates the Astro compiler to the latest release
+
 ## 1.1.1
 
 ### Patch Changes
