@@ -194,7 +194,7 @@ export function separatorFor(
 		return run === '' ? 'none' : 'space';
 	}
 	if (isBlankRun(run)) return 'blank';
-	if (settings.sensitivity === 'ignore') return 'break';
+	if (settings.sensitivity === 'ignore' && touchesTag(sides)) return 'break';
 	// Between inline neighbours a newline and a space render alike, so it is free to reflow.
 	if (
 		hasNewline(run) &&
@@ -351,10 +351,24 @@ function isFree(boundary: Boundary): boolean {
 	return false;
 }
 
+/**
+ * `ignore` makes whitespace around markup insignificant. Text and expressions stay content, as with
+ * `css`. A null side stands for the container; a null list means both neighbours are text.
+ */
+const touchesTag = (sides: (AstroNode | null)[] | null): boolean =>
+	sides?.some(
+		(side) =>
+			side === null ||
+			side.type === 'JSXElement' ||
+			side.type === 'JSXFragment' ||
+			side.type === 'AstroComment' ||
+			side.type === 'AstroDoctype',
+	) ?? false;
+
 /** Whether the user authorised changing rendered whitespace here, not whether it is sound. */
 function mayAlterRenderedWhitespace(boundary: Boundary): boolean {
 	const { sensitivity } = boundary.context;
-	if (sensitivity === 'ignore') return true;
+	if (sensitivity === 'ignore' && touchesTag(boundary.sides)) return true;
 	if (sensitivity === 'strict') return false;
 	// One block box is enough: it swallows the whitespace on its side whatever the other neighbour is.
 	return boundary.sides.some((side) =>

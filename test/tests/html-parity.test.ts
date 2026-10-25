@@ -299,6 +299,59 @@ it('matches HTML ignore sensitivity', async () => {
 	});
 });
 
+it('keeps spaces between text and expressions with ignore sensitivity', async () => {
+	const input = '<p>Get {credits} credits</p>\n<p>Hi {name}, welcome</p>\n';
+
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		const options = { htmlWhitespaceSensitivity: 'ignore' as const, astroCompressHTML };
+		const output = await formatAstro(input, options);
+		expect(output).toBe(input);
+		expect(await formatAstro(output, options)).toBe(output);
+	}
+});
+
+it('keeps spaces around split text and spread expressions with ignore sensitivity', async () => {
+	const input =
+		'<p>{credits} < 10</p>\n<p>Get {...credits} credits</p>\n<p>foo < 10</p>\n<p>foo< 10</p>\n';
+
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		const options = { htmlWhitespaceSensitivity: 'ignore' as const, astroCompressHTML };
+		const output = await formatAstro(input, options);
+		expect(output).toBe(input);
+		expect(await formatAstro(output, options)).toBe(output);
+	}
+});
+
+it('keeps expression separators with ignore sensitivity in every compression mode', async () => {
+	const input = '<p>{first} {last}</p>';
+
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		const options = { htmlWhitespaceSensitivity: 'ignore' as const, astroCompressHTML };
+		const output = await formatAstro(input, options);
+		expect(output).toContain('{first} {last}');
+		expect(await formatAstro(output, options)).toBe(output);
+	}
+});
+
+it('preserves JSX newline trimming around expressions with ignore sensitivity', async () => {
+	const input = '<p>foo\n{credits}\nbar</p>';
+	const options = { htmlWhitespaceSensitivity: 'ignore' as const };
+	const output = await formatAstro(input, options);
+
+	expect(output).toBe('<p>\n  foo\n  {credits}\n  bar\n</p>\n');
+	expect(await formatAstro(output, options)).toBe(output);
+});
+
+it('keeps spaces beside expressions when reflowing with ignore sensitivity', async () => {
+	const input =
+		'<p>You will get {credits} credits for free to download comments to CSV, Excel and JSON {credits} times</p>';
+	const output = await formatAstro(input, { htmlWhitespaceSensitivity: 'ignore' });
+
+	expect(output).toContain('get {credits} credits');
+	expect(output).toContain('JSON {credits} times');
+	expect(await formatAstro(output, { htmlWhitespaceSensitivity: 'ignore' })).toBe(output);
+});
+
 it('matches HTML bracket lending and parent closing-tag width', async () => {
 	await expectHtmlParity(
 		'<p><span>aaaaaaaaaaaaaaaaaaaaaaaa</span><span>bbbbbbbbbbbbbbbbbbbbbbbb</span></p>',
