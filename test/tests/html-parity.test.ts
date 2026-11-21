@@ -288,6 +288,15 @@ it('preserves whitespace in SVG text content', async () => {
 	expect(inherited).toContain('<text>a <tspan>b</tspan> c</text>');
 });
 
+it('keeps the spaces between text, expressions and elements in a table caption', async () => {
+	const input = '<table>\n  <caption>Compare {a} or <b>b</b>.</caption>\n</table>';
+	for (const astroCompressHTML of ['jsx', 'html', 'none'] as const) {
+		expect(await formatAstro(input, { astroCompressHTML })).toBe(
+			'<table>\n  <caption>\n    Compare {a} or <b>b</b>.\n  </caption>\n</table>\n',
+		);
+	}
+});
+
 it('preserves whitespace that prevents :empty from matching comment-only content', async () => {
 	const input = '<div> <!--comment--></div>';
 	expect(await formatAstro(input, { astroCompressHTML: 'html' })).toBe(`${input}\n`);

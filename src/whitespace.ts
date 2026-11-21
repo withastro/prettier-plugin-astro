@@ -342,7 +342,13 @@ function isFree(boundary: Boundary): boolean {
 	const tag = container.type === 'JSXElement' ? tagNameOf(container) : null;
 	if (loneChild && tag !== null && isComponentName(tag)) return true;
 	// These lay children out themselves, but under `strict` the author still owns every run.
-	if (context.sensitivity !== 'strict' && breaksChildren(container)) return true;
+	// A caption breaks like the rest of a table, yet its text renders like a cell's.
+	if (
+		context.sensitivity !== 'strict' &&
+		breaksChildren(container) &&
+		displayOf(container) !== 'table-caption'
+	)
+		return true;
 
 	if (mode === 'html') {
 		if (loneChild) return true;
