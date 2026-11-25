@@ -213,6 +213,19 @@ test(
 	'other/lending-closing-bracket',
 );
 
+for (const astroCompressHTML of ['html', 'none'] as const) {
+	it(`does not carry a JSX prettier-ignore past non-ASCII whitespace in ${astroCompressHTML} mode`, async () => {
+		const options = { astroCompressHTML };
+		for (const space of [' ', '　']) {
+			const input = `<p>{/* prettier-ignore */}${space}\n<b    class="a">x</b>y</p>\n`;
+			const firstPass = await format(input, options);
+			expect(firstPass.formatted).toContain('<b class="a">');
+			const secondPass = await format(firstPass.formatted, options);
+			expect(secondPass.formatted).toBe(firstPass.formatted);
+		}
+	});
+}
+
 test(
 	'Keeps a container whose only content is a slot free of whitespace in jsx mode',
 	files,

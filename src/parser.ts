@@ -152,7 +152,7 @@ function applyPrettierIgnore(root: AstroNode): void {
 		for (const [index, child] of children.entries()) {
 			if (isJsxIgnoreComment(child, comments)) {
 				// Prettier's JSX printer prints this target from source, so ours must pick the same one.
-				const target = children.slice(index + 1).find((sibling) => !printsNothing(sibling));
+				const target = children.slice(index + 1).find((sibling) => !isJsxLineBreak(sibling));
 				if (target?.type === 'JSXElement' || target?.type === 'JSXFragment') {
 					target.astroIgnored = true;
 				}
@@ -175,6 +175,12 @@ function isJsxIgnoreComment(node: AstroNode, comments: JsComment[]): boolean {
 			comment.end <= node.end &&
 			comment.value.trim() === 'prettier-ignore',
 	);
+}
+
+// Prettier's JSX printer skips text made only of spaces, tabs and line breaks that holds a line break.
+function isJsxLineBreak(node: AstroNode): boolean {
+	const raw = String(node.raw ?? '');
+	return node.type === 'JSXText' && /^[ \t\r\n]*$/.test(raw) && raw.includes('\n');
 }
 
 const svgTextElements = new Set(['text', 'textPath', 'tspan']);
