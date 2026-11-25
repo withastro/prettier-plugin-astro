@@ -145,16 +145,36 @@ function markAttribute(node: AstroNode, source: string): void {
 }
 
 function applyPrettierIgnore(root: AstroNode): void {
+	const comments = (root.comments as JsComment[] | undefined) ?? [];
 	walk(root, (node) => {
 		const children = node.type === 'AstroRoot' ? (node.body as AstroNode[]) : childrenOf(node);
 		if (children === null) return;
 		for (const [index, child] of children.entries()) {
+			if (isJsxIgnoreComment(child, comments)) {
+				// Prettier's JSX printer prints this target from source, so ours must pick the same one.
+				const target = children.slice(index + 1).find((sibling) => !printsNothing(sibling));
+				if (target?.type === 'JSXElement' || target?.type === 'JSXFragment') {
+					target.astroIgnored = true;
+				}
+				continue;
+			}
 			if (child.type !== 'AstroComment') continue;
 			if (String(child.value).trim() !== 'prettier-ignore') continue;
 			const target = children.slice(index + 1).find((sibling) => sibling.type !== 'JSXText');
 			if (target) target.astroIgnored = true;
 		}
 	});
+}
+
+function isJsxIgnoreComment(node: AstroNode, comments: JsComment[]): boolean {
+	if (node.type !== 'JSXExpressionContainer') return false;
+	if ((node.expression as AstroNode).type !== 'JSXEmptyExpression') return false;
+	return comments.some(
+		(comment) =>
+			comment.start >= node.start &&
+			comment.end <= node.end &&
+			comment.value.trim() === 'prettier-ignore',
+	);
 }
 
 const svgTextElements = new Set(['text', 'textPath', 'tspan']);
